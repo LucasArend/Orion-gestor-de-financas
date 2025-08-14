@@ -18,6 +18,12 @@ function Login() {
 
         <p className='lostPass'>Esqueceu a senha?</p>
       </form>
+
+      <div className='right'>
+        <img src="Orion.png" alt="Ícone Orion" />
+        <h1>Orion</h1>
+        <p>Clareza para as suas finanças</p>
+      </div>
     </div>
   );
 }

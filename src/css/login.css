@@ -74,3 +74,23 @@ input::placeholder {
 .lostPass:hover {
   color: var(--text-dark2);
 }
+
+.right {
+  position: absolute;
+  top: 50%;
+  left: 75%;
+  transform: translate(-50%, -50%);
+  color: var(--text-dark1);
+  text-align: center;
+}
+
+.right h1 {
+  font-size: 7.5rem;
+  font-weight: 500;
+}
+
+.right p {
+  font-size: 2rem;
+  font-weight: 400;
+  font-style: italic;
+}
