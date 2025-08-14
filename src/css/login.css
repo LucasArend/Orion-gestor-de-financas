@@ -12,24 +12,25 @@
   align-items: center;
   position: relative;
   height: 100vh;
-  background: linear-gradient(to right, var(--background-light)50% , var(--backgroun-dark) 50%);
+  background: linear-gradient(to right, var(--background-light)50% , var(--background-dark) 50%);
 }
 
 .form {
   display: flex;
   flex-direction: column;
   justify-items: center;
-  background-color: var(--color-white);
-  border: 1px solid var(--color-border);
+  background-color: #f6f6f6;
+  border: 1px solid var(--text-dark1);
   border-radius: .5rem;
   padding: 1.5rem;
-  width: 20%;
-  height: 25rem;
+  width: 25%;
+  height: 30rem;
   gap: .5rem;
   position: absolute;
   top: 50%;
   left: 25%;
   transform: translate(-50%, -50%);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 label {
@@ -64,14 +65,20 @@ input::placeholder {
   background-color: var(--color-btn-hoover);
 }
 
-.lostPass {
+.links {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.linkTexts {
   font-size: .85rem;
   text-decoration: underline;
   cursor: pointer;
   transition: color .5s ease;
 }
 
-.lostPass:hover {
+.linkTexts:hover {
   color: var(--text-dark2);
 }
 
@@ -93,4 +100,51 @@ input::placeholder {
   font-size: 2rem;
   font-weight: 400;
   font-style: italic;
+}
+
+.line {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: var(--color-black);
+  font-size: 1.25rem;
+  font-weight: 300;
+  margin: 2rem .5rem 2rem .5rem;
+}
+
+.line::before,
+.line::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid var(--color-black);
+}
+
+.line::before {
+  margin-right: 1.75rem;
+}
+
+.line::after {
+  margin-left: 1.75rem;
+}
+
+.icons {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: .5rem;
+  cursor: pointer;
+}
+
+.icons p {
+  font-size: .9rem;
+  font-weight: 300;
+}
+
+.icons {
+  transition: transform 0.5s ease;
+}
+
+.icons:hover {
+  transform: scale(1.25);
 }

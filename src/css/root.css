@@ -2,10 +2,11 @@
 
 :root {
   --background-light: #F3F3F3;
-  --backgroun-dark: #001133;
+  --background-dark: #001133;
   --text-dark1: #E0E0E0;
   --text-dark2: #A0A0A0;
   --color-white: #FFFFFF; 
+  --color-black: #000000; 
   --color-btn: #333333;
   --color-btn-hoover: #595959;
   --color-border: #E0E0E0;

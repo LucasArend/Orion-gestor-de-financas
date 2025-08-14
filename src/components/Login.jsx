@@ -1,3 +1,4 @@
+import { FcGoogle } from "react-icons/fc";
 import '../css/login.css'
 
 function Login() {
@@ -16,7 +17,17 @@ function Login() {
 
         <button className='btn'>Entrar</button>
 
-        <p className='lostPass'>Esqueceu a senha?</p>
+        <div className='links'>
+        <p className='linkTexts'>Esqueceu a senha?</p>
+        <p className='linkTexts'>Cadastre-se</p>
+        </div>
+
+        <div className='line'>ou</div>
+
+        <div className='icons'> 
+          <span className="google"><FcGoogle size={40}/></span>
+          <p>Google</p>
+        </div>
       </form>
 
       <div className='right'>
