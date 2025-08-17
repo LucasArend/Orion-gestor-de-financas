@@ -24,7 +24,9 @@
   border-radius: .5rem;
   padding: 1.5rem;
   width: 25%;
-  height: 30rem;
+  /* height: auto; */
+  /* overflow: hidden; */
+  /* max-height: 46rem; */
   gap: .5rem;
   position: absolute;
   top: 50%;
@@ -43,6 +45,7 @@ input {
   border: 1px solid;
   border: 1px solid var(--color-border);
   margin-bottom: 1rem;
+  gap: 1rem;
 }
 
 input::placeholder {
@@ -147,4 +150,11 @@ input::placeholder {
 
 .icons:hover {
   transform: scale(1.25);
+}
+
+.erro {
+  color: var(--color-error);
+  font-weight: 600;
+  font-size: .8rem;
+  padding: .25rem;
 }
