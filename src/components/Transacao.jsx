@@ -1,7 +1,9 @@
+import NewTransactionButton from "./NewTransactionButton";
+
 function Transacao() {
   return (
     <div>
-      <h1>Transações</h1>
+      <NewTransactionButton></NewTransactionButton>
     </div>
   );
 }
