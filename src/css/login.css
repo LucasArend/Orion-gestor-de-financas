@@ -1,4 +1,4 @@
-@import './root.css';
+@import '../css/root.css';
 
 * {
   box-sizing: border-box;
@@ -92,6 +92,7 @@ input::placeholder {
   transform: translate(-50%, -50%);
   color: var(--text-dark1);
   text-align: center;
+  font-family: 'Lato', sans-serif;
 }
 
 .right h1 {
@@ -103,6 +104,7 @@ input::placeholder {
   font-size: 2rem;
   font-weight: 400;
   font-style: italic;
+  margin-bottom: 6rem;
 }
 
 .line {
