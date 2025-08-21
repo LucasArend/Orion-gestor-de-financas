@@ -1,5 +1,5 @@
-import { FcGoogle } from "react-icons/fc";
 import '../css/login.css'
+import { FcGoogle } from "react-icons/fc";
 import { useState } from "react";
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -15,16 +15,29 @@ function Login() {
   const { login } = useAuth()
   const navigate = useNavigate()
 
- const handleLogin = async () => {
+  const loginGoogle = async () => {
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-      console.log("Usuário logado:", user);
+      const result = await signInWithPopup(auth, googleProvider)
+      const token = await result.user.getIdToken()
+
+      const response = await axios.post(
+        "URL_BACKEND",
+        {},
+        {
+         headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+         },
+        }
+      )
+
+      console.log("Resposta do backend:", response.data)
+
 
     } catch (error) {
-      console.error("Erro no login:", error);
+      console.error("Erro no login Google:", error)
     }
-  };
+  }
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -82,7 +95,7 @@ function Login() {
         <div className='line'>ou</div>
 
         <div className='icons'> 
-          <span className="google" onClick={handleLogin}><FcGoogle size={40}/></span>
+          <span className="google" onClick={loginGoogle}><FcGoogle size={40}/></span>
           <p>Google</p>
         </div>
       </form>
