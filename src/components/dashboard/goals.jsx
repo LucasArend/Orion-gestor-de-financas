@@ -26,7 +26,7 @@ export default function GoalsList({ goals }) {
         </thead>
         <tbody className="divide-y divide-gray-200 bg-white">
           {goals.map((goal) => (
-            <tr key={goal.id}>
+            <tr className="hover:bg-zinc-100" key={goal.id}>
               <td className="max-w-xs truncate whitespace-nowrap px-6 py-4 text-gray-900 text-sm">
                 {goal.objective}
               </td>

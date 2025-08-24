@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import navItems from '../../data/nav-items';
+import { navItems } from '../../data/nav-items';
 
 export default function Sidebar() {
   const location = useLocation();

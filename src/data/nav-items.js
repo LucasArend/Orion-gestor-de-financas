@@ -5,11 +5,11 @@ import {
   Settings,
 } from 'lucide-react';
 
-const navItems = [
-  { name: 'Dashboard', icon: LayoutDashboard, path: '/' },
-  { name: 'Transações', icon: ReceiptText, path: '/transacoes' },
-  { name: 'Relatórios', icon: LineChart, path: '/relatorios' },
-  { name: 'Configurações', icon: Settings, path: '/configuracoes' },
-];
+//Itens do menu lateral
 
-export default navItems;
+export const navItems = [
+  { id: 1, name: 'Dashboard', icon: LayoutDashboard, path: '/' },
+  { id: 2, name: 'Transações', icon: ReceiptText, path: '/transacoes' },
+  { id: 3, name: 'Relatórios', icon: LineChart, path: '/relatorios' },
+  { id: 4, name: 'Configurações', icon: Settings, path: '/configuracoes' },
+];

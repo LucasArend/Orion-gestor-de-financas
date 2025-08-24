@@ -1,24 +1,12 @@
-import { ArrowDown, ArrowUp, ChevronRight } from 'lucide-react';
-
-const transactionIcons = {
-  positive: {
-    icon: ArrowUp,
-    color: 'text-green-500',
-    bgColor: 'bg-green-100',
-  },
-  negative: {
-    icon: ArrowDown,
-    color: 'text-red-500',
-    bgColor: 'bg-red-100',
-  },
-};
+import { ChevronRight } from 'lucide-react';
+import { transactionIcons } from '../../data/transaction-icons';
 
 const TransactionItem = ({ type, description, value, isPositive }) => {
   const status = isPositive ? 'positive' : 'negative';
   const { icon: Icon, color, bgColor } = transactionIcons[status];
 
   return (
-    <div className="flex items-center justify-between rounded-lg bg-zinc-100 p-4">
+    <div className="flex items-center justify-between rounded-lg bg-zinc-100 p-4 hover:bg-zinc-200">
       <div className="flex items-center">
         {/* Ícone com fundo colorido */}
         <div className={`rounded-full p-2 ${bgColor} flex-shrink-0`}>

@@ -1,6 +1,6 @@
 import { HeartHandshake, TrendingDown, TrendingUp, Wallet } from 'lucide-react';
 
-// Davos que devem vir do backend
+// Davos que devem vir do backend, dados fictícios
 
 export const chartCategoriesData = [
   { nome: 'Contas', valor: 789 },

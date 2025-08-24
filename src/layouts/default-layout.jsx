@@ -1,7 +1,7 @@
 import { useLocation } from 'react-router-dom';
 import Header from '../components/dashboard/header';
 import Sidebar from '../components/dashboard/sidebar';
-import navItems from '../data/nav-items';
+import { navItems } from '../data/nav-items';
 
 export default function DefaultLayout({ children }) {
   const location = useLocation();
