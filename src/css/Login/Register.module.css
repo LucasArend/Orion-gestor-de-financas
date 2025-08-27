@@ -1,4 +1,5 @@
-@import '../css/root.css';
+@import '../../css/root.css';
+
 
 .loginContainer {
   display: flex;

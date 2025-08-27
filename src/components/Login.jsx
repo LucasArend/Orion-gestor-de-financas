@@ -1,4 +1,4 @@
-import styles from '../css/Login.module.css'
+import styles from '../css/Login/Login.module.css'
 import { FcGoogle } from "react-icons/fc";
 import { useState } from "react";
 import { useAuth } from '../context/AuthContext';

@@ -8,17 +8,16 @@ import Menu from "./Menu";
 import NotFound from "./components/NotFound";
 import Transacao from "./components/Transaction/Transaction";
 import Register from "./components/Register"
-import 'react-modern-calendar-datepicker/lib/DatePicker.css';
+
 
 export default function App() {
   return (
     <AuthProvider>
       <Router>
-        <Menu />
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<Login />}/>
           <Route path="/register" element={<Register />} />
-
+          
 
           <Route
             path="/dashboard"
