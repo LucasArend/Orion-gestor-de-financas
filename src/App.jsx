@@ -1,29 +1,18 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Login from "./components/Login";
-import Dashboard from "./components/Dashboard";
-import Menu from "./Menu";
-import { AuthProvider } from "./context/AuthContext";
-import NotFound from "./components/NotFound";
-import Transacao from "./components/transacao";
-import Register from "./components/Register"
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import DefaultLayout from './layouts/default-layout';
+import Dashboard from './pages/dashboard';
 
-
-
-function App() {
+export default function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Menu />
+    <BrowserRouter>
+      <DefaultLayout>
         <Routes>
-          <Route path="/" element={<Login />} /> 
-          <Route path="/register" element={<Register />} />
-          <Route path="/transacao" element={<Transacao />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="*" element={<NotFound />} />
+          <Route element={<Dashboard />} path="/" />
+          {/* <Route path="/transactions" element={<TransactionsPage />} /> */}
+          {/* <Route path="/reports" element={<ReportsPage />} /> */}
+          {/* <Route path="/settings" element={<ReportsPage />} /> */}
         </Routes>
-    </Router>
-    </AuthProvider>
+      </DefaultLayout>
+    </BrowserRouter>
   );
 }
-
-export default App;
