@@ -8,6 +8,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,10 +24,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private static final Logger logger = Logger.getLogger(JwtFilter.class.getName());
     private final CustomUserDetailsService userDetailsService;
-    private final String jwtSecret = "aB2cD4eF6gH8iJ0kL2mN4oP6qR8sT0uV2wX4yZ6aB8=";
+    private final String jwtSecret;
 
-    public JwtFilter(CustomUserDetailsService userDetailsService) {
+    public JwtFilter(CustomUserDetailsService userDetailsService,
+                     @Value("${jwt.secret}") String jwtSecret) {
         this.userDetailsService = userDetailsService;
+        this.jwtSecret = jwtSecret;
     }
 
     @Override
@@ -46,7 +49,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String jwt = authHeader.substring(7);
         try {
-            // API CORRETA para JJWT 0.12.6
             SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
 
             Claims claims = Jwts.parser()

@@ -5,6 +5,7 @@ import com.seuapp.model.User;
 import com.seuapp.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +17,17 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final String jwtSecret = "aB2cD4eF6gH8iJ0kL2mN4oP6qR8sT0uV2wX4yZ6aB8=";
-    private final long jwtExpiration = 3600000;
+    private final String jwtSecret;
+    private final long jwtExpiration;
 
-    public AuthService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
+    public AuthService(UserRepository userRepository,
+                       BCryptPasswordEncoder passwordEncoder,
+                       @Value("${jwt.secret}") String jwtSecret,
+                       @Value("${jwt.expiration}") long jwtExpiration) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtSecret = jwtSecret;
+        this.jwtExpiration = jwtExpiration;
     }
 
     public void register(User user) {
@@ -44,7 +50,6 @@ public class AuthService {
     }
 
     private String generateToken(String email) {
-        // API CORRETA para JJWT 0.12.6
         SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
 
         return Jwts.builder()
