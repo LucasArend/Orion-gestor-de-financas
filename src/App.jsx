@@ -4,8 +4,9 @@ import Dashboard from "./components/Dashboard";
 import Menu from "./Menu";
 import { AuthProvider } from "./context/AuthContext";
 import NotFound from "./components/NotFound";
-import Transacao from "./components/transacao";
+import Transacao from "./components/Transaction/Transaction";
 import Register from "./components/Register"
+import 'react-modern-calendar-datepicker/lib/DatePicker.css';
 
 
 

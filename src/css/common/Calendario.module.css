@@ -1,0 +1,116 @@
+.container {
+  
+  position: relative;
+  width: 100%;
+}
+
+.label {
+  
+  display: block;
+  margin-bottom: 0.3rem;
+  font-weight: bold;
+}
+
+.inputWrapper {
+  
+  position: relative;
+}
+
+.input {
+  
+  width: 100%;
+  padding: 0.5rem;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.picker {
+  
+  position: absolute;
+  bottom: 105%;
+  min-height: 55vh;
+  right: 0;
+  z-index: 10;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  display: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  padding: 10px;
+  
+}
+
+.picker.visible {
+  margin-top: 0 !important;
+  display: block;
+}
+
+.switcher {
+  text-align: right;
+  margin-bottom: 8px;
+}
+
+.switcher button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: #007bff;
+  font-size: 0.9rem;
+}
+
+.monthPicker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  width: 160px;
+  margin-bottom: 10px;
+}
+
+.header button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.monthGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.month {
+  padding: 8px 0;
+  width: 50px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: white;
+  text-align: center;
+}
+
+.month:hover {
+  background-color: #eee;
+}
+
+.selected {
+  background-color: #4caf50;
+  color: white;
+}
+
+.captionClickable {
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 8px;
+  user-select: none;
+}
+.captionClickable:hover {
+  color: #007bff;
+}
