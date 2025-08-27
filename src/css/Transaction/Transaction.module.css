@@ -1,0 +1,26 @@
+.container{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.transactionCard{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+}
+
+.transactionListCard{
+    border-style: solid;
+    border-radius: 8px;
+    border-color: #da1414;
+    padding: 8vh;
+}
+
+.transactionListCard{
+    border-style: solid;
+    border-radius: 8px;
+    border-color: #da1414;
+    padding: 8vh;
+}
