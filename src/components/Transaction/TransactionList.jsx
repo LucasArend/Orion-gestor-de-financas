@@ -7,7 +7,7 @@ function TransactionList({ transacoes, loading }) {
     <div className={styles.container}>
       <h3>Transações</h3>
       {transacoes.length === 0 ? (
-        <p>Nenhuma transação encontrada.</p>
+        <p>Nenhuma transação encontrada... Execute "npm run serverTest" no terminal para visualizar</p>
       ) : (
         <ul className={styles.list}>
           {transacoes.map((transacao) => (

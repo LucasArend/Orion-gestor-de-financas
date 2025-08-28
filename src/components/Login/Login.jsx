@@ -1,10 +1,10 @@
-import styles from '../css/Login/Login.module.css'
+import styles from '../../css/Login/Login.module.css'
 import { FcGoogle } from "react-icons/fc";
 import { useState } from "react";
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { signInWithPopup } from "firebase/auth";
-import { auth, googleProvider } from '../firebase'
+import { auth, googleProvider } from '../../firebase'
 import axios from 'axios';
 
 function Login() {
@@ -113,7 +113,14 @@ function Login() {
         <img src="Orion.png" alt="Ícone Orion" />
         <h1>Orion</h1>
         <p>Clareza para as suas finanças</p>
+
+        {/* IMPORTANTE!!!!!!!!!! LEMBRAR DE DELETAR */}
+              <button type="button" onClick={() => navigate("/Dashboard")} className={styles.btn}>
+                Dev Access
+              </button>
+              
       </div>
+
     </div>
   );
 }

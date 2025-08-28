@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles from "../css/Login/Register.module.css"; // importando módulo css
+import styles from "../../css/Login/Register.module.css"; // importando módulo css
 import { FaFacebookF, FaGoogle, FaTwitter } from "react-icons/fa";
 
 export default function Register() {

@@ -30,7 +30,7 @@ function Transaction() {
 
   return (
     <div className={styles.container}>
-        <div className={styles.filterCard}>teste</div>
+        <div className={styles.filterCard}></div>
         <div className={styles.transactionCard}>
             <NewTransactionButton onAdd={handleAddTransacao} />
             <div className={styles.transactionListCard}>
