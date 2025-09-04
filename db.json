@@ -23,7 +23,7 @@
       "tipo": "renda",
       "valor": 500,
       "categoria": "Salário",
-      "descricao": "aaaa",
+      "descricao": "Freelance",
       "parcelas": 5,
       "data": "2025-08-30T03:00:00.000Z"
     },
@@ -32,7 +32,7 @@
       "tipo": "renda",
       "valor": 2222,
       "categoria": "Transporte",
-      "descricao": "teste",
+      "descricao": "carro",
       "parcelas": 2,
       "data": "2025-08-13T03:00:00.000Z"
     }

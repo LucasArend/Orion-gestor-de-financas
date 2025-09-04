@@ -9,15 +9,28 @@ function TransactionList({ transacoes, loading }) {
       {transacoes.length === 0 ? (
         <p>Nenhuma transação encontrada... Execute "npm run serverTest" no terminal para visualizar</p>
       ) : (
-        <ul className={styles.list}>
-          {transacoes.map((transacao) => (
-            <li key={transacao.id} className={styles.item}>
-              [{transacao.tipo}] {transacao.descricao} - R$ {transacao.valor} (
-              {transacao.categoria}) -{" "}
-              {new Date(transacao.data).toLocaleDateString()}
-            </li>
-          ))}
-        </ul>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Descrição</th>
+              <th>Valor</th>
+              <th>Categoria</th>
+              <th>Data</th>
+            </tr>
+          </thead>
+          <tbody>
+            {transacoes.map((transacao) => (
+              <tr key={transacao.id}>
+                <td>{transacao.tipo}</td>
+                <td>{transacao.descricao}</td>
+                <td>R$ {transacao.valor}</td>
+                <td>{transacao.categoria}</td>
+                <td>{new Date(transacao.data).toLocaleDateString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
     </div>
   );
