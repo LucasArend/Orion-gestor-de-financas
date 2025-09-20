@@ -1,40 +1,40 @@
 {
   "transacoes": [
     {
-      "id": "1",
+      "id": "73e9",
       "tipo": "renda",
-      "valor": 5000,
-      "categoria": "Salário",
-      "descricao": "Pagamento mensal",
-      "parcelas": 1,
-      "data": "2025-08-01T00:00:00.000Z"
-    },
-    {
-      "id": "2",
-      "tipo": "despesa",
-      "valor": 200,
+      "valor": 1212,
       "categoria": "Alimentação",
-      "descricao": "Supermercado",
+      "descricao": "aaaa",
       "parcelas": 1,
-      "data": "2025-08-10T00:00:00.000Z"
+      "data": "2025-09-17T03:00:00.000Z"
     },
     {
-      "id": "9402",
+      "id": "f76c",
       "tipo": "renda",
-      "valor": 500,
-      "categoria": "Salário",
-      "descricao": "Freelance",
-      "parcelas": 5,
-      "data": "2025-08-30T03:00:00.000Z"
+      "valor": 2,
+      "categoria": "Transportes",
+      "descricao": "asdas",
+      "parcelas": 1,
+      "data": "2025-09-17T03:00:00.000Z"
+    }
+  ],
+  "categorias": [
+    {
+      "nome": "Transporte",
+      "id": "0152"
     },
     {
-      "id": "1f5e",
-      "tipo": "renda",
-      "valor": 2222,
-      "categoria": "Transporte",
-      "descricao": "carro",
-      "parcelas": 2,
-      "data": "2025-08-13T03:00:00.000Z"
+      "id": "faf6",
+      "nome": "Freelance"
+    },
+    {
+      "id": "0d45",
+      "nome": "Mercado"
+    },
+    {
+      "id": "95cb",
+      "nome": "Saude"
     }
   ]
 }

@@ -3,9 +3,8 @@ import { AuthProvider } from "./context/AuthContext";
 import DefaultLayout from './layouts/default-layout';
 import Dashboard from './pages/dashboard';
 import Login from "./components/Login/Login";
-import Menu from "./Menu";
 import NotFound from "./components/NotFound";
-import Transacao from "./components/Transaction/TransactionBody";
+import Transacao from "./components/Transaction/Transaction";
 import Register from "./components/Registration/Register"
 
 

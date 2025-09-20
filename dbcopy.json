@@ -1,0 +1,13 @@
+{
+  "transacoes": [
+    {
+      "id": "1",
+      "tipo": "renda",
+      "valor": 5000,
+      "categoria": "Salário",
+      "descricao": "Pagamento mensal",
+      "parcelas": 1,
+      "data": "2025-08-01T00:00:00.000Z"
+    }
+  ]
+}
