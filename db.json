@@ -17,6 +17,24 @@
       "descricao": "asdas",
       "parcelas": 1,
       "data": "2025-09-17T03:00:00.000Z"
+    },
+    {
+      "id": "2102",
+      "tipo": "renda",
+      "valor": 331,
+      "categoria": "Saude",
+      "descricao": "Hospital",
+      "parcelas": 1,
+      "data": "2025-09-20T03:00:00.000Z"
+    },
+    {
+      "id": "4375",
+      "tipo": "despesa",
+      "valor": 1903,
+      "categoria": "Categoria Teste",
+      "descricao": "Porto Alegre",
+      "parcelas": 3,
+      "data": "2025-09-12T03:00:00.000Z"
     }
   ],
   "categorias": [
@@ -35,6 +53,10 @@
     {
       "id": "95cb",
       "nome": "Saude"
+    },
+    {
+      "id": "d949",
+      "nome": "Categoria Teste"
     }
   ]
 }
