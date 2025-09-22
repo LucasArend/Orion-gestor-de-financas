@@ -25,7 +25,7 @@ export default function Header({ pageTitle }) {
   }, []);
 
   return (
-    <header className="sticky top-0 z-10 flex h-14 items-center justify-between bg-white p-8">
+    <header className="sticky top-0 z-50 flex h-14 items-center justify-between border-zinc-200 border-b-1 bg-white p-8">
       <div className="flex-1">
         <h1 className="font-bold text-gray-900 text-xl">{pageTitle}</h1>
       </div>
@@ -34,7 +34,7 @@ export default function Header({ pageTitle }) {
         {/* Avatar */}
         <div className="relative">
           <button
-            className="flex items-center gap-2 rounded-2xl border border-gray-200 p-1.5 pr-2 hover:bg-gray-50"
+            className="flex items-center gap-2 rounded-2xl p-1.5 pr-2 hover:bg-gray-50"
             onClick={() => setOpen(!open)}
             ref={buttonRef}
             type="button"

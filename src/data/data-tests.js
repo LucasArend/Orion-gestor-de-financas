@@ -1,6 +1,4 @@
-import { HeartHandshake, TrendingDown, TrendingUp, Wallet } from 'lucide-react';
-
-// Davos que devem vir do backend, dados fictícios
+// Dados que devem vir do backend, dados fictícios
 
 export const chartCategoriesData = [
   { nome: 'Contas', valor: 789 },
@@ -26,34 +24,31 @@ export const transactionsData = [
 
 export const name = { name: 'Pedro Avila' };
 
+// cada item pode ser uma coluna do BD
 export const cardData = [
   {
     id: 1,
-    titulo: 'Balanço do mês',
+    titulo: 'Balanço do Mês',
     valor: -109.0,
-    icone: Wallet,
-    cor: 'text-red-500',
+    iconKey: 'wallet',
   },
   {
     id: 2,
-    titulo: 'Renda total',
+    titulo: 'Renda Total',
     valor: 2850.0,
-    icone: TrendingUp,
-    cor: 'text-green-500',
+    iconKey: 'trendingUp',
   },
   {
     id: 3,
-    titulo: 'Gastos totais',
+    titulo: 'Gastos Totais',
     valor: -2959.0,
-    icone: TrendingDown,
-    cor: 'text-red-500',
+    iconKey: 'trendingDown',
   },
   {
     id: 4,
     titulo: 'Reserva de Emergência',
     valor: 25_000.0,
-    icone: HeartHandshake,
-    cor: 'text-gray-800',
+    iconKey: 'heartHandshake',
   },
 ];
 
@@ -112,4 +107,57 @@ export const goalData = [
     forecast: '01/04/2025',
     dueDate: '01/01/2026',
   },
+];
+
+export const cardDataReports = [
+  {
+    id: 1,
+    titulo: 'Renda Total',
+    valor: 5000.0,
+    iconKey: 'circleDollarSign',
+  },
+  {
+    id: 2,
+    titulo: 'Despesas Totais',
+    valor: 541.0,
+    iconKey: 'shoppingCart',
+  },
+  {
+    id: 3,
+    titulo: 'Próximo Balanço',
+    valor: -41.0,
+    iconKey: 'fileClock',
+  },
+  {
+    id: 4,
+    titulo: 'Taxa de Poupança',
+    valor: 8.5,
+    iconKey: 'piggyBank',
+  },
+];
+
+export const barChartData = {
+  totalSalary: 5000.0,
+  categories: [
+    { id: 1, name: 'Mercado', value: 150.8 },
+    { id: 2, name: 'Transporte', value: 50.0 },
+    { id: 3, name: 'Entretenimento', value: 45.99 },
+    { id: 4, name: 'Contas', value: 150.0 },
+    { id: 5, name: 'Outros', value: 1000.0 },
+  ],
+};
+
+export const monthlySummary = [
+  { month: '2025-09-01', totalIncome: 6500.0, totalExpense: 3200.0 },
+  { month: '2025-08-01', totalIncome: 7500.0, totalExpense: 8200.0 },
+  { month: '2025-07-01', totalIncome: 6500.0, totalExpense: 2200.0 },
+  { month: '2025-05-01', totalIncome: 3200.0, totalExpense: 3000.0 },
+  { month: '2025-04-01', totalIncome: 8000.0, totalExpense: 7800.0 },
+  { month: '2025-03-01', totalIncome: 5500.0, totalExpense: 3200.0 },
+  { month: '2025-02-01', totalIncome: 5200.0, totalExpense: 3000.0 },
+  { month: '2025-01-01', totalIncome: 5000.0, totalExpense: 2800.0 },
+  { month: '2024-12-01', totalIncome: 4800.0, totalExpense: 4000.0 },
+  { month: '2024-11-01', totalIncome: 4500.0, totalExpense: 2200.0 },
+  { month: '2024-10-01', totalIncome: 5500.0, totalExpense: 1200.0 },
+  { month: '2024-09-01', totalIncome: 3500.0, totalExpense: 2300.0 },
 ];

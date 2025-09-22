@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { Plus } from 'lucide-react';
+import { useState } from 'react';
 import styles from '../../css/Transaction/NewTransactionButton.module.css';
 import Calendario from '../Common/Calendario';
 
@@ -10,7 +11,9 @@ async function enviarTransacaoParaBackend(transacao) {
       body: JSON.stringify(transacao),
     });
 
-    if (!response.ok) throw new Error('Erro ao enviar transação');
+    if (!response.ok) {
+      throw new Error('Erro ao enviar transação');
+    }
     return await response.json();
   } catch (error) {
     console.error('Erro ao enviar transação:', error);
@@ -29,8 +32,8 @@ function NewTransactionButton({ onAdd }) {
   const [parcelas, setParcelas] = useState('');
 
   async function handleAdicionarTransacao() {
-    if (!valor || !categoriaSelecionada || !descricao || !dataSelecionada) {
-      alert("Por favor, preencha todos os campos obrigatórios.");
+    if (!(valor && categoriaSelecionada && descricao && dataSelecionada)) {
+      alert('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
 
@@ -62,8 +65,13 @@ function NewTransactionButton({ onAdd }) {
 
   return (
     <div className={styles.container}>
-      <button onClick={() => setOpen(true)} className={styles.btn}>
-        + Add Transação
+      <button
+        className={`${styles.btn} flex items-center space-x-2 shadow-[#2161E5]/50 shadow-lg`}
+        onClick={() => setOpen(true)}
+        type="button"
+      >
+        <Plus className="h-4 w-4" />
+        <span>Add Transação</span>
       </button>
 
       {open && (
@@ -74,23 +82,27 @@ function NewTransactionButton({ onAdd }) {
               <div className={styles.title}>
                 <p>Tipo da transação</p>
                 <div className={styles.options}>
-                  <label className={`${styles.option} ${tipoSelecionado === 'renda' ? styles.renda : ''}`}>
+                  <label
+                    className={`${styles.option} ${tipoSelecionado === 'renda' ? styles.renda : ''}`}
+                  >
                     <input
-                      type="radio"
-                      name="tipo"
-                      value="renda"
                       checked={tipoSelecionado === 'renda'}
+                      name="tipo"
                       onChange={() => setTipoSelecionado('renda')}
+                      type="radio"
+                      value="renda"
                     />
                     <span className={styles.labelText}>Renda</span>
                   </label>
-                  <label className={`${styles.option} ${tipoSelecionado === 'despesa' ? styles.despesa : ''}`}>
+                  <label
+                    className={`${styles.option} ${tipoSelecionado === 'despesa' ? styles.despesa : ''}`}
+                  >
                     <input
-                      type="radio"
-                      name="tipo"
-                      value="despesa"
                       checked={tipoSelecionado === 'despesa'}
+                      name="tipo"
                       onChange={() => setTipoSelecionado('despesa')}
+                      type="radio"
+                      value="despesa"
                     />
                     <span className={styles.labelText}>Despesa</span>
                   </label>
@@ -100,11 +112,11 @@ function NewTransactionButton({ onAdd }) {
               <div>
                 <label htmlFor="valor">Valor</label>
                 <input
-                  type="number"
                   id="valor"
                   name="valor"
-                  value={valor}
                   onChange={(event) => setValor(event.target.value)}
+                  type="number"
+                  value={valor}
                 />
               </div>
 
@@ -114,10 +126,14 @@ function NewTransactionButton({ onAdd }) {
                   className={styles.selectCategory}
                   id="categoria"
                   name="categoria"
+                  onChange={(event) =>
+                    setCategoriaSelecionada(event.target.value)
+                  }
                   value={categoriaSelecionada}
-                  onChange={(event) => setCategoriaSelecionada(event.target.value)}
                 >
-                  <option value="" disabled>Selecione a categoria</option>
+                  <option disabled value="">
+                    Selecione a categoria
+                  </option>
                   <option value="Salário">Salário</option>
                   <option value="Alimentação">Alimentação</option>
                   <option value="Transporte">Transporte</option>
@@ -128,47 +144,47 @@ function NewTransactionButton({ onAdd }) {
               <div>
                 <label htmlFor="descricao">Descrição</label>
                 <input
-                  type="text"
                   id="descricao"
                   name="descricao"
-                  value={descricao}
                   onChange={(event) => setDescricao(event.target.value)}
+                  type="text"
+                  value={descricao}
                 />
               </div>
 
               <div className={styles.parcelasEcalendario}>
                 <div>
                   <p>Parcelas</p>
-                  <label htmlFor="parcelas"></label>
+                  <label htmlFor="parcelas" />
                   <input
-                    type="number"
                     id="parcelas"
-                    name="parcelas"
-                    value={parcelas}
-                    onChange={(event) => setParcelas(event.target.value)}
                     min={1}
+                    name="parcelas"
+                    onChange={(event) => setParcelas(event.target.value)}
+                    type="number"
+                    value={parcelas}
                   />
                 </div>
 
                 <div>
                   <Calendario
-                    value={dataSelecionada}
-                    onChange={setDataSelecionada}
                     label="Data da transação"
+                    onChange={setDataSelecionada}
+                    value={dataSelecionada}
                   />
                 </div>
               </div>
 
               <div className={styles.buttons}>
                 <button
-                  onClick={() => setOpen(false)}
                   className={`${styles.btn} ${styles.close}`}
+                  onClick={() => setOpen(false)}
                 >
                   cancelar
                 </button>
                 <button
-                  onClick={handleAdicionarTransacao}
                   className={styles.btn}
+                  onClick={handleAdicionarTransacao}
                 >
                   + Add
                 </button>
