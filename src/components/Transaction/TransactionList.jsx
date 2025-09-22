@@ -1,8 +1,15 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { TrashIcon } from "@heroicons/react/24/outline";
 
-function TransactionList({ transacoes, loading, onRemove, onOpen }) {
+function TransactionList({ transacoes, loading, search, category, type, onRemove, onOpen }) {
   if (loading) return <p>Carregando transações...</p>;
+
+  const filtered = transacoes.filter((t) => {
+    const matchesSearch = (t.descricao ?? "").toLowerCase().includes((search ?? "").toLowerCase());
+    const matchesCategory = category ? t.categoria === category : true;
+    const matchesType = type ? t.tipo === type : true;
+    return matchesSearch && matchesCategory && matchesType;
+  });
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md w-full">
@@ -16,7 +23,7 @@ function TransactionList({ transacoes, loading, onRemove, onOpen }) {
         </button>
       </div>
 
-      {transacoes.length === 0 ? (
+      {filtered.length === 0 ? (
         <p className="text-gray-500 text-sm">
           Nenhuma transação encontrada...
         </p>
@@ -34,7 +41,7 @@ function TransactionList({ transacoes, loading, onRemove, onOpen }) {
           </thead>
           <tbody>
             <AnimatePresence>
-              {transacoes.map((transacao) => {
+              {filtered.map((transacao) => {
                 const isRenda = transacao.tipo === "renda";
 
                 return (
@@ -64,7 +71,7 @@ function TransactionList({ transacoes, loading, onRemove, onOpen }) {
                         isRenda ? "text-green-600" : "text-red-600"
                       }`}
                     >
-                      R$ {transacao.valor}
+                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(transacao.valor)}
                     </td>
                     <td className="p-2">{transacao.categoria}</td>
                     <td className="p-2">

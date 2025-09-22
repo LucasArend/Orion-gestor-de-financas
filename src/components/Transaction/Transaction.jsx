@@ -3,6 +3,8 @@ import TransactionList from "./TransactionList";
 import NewTransactionModal from "./NewTransactionModal";
 import ConfirmModal from "../Common/ConfirmModal";
 import { toast, Toaster } from "react-hot-toast";
+import { IoFunnelOutline } from "react-icons/io5";
+import { HiMagnifyingGlass } from "react-icons/hi2";
 
 function Transaction() {
   const [transacoes, setTransacoes] = useState([]);
@@ -10,6 +12,11 @@ function Transaction() {
   const [open, setOpen] = useState(false);
   const [modalConfirmOpen, setModalConfirmOpen] = useState(false);
   const [transacaoParaRemover, setTransacaoParaRemover] = useState(null);
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("");
+  const [type, setType] = useState("");
+
+  const categories = Array.from(new Set(transacoes.map(t => t.categoria))).sort()
 
 
   const fetchTransacoes = useCallback(async () => {
@@ -61,9 +68,53 @@ function Transaction() {
       <Toaster position="top-right" reverseOrder={false} />
 
       <div className="w-full max-w-4xl">
+        <div className="bg-white p-6 rounded-lg shadow-md w-full mb-5">
+          <div className="flex items-center mb-5">
+            <IoFunnelOutline className="text-2xl mr-1"/>
+            <span className="text-lg font-semibold">Filtros</span>
+          </div>
+
+          <div className="flex items-center gap-3 justify-center">
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-1.5">
+                <HiMagnifyingGlass className="h-5 w-5" />
+              </span>
+              <input
+               type="text"
+               placeholder="Buscar descrição..."
+               value={search}
+               onChange={(e) => setSearch(e.target.value)}
+               className="border border-gray-200 rounded p-2 flex-1 py-1.5 pl-7 pr-3" 
+               />
+            </div>
+
+             <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="border border-gray-200 rounded p-2 flex-1 cursor-pointer"
+             >
+                <option value="">Todas as categorias</option>
+                {categories.map(c => <option key={c} value={c}>{c}</option>)}
+             </select>
+
+             <select
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+              className="border border-gray-200  rounded p-2 flex-1 cursor-pointer"
+             >
+                <option value="">Todos os tipos</option>
+                <option value="renda">Renda</option>
+                <option value="despesa">Despesa</option>
+             </select>
+          </div>
+        </div>
+
         <TransactionList
           transacoes={transacoes}
           loading={loading}
+          search={search}
+          category={category}
+          type={type}
           onRemove={handleRemoveTransacao}
           onOpen={() => setOpen(true)}
         />
@@ -86,5 +137,6 @@ function Transaction() {
     </div>
   );
 }
+
 
 export default Transaction;
