@@ -11,7 +11,7 @@ function Transaction() {
   const [modalConfirmOpen, setModalConfirmOpen] = useState(false);
   const [transacaoParaRemover, setTransacaoParaRemover] = useState(null);
 
-  // 🔄 Função central de carregar transações
+
   const fetchTransacoes = useCallback(async () => {
     setLoading(true);
     try {

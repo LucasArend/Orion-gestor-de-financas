@@ -1,4 +1,3 @@
-// ... imports mantidos
 import { useState, useEffect } from "react";
 import Calendario from "../Common/Calendario";
 import { TrashIcon } from "@heroicons/react/24/outline";
@@ -277,7 +276,6 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions }) {
           </div>
         )}
 
-        {/* Categoria */}
         <div>
           <label className="block text-sm font-medium mb-1">Categoria</label>
 
@@ -430,7 +428,6 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions }) {
           </>
         )}
 
-        {/* Modal exclusão */}
         {modalDeleteOpen && (
           <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-40 z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
