@@ -21,4 +21,13 @@ public class TransactionController {
         Transaction newTransaction = transactionService.createTransaction(request);
         return new ResponseEntity<>(newTransaction, HttpStatus.CREATED);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Transaction> updateTransaction(
+            @PathVariable Long id,
+            @Valid @RequestBody TransactionRequest request) {
+
+        Transaction updatedTransaction = transactionService.updateTransaction(id, request);
+        return ResponseEntity.ok(updatedTransaction); // Retorna 200 OK
+    }
 }
