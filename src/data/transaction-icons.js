@@ -1,7 +1,5 @@
 import { ArrowDown, ArrowUp } from 'lucide-react';
 
-//Icones da lista de transações
-
 export const transactionIcons = {
   positive: {
     icon: ArrowUp,

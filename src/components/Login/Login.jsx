@@ -82,6 +82,7 @@ function Login() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder='Digite seu e-mail'
+          className={styles.inputs}
         />
 
         <label htmlFor="password">Senha</label>
@@ -90,6 +91,7 @@ function Login() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder='Digite sua senha'
+          className={styles.inputs}
         />
 
         {erro && <p className={styles.erro}>{erro}</p>}

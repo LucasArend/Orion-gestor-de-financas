@@ -1,3 +1,4 @@
+
 package com.seuapp.controller; // ou com.seuapp.exception, dependendo de onde o arquivo está
 
 import com.seuapp.exception.TransactionNotFoundException; // Importe a exceção
@@ -14,5 +15,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(TransactionNotFoundException.class)
     public ResponseEntity<String> handleTransactionNotFoundException(TransactionNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+
     }
 }

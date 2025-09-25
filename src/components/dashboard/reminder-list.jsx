@@ -13,7 +13,7 @@ export default function RemindersList({ reminders }) {
       <div className="mb-4 flex items-center justify-between">
         <h3 className="font-semibold text-gray-800 text-xl">Lembretes</h3>
         <button
-          className="flex items-center space-x-2 rounded-lg bg-zinc-200 px-3 py-2 text-sm text-zinc-800 transition-colors hover:bg-zinc-300"
+          className="flex items-center space-x-2 rounded-lg bg-zinc-200 px-3 py-2 text-sm text-zinc-800 shadow-lg shadow-zinc-400/50 transition-colors hover:bg-zinc-300"
           type="button"
         >
           <Plus className="h-4 w-4" />
@@ -47,7 +47,7 @@ export default function RemindersList({ reminders }) {
       {shouldShowButton && (
         <div className="flex flex-col items-center pt-2 pr-3 pl-3 text-center">
           <button
-            className="flex w-full items-center justify-center rounded-lg bg-[#2979FF] py-2 font-semibold text-sm text-white transition-colors hover:bg-[#2161E5]"
+            className="flex w-full items-center justify-center rounded-lg bg-[#2979FF] py-2 font-semibold text-sm text-white shadow-[#2161E5]/50 shadow-lg transition-colors hover:bg-[#2161E5]"
             type="button"
           >
             Mostrar mais
