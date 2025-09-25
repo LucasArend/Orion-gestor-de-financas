@@ -26,8 +26,8 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/**").permitAll() // Regra para login/cadastro (público)
-                        .anyRequest().authenticated() // Protege TODOS os outros endpoints
+                        .requestMatchers("/api/auth/**").permitAll() // Permite login/cadastro
+                        .anyRequest().authenticated() // Protege TODOS os outros endpoints, incluindo /bills
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
