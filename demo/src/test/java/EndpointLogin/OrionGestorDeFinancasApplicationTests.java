@@ -1,4 +1,6 @@
-package com.seuapp;
+
+package EndpointLogin;
+
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

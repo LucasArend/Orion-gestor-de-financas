@@ -2,7 +2,7 @@ import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import Login from './components/Login/Login';
 import NotFound from './components/NotFound';
 import Register from './components/Registration/Register';
-import Transacao from './components/Transaction/TransactionBody';
+import Transacao from './components/Transaction/Transaction';
 import { AuthProvider } from './context/AuthContext';
 import DefaultLayout from './layouts/default-layout';
 import Dashboard from './pages/dashboard';

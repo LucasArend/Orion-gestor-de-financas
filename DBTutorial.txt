@@ -1,0 +1,18 @@
+1- Instale o docker
+
+opção 1
+
+1- pelo terminal, entre na pasta do orion
+2- execute os seguintes comandos no terminal:
+     docker-compose up -d
+     docker cp orion_db_dump.sql orion-postgres:/orion_db_dump.sql
+     docker exec -it orion-postgres psql -U orion_user -d orion_db -f /orion_db_dump.sql
+
+opção 2
+
+1- pelo terminal, entre na pasta do orion
+2- chmod +x setup_db.sh
+3-./setup_db.sh
+
+A estrutura do banco de dados pode ser encontrada
+no OrionDB.pdf
