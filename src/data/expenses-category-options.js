@@ -62,10 +62,5 @@ export const expensesChartOptions = {
       },
     },
   },
-  elements: {
-    bar: {
-      hoverBackgroundColor: '#2161E5',
-    },
-  },
   barPercentage: 0.5,
 };

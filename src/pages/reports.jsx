@@ -9,18 +9,19 @@ import {
   monthlySummary,
 } from '../data/data-tests';
 import { doughnutChartOptions } from '../data/doughnut-chart-options';
+import { cardInfoReports } from '../data/reports-card-info';
 import { makeCategoryDoughnutData } from '../utils/chart-data-factory';
-import { getIcons } from '../utils/get-icons';
 import { getTextColor } from '../utils/get-text-color';
 
 export default function Reports() {
+  const percent = 100;
   const labels = ['Transporte', 'Alimentação', 'Lazer', 'Contas', 'Outros'];
   const values = [2, 5, 5, 3, 4];
 
   return (
     <div className="space-y-5">
       <section>
-        <h1 className="font-bold text-3xl text-gray-900">
+        <h1 className="font-bold text-3xl text-gray-700">
           Resultado Financeiro
         </h1>
         <p className="mt-1 mb-6 text-gray-500">
@@ -32,8 +33,11 @@ export default function Reports() {
         {/* Container para os Cards */}
         <div className="grid items-stretch gap-4 md:grid-cols-2 lg:grid-cols-4">
           {cardDataReports.map((data) => {
-            const Icon = getIcons(data.iconKey);
-
+            const config = cardInfoReports[data.categoria];
+            if (!config) {
+              return null;
+            }
+            const { title, Icon } = config;
             return (
               <div
                 className="flex flex-col items-start justify-center rounded-lg bg-white p-6 shadow-lg shadow-zinc-400/50 transition-all duration-300 hover:scale-95"
@@ -44,17 +48,23 @@ export default function Reports() {
                 </div>
                 <div className="flex-1 overflow-hidden">
                   <h3 className="overflow-hidden text-ellipsis font-semibold text-gray-500 text-lg">
-                    {data.titulo}
+                    {title}
                   </h3>
                   <p
                     className={`mt-2 font-bold text-3xl ${getTextColor(
-                      data.titulo,
+                      title,
                       data.valor
                     )}`}
                   >
-                    {data.titulo === 'Taxa de Poupança'
-                      ? `${data.valor.toFixed(2).replace('.', ',')}%`
-                      : `R$${data.valor.toFixed(2).replace('.', ',')}`}
+                    {title === 'Taxa de Poupança'
+                      ? new Intl.NumberFormat('pt-BR', {
+                          style: 'percent',
+                          minimumFractionDigits: 2,
+                        }).format(data.valor / percent)
+                      : new Intl.NumberFormat('pt-BR', {
+                          style: 'currency',
+                          currency: 'BRL',
+                        }).format(data.valor)}
                   </p>
                 </div>
               </div>
@@ -69,7 +79,7 @@ export default function Reports() {
           <h3 className="mb-4 font-semibold text-gray-800 text-xl">
             Quantidade de Gastos por Categoria
           </h3>
-          <div className="flex min-h-0 flex-1 items-center justify-center">
+          <div className="flex min-h-0 flex-1 flex-col rounded-lg">
             <DoughnutChart
               data={makeCategoryDoughnutData(labels, values)}
               options={doughnutChartOptions}

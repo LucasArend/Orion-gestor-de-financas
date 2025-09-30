@@ -28,27 +28,23 @@ export const name = { name: 'Pedro Avila' };
 export const cardData = [
   {
     id: 1,
-    titulo: 'Balanço do Mês',
+    categoria: 'monthlySummary',
     valor: -109.0,
-    iconKey: 'wallet',
   },
   {
     id: 2,
-    titulo: 'Renda Total',
+    categoria: 'income',
     valor: 2850.0,
-    iconKey: 'trendingUp',
   },
   {
     id: 3,
-    titulo: 'Gastos Totais',
+    categoria: 'totalExpenses',
     valor: -2959.0,
-    iconKey: 'trendingDown',
   },
   {
     id: 4,
-    titulo: 'Reserva de Emergência',
+    categoria: 'savings',
     valor: 25_000.0,
-    iconKey: 'heartHandshake',
   },
 ];
 
@@ -112,27 +108,23 @@ export const goalData = [
 export const cardDataReports = [
   {
     id: 1,
-    titulo: 'Renda Total',
+    categoria: 'balance',
     valor: 5000.0,
-    iconKey: 'circleDollarSign',
   },
   {
     id: 2,
-    titulo: 'Despesas Totais',
+    categoria: 'totalIncome',
     valor: 541.0,
-    iconKey: 'shoppingCart',
   },
   {
     id: 3,
-    titulo: 'Próximo Balanço',
+    categoria: 'expense',
     valor: -41.0,
-    iconKey: 'fileClock',
   },
   {
     id: 4,
-    titulo: 'Taxa de Poupança',
+    categoria: 'savingsRate',
     valor: 8.5,
-    iconKey: 'piggyBank',
   },
 ];
 

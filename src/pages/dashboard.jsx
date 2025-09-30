@@ -3,6 +3,7 @@ import ChartExpenses from '../components/Dashboard/expenses-chart';
 import GoalsList from '../components/Dashboard/goals';
 import RemindersList from '../components/Dashboard/reminder-list';
 import TransactionsList from '../components/Dashboard/transactions-list';
+import { cardInfoDashboard } from '../data/dashboard-card-info';
 import {
   cardData,
   chartCategoriesData,
@@ -11,7 +12,6 @@ import {
   reminderData,
   transactionsData,
 } from '../data/data-tests';
-import { getIcons } from '../utils/get-icons';
 import { getTextColor } from '../utils/get-text-color';
 
 export default function Dashboard() {
@@ -29,7 +29,11 @@ export default function Dashboard() {
         {/* Container para os Cards */}
         <div className="grid grid-cols-2 items-stretch gap-4">
           {cardData.map((data) => {
-            const Icon = getIcons(data.iconKey);
+            const config = cardInfoDashboard[data.categoria];
+            if (!config) {
+              return null;
+            }
+            const { title, Icon } = config;
             return (
               <div
                 className="flex flex-col items-start justify-center rounded-lg bg-white p-6 shadow-sm transition-all duration-300 hover:scale-95"
@@ -40,12 +44,15 @@ export default function Dashboard() {
                 </div>
                 <div className="flex-1 overflow-hidden">
                   <h3 className="overflow-hidden text-ellipsis font-semibold text-gray-500 text-lg">
-                    {data.titulo}
+                    {title}
                   </h3>
                   <p
-                    className={`mt-2 font-bold text-3xl ${getTextColor(data.titulo, data.valor)}`}
+                    className={`mt-2 font-bold text-3xl ${getTextColor(title, data.valor)}`}
                   >
-                    {`R$${data.valor.toFixed(2).replace('.', ',')}`}
+                    {new Intl.NumberFormat('pt-BR', {
+                      style: 'currency',
+                      currency: 'BRL',
+                    }).format(data.valor)}
                   </p>
                 </div>
               </div>

@@ -25,9 +25,17 @@ export default function CategorySummary({ data, totalSalary }) {
             {/* Valores */}
             <div className="text-right">
               <p className="font-semibold text-gray-800 text-sm">
-                R${item.value.toFixed(2).replace('.', ',')}
+                {new Intl.NumberFormat('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL',
+                }).format(item.value)}
               </p>
-              <p className="text-gray-400 text-xs">{percentage.toFixed(2)}%</p>
+              <p className="text-gray-400 text-xs">
+                {new Intl.NumberFormat('pt-BR', {
+                  style: 'percent',
+                  minimumFractionDigits: 2,
+                }).format(percentage / percent)}
+              </p>
             </div>
           </div>
         );
