@@ -19,7 +19,7 @@ export default function ChartPercentage({ data, totalSalary }) {
   return (
     <div className="flex flex-col items-center">
       {/* Semicírculo */}
-      <div className="relative z-0 mb-4 h-48 w-48">
+      <div className="relative z-0 mb-4 h-48 w-52">
         <DoughnutChart data={centerCircleData} options={centerCircleOptions} />
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           {/* Texto central */}
@@ -27,7 +27,10 @@ export default function ChartPercentage({ data, totalSalary }) {
             <p className="text-gray-500 text-sm">Total</p>
           </div>
           <p className="font-bold text-2xl text-gray-800">
-            R${totalMonthlySpending.toFixed(2).replace('.', ',')}
+            {new Intl.NumberFormat('pt-BR', {
+              style: 'currency',
+              currency: 'BRL',
+            }).format(totalMonthlySpending)}
           </p>
         </div>
       </div>

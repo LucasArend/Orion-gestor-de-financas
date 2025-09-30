@@ -18,9 +18,10 @@ const TransactionItem = ({ type, description, value, isPositive }) => {
         </div>
       </div>
       <p className={`font-semibold ${color}`}>
-        {isPositive
-          ? `+R$${value.toFixed(2).replace('.', ',')}`
-          : `-R$${value.toFixed(2).replace('.', ',')}`}
+        {new Intl.NumberFormat('pt-BR', {
+          style: 'currency',
+          currency: 'BRL',
+        }).format(value)}
       </p>
     </div>
   );
@@ -54,7 +55,7 @@ export default function TransactionsList({ transactions }) {
             isPositive={transaction.value >= 0}
             key={transaction.id}
             type={transaction.type}
-            value={Math.abs(transaction.value)}
+            value={transaction.value}
           />
         ))}
       </div>
