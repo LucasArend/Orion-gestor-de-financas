@@ -7,6 +7,7 @@ import { AuthProvider } from './context/AuthContext';
 import DefaultLayout from './layouts/default-layout';
 import Dashboard from './pages/dashboard';
 import Reports from './pages/reports';
+import Finance from './components/Finance/Finance'
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
             <Route element={<Dashboard />} path="/dashboard" />
             <Route element={<Transacao />} path="/transacao" />
             <Route element={<Reports />} path="/relatorios" />
+            <Route element={<Finance />} path="/configuracoes" />
           </Route>
           <Route element={<NotFound />} path="*" />
         </Routes>
