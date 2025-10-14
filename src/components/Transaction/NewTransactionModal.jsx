@@ -239,7 +239,7 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions }) {
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-10 flex justify-center items-center overflow-y-auto p-4 z-50"
+      className="fixed inset-0 bg-black/70 flex justify-center items-center overflow-y-auto p-4 z-50"
       onClick={onClose}
     >
       <div

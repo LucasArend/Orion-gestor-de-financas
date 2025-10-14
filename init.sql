@@ -50,3 +50,11 @@ CREATE TABLE transacao (
     FOREIGN KEY (tipo_transacao_id) REFERENCES tipo_transacao(id),
     FOREIGN KEY (categoria_id) REFERENCES categoria(id)
 );
+
+CREATE TABLE economia (
+    id INT PRIMARY KEY,
+    saldo NUMERIC(15,2) NOT NULL DEFAULT 0,
+    reserva_de_emergencia NUMERIC(15,2) NOT NULL DEFAULT 0,
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE
+);
