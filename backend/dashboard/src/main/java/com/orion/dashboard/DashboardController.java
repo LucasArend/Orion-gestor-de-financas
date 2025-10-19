@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/dashboard")
-@CrossOrigin(origins = {"http://localhost:5173"}) // Vite
+@CrossOrigin(origins = {"http://localhost:5173"}) // Front-end em Vite
 public class DashboardController {
 
     private final DashboardService service;
@@ -14,8 +14,10 @@ public class DashboardController {
         this.service = service;
     }
 
+    // Endpoint principal - retorna dados brutos do dashboard
     @GetMapping
-    public ResponseEntity<DashboardDTO> get(@RequestParam Long userId) {
-        return ResponseEntity.ok(service.getDashboard(userId));
+    public ResponseEntity<DashboardDTO> getDashboard(@RequestParam Long userId) {
+        DashboardDTO dto = service.getDashboardData(userId);
+        return ResponseEntity.ok(dto);
     }
 }

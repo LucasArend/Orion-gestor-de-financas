@@ -1,48 +1,88 @@
 package com.orion.transacao;
 
 import com.orion.usuario.Usuario;
+import com.orion.tipoTransacao.TipoTransacao;
+import com.orion.categoria.Categoria;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "transacoes")
+@Table(name = "transacao")
 public class Transacao {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional=false)
-    @JoinColumn(name="usuario_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable=false, length=10)
-    private TipoTransacao tipo;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "tipo_transacao_id", nullable = false)
+    private TipoTransacao tipoTransacao;
 
-    @Column(nullable=false, length=80)
-    private String categoria;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "categoria_id", nullable = false)
+    private Categoria categoria;
 
-    @Column(length=150)
+    @Column(columnDefinition = "TEXT")
     private String descricao;
 
-    @Column(nullable=false, precision=14, scale=2)
+    @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal valor;
 
-    @Column(nullable=false)
-    private LocalDate data;
+    @Column(name = "data_vencimento")
+    private LocalDate dataVencimento;
 
-    // getters/setters
+    @Column(name = "data_criacao", nullable = false, updatable = false)
+    private LocalDateTime dataCriacao;
+
+    @Column(name = "quantidade_parcelas")
+    private Integer quantidadeParcelas;
+
+    // Mantemos status como String, exatamente como está no banco
+    @Column(name = "status", nullable = false, length = 20)
+    private String status;
+
+    @PrePersist
+    protected void onCreate() {
+        this.dataCriacao = LocalDateTime.now();
+
+        // Define status padrão ao criar nova transação
+        if (this.status == null) {
+            this.status = "Pendente";
+        }
+    }
+
+    // ===== GETTERS e SETTERS =====
     public Long getId() { return id; }
+
     public Usuario getUsuario() { return usuario; }
     public void setUsuario(Usuario usuario) { this.usuario = usuario; }
-    public TipoTransacao getTipo() { return tipo; }
-    public void setTipo(TipoTransacao tipo) { this.tipo = tipo; }
-    public String getCategoria() { return categoria; }
-    public void setCategoria(String categoria) { this.categoria = categoria; }
+
+    public TipoTransacao getTipoTransacao() { return tipoTransacao; }
+    public void setTipoTransacao(TipoTransacao tipoTransacao) { this.tipoTransacao = tipoTransacao; }
+
+    public Categoria getCategoria() { return categoria; }
+    public void setCategoria(Categoria categoria) { this.categoria = categoria; }
+
     public String getDescricao() { return descricao; }
     public void setDescricao(String descricao) { this.descricao = descricao; }
+
     public BigDecimal getValor() { return valor; }
     public void setValor(BigDecimal valor) { this.valor = valor; }
-    public LocalDate getData() { return data; }
-    public void setData(LocalDate data) { this.data = data; }
+
+    public LocalDate getDataVencimento() { return dataVencimento; }
+    public void setDataVencimento(LocalDate dataVencimento) { this.dataVencimento = dataVencimento; }
+
+    public LocalDateTime getDataCriacao() { return dataCriacao; }
+
+    public Integer getQuantidadeParcelas() { return quantidadeParcelas; }
+    public void setQuantidadeParcelas(Integer quantidadeParcelas) { this.quantidadeParcelas = quantidadeParcelas; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 }
