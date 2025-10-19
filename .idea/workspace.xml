@@ -5,10 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d725f6de-d6d1-495f-be90-efa9874172da" name="Changes" comment="">
-
-      <change afterPath="$PROJECT_DIR$/demo/src/main/java/com/seuapp/model/Transactions.java" afterDir="false" />
-
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/DashboardDTO.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,12 +42,11 @@
   &quot;keyToString&quot;: {
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-
-    &quot;git-widget-placeholder&quot;: &quot;Diego&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/backend-dashboard&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/diego/OneDrive/Documentos/Diego/T1-2025/Projeto-FinalV.20/Orion-gestor-de-financas&quot;
-
+    &quot;last_opened_file_path&quot;: &quot;/home/raphael/Programacao/estudos/TrabalhoDeConclusao/Orion-gestor-de-financas/backend/dashboard&quot;
   }
 }</component>
   <component name="TaskManager">
