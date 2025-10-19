@@ -5,8 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d725f6de-d6d1-495f-be90-efa9874172da" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/dashboard/DashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/dashboard/src/main/java/com/orion/dashboard/DashboardController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/dashboard/DashboardService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/dashboard/src/main/java/com/orion/dashboard/DashboardService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/dashboard/src/main/java/com/orion/dashboard/DashboardApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/dashboard/src/main/java/com/orion/DashboardApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/dashboard/src/main/java/com/orion/usuario/Usuario.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/dashboard/src/main/java/com/orion/usuario/Usuario.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/dashboard/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/dashboard/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/dashboard/src/test/java/com/orion/dashboard/DashboardApplicationTests.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,16 +30,17 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;DiegoEndpointLogin&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/diego/OneDrive/Documentos/Diego/T1-2025/Projeto-Final/Orion-gestor-de-financas&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "feature/backend-dashboard",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/raphael/Programacao/estudos/TrabalhoDeConclusao/Orion-gestor-de-financas/backend/dashboard"
   }
-}</component>
+}]]></component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="d725f6de-d6d1-495f-be90-efa9874172da" name="Changes" comment="" />

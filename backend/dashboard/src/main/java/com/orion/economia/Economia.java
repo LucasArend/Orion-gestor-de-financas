@@ -7,15 +7,15 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "economia")
-public class Economia {
+public final class Economia {
 
     @Id
     @Column(name = "usuario_id")
     private Long usuarioId; // PK e FK
 
     @OneToOne
-    @MapsId // Indica que o ID desta entidade é também a FK
-    @JoinColumn(name = "usuario_id", referencedColumnName = "id")
+    @MapsId // O ID desta entidade é também a FK
+    @JoinColumn(name = "usuario_id") // "referencedColumnName" é implícito
     private Usuario usuario;
 
     @Column(nullable = false)
@@ -24,47 +24,30 @@ public class Economia {
     @Column(name = "reserva_de_emergencia", nullable = false)
     private BigDecimal reservaDeEmergencia = BigDecimal.ZERO;
 
-    @Column(name = "atualizado_em")
-    private LocalDateTime atualizadoEm = LocalDateTime.now();
+    @Column(name = "atualizado_em", updatable = false, insertable = false)
+    private LocalDateTime atualizadoEm; // Controlado pelo banco (DEFAULT NOW())
 
-    // Getters e Setters
+    // Construtor padrão exigido pelo JPA
+    protected Economia() {}
+
+    // Apenas getters (somente leitura)
     public Long getUsuarioId() {
         return usuarioId;
-    }
-
-    public void setUsuarioId(Long usuarioId) {
-        this.usuarioId = usuarioId;
     }
 
     public Usuario getUsuario() {
         return usuario;
     }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
     public BigDecimal getSaldo() {
         return saldo;
-    }
-
-    public void setSaldo(BigDecimal saldo) {
-        this.saldo = saldo;
     }
 
     public BigDecimal getReservaDeEmergencia() {
         return reservaDeEmergencia;
     }
 
-    public void setReservaDeEmergencia(BigDecimal reservaDeEmergencia) {
-        this.reservaDeEmergencia = reservaDeEmergencia;
-    }
-
     public LocalDateTime getAtualizadoEm() {
         return atualizadoEm;
-    }
-
-    public void setAtualizadoEm(LocalDateTime atualizadoEm) {
-        this.atualizadoEm = atualizadoEm;
     }
 }

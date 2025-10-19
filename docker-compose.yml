@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  orion-db:
+    image: postgres:15
+    container_name: orion-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: orion_user
+      POSTGRES_PASSWORD: orion_pass
+      POSTGRES_DB: orion_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - orion_pgdata:/var/lib/postgresql/data
+    networks:
+      - orion-network
+
+
+volumes:
+  orion_pgdata:
+
+networks:
+  orion-network:

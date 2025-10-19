@@ -13,10 +13,15 @@ public class TipoTransacao {
     @Column(nullable = false, length = 50)
     private String nome;
 
-    // Getters e Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    // Construtor padrão exigido pelo JPA
+    protected TipoTransacao() {}
 
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
+    // Apenas getters (somente leitura)
+    public Long getId() {
+        return id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
 }

@@ -40,22 +40,17 @@ public class Meta {
     @Column(name = "contribution", nullable = false, precision = 12, scale = 2)
     private BigDecimal aporteMensal;
 
-    // ===== Getters e Setters =====
+    // Construtor padrão protegido para JPA
+    protected Meta() {}
+
+    // ===== Apenas getters (somente leitura) =====
     public Long getId() { return id; }
     public Usuario getUsuario() { return usuario; }
-    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
     public String getDescricao() { return descricao; }
-    public void setDescricao(String descricao) { this.descricao = descricao; }
     public BigDecimal getValorAlvo() { return valorAlvo; }
-    public void setValorAlvo(BigDecimal valorAlvo) { this.valorAlvo = valorAlvo; }
     public BigDecimal getProgresso() { return progresso; }
-    public void setProgresso(BigDecimal progresso) { this.progresso = progresso; }
     public LocalDateTime getDataInicio() { return dataInicio; }
-    public void setDataInicio(LocalDateTime dataInicio) { this.dataInicio = dataInicio; }
     public LocalDate getDataEsperada() { return dataEsperada; }
-    public void setDataEsperada(LocalDate dataEsperada) { this.dataEsperada = dataEsperada; }
     public LocalDate getDataPrevista() { return dataPrevista; }
-    public void setDataPrevista(LocalDate dataPrevista) { this.dataPrevista = dataPrevista; }
     public BigDecimal getAporteMensal() { return aporteMensal; }
-    public void setAporteMensal(BigDecimal aporteMensal) { this.aporteMensal = aporteMensal; }
 }

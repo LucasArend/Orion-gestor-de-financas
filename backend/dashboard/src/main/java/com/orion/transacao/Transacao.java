@@ -43,21 +43,18 @@ public class Transacao {
     @Column(name = "quantidade_parcelas")
     private Integer quantidadeParcelas;
 
-    // Mantemos status como String, exatamente como está no banco
     @Column(name = "status", nullable = false, length = 20)
     private String status;
 
     @PrePersist
     protected void onCreate() {
         this.dataCriacao = LocalDateTime.now();
-
-        // Define status padrão ao criar nova transação
         if (this.status == null) {
             this.status = "Pendente";
         }
     }
 
-    // ===== GETTERS e SETTERS =====
+    // ===== GETTERS =====
     public Long getId() { return id; }
 
     public Usuario getUsuario() { return usuario; }
@@ -84,5 +81,4 @@ public class Transacao {
     public void setQuantidadeParcelas(Integer quantidadeParcelas) { this.quantidadeParcelas = quantidadeParcelas; }
 
     public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
 }

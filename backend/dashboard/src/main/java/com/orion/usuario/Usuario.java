@@ -14,26 +14,19 @@ public class Usuario {
     private String nome;
 
     @Column(columnDefinition = "TEXT")
-    private String foto; // ✅ Adicionado conforme tabela
+    private String foto;
 
-    // ===== Getters e Setters =====
-    public Long getId() {
-        return id;
-    }
+    // Construtor padrão protegido para JPA
+    protected Usuario() {}
 
-    public String getNome() {
-        return nome;
-    }
+    // Apenas getters (somente leitura)
+    public Long getId() { return id; }
+    public String getNome() { return nome; }
+    public String getFoto() { return foto; }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
+    // Setter de nome se necessário (ex: edição de usuário)
+    public void setNome(String nome) { this.nome = nome; }
 
-    public String getFoto() {
-        return foto;
-    }
-
-    public void setFoto(String foto) {
-        this.foto = foto;
-    }
+    // Setter de foto se necessário (ex: upload de imagem)
+    public void setFoto(String foto) { this.foto = foto; }
 }
