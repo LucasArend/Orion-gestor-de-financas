@@ -1,6 +1,7 @@
 import { ChevronDown } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { name } from '../../data/data-tests';
+import Avatar from '../Avatar/avatar';
 
 export default function Header({ pageTitle }) {
   const [open, setOpen] = useState(false);
@@ -34,19 +35,17 @@ export default function Header({ pageTitle }) {
         {/* Avatar */}
         <div className="relative">
           <button
-            className="flex items-center gap-2 rounded-2xl p-1.5 pr-2 hover:bg-gray-50"
+            className="flex items-center gap-2 rounded-2xl p-1.5 pr-2 hover:bg-gray-200"
             onClick={() => setOpen(!open)}
             ref={buttonRef}
             type="button"
           >
-            <img
-              alt="avatar"
-              className="h-8 w-8 rounded-full"
-              height={32}
-              src={'https://i.pravatar.cc/40?img=68'}
-              width={32}
+            <Avatar
+              key="user-avatar"
+              name={name.name || ''}
+              style={'h-8 w-8 text-sm'}
             />
-            <span className="hidden text-gray-700 text-sm sm:block">
+            <span className="font-medium text-gray-700 text-sm sm:block">
               {name.name}
             </span>
             <ChevronDown className="h-5 w-5" />

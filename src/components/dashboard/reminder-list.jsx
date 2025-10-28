@@ -13,10 +13,10 @@ export default function RemindersList({ reminders }) {
       <div className="mb-4 flex items-center justify-between">
         <h3 className="font-semibold text-gray-800 text-xl">Lembretes</h3>
         <button
-          className="flex items-center space-x-2 rounded-lg bg-zinc-200 px-3 py-2 text-sm text-zinc-800 shadow-lg shadow-zinc-400/50 transition-colors hover:bg-zinc-300"
+          className="flex items-center space-x-2 rounded-lg bg-zinc-200 px-3 py-2 text-sm text-zinc-700 shadow-lg shadow-zinc-400/50 transition-colors hover:bg-zinc-300"
           type="button"
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="h-4 w-4 text-zinc-700" />
           <span>Adicionar</span>
         </button>
       </div>

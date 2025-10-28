@@ -36,7 +36,7 @@ export default function Dashboard() {
             const { title, Icon } = config;
             return (
               <div
-                className="flex flex-col items-start justify-center rounded-lg bg-white p-6 shadow-sm transition-all duration-300 hover:scale-95"
+                className="flex flex-col items-start justify-center rounded-lg bg-white p-6 shadow-lg shadow-zinc-400/50 transition-all duration-300 hover:scale-95"
                 key={data.id}
               >
                 <div className="mb-4 rounded-full bg-gray-200 p-3 shadow-lg shadow-zinc-400/50">
@@ -61,26 +61,28 @@ export default function Dashboard() {
         </div>
 
         {/* Container para a Lista de Lembretes */}
-        <RemindersList className="lg:col-span-2" reminders={reminderData} />
+        <div className="shadow-lg shadow-zinc-400/50">
+          <RemindersList className="lg:col-span-2" reminders={reminderData} />
+        </div>
       </section>
 
       {/* Seção de Gráfico e Transações */}
       <section className="grid items-stretch gap-4 lg:grid-cols-2">
         {/* Gráfico de Gastos */}
-        <div className="flex flex-col rounded-lg bg-white p-6 shadow-sm">
+        <div className="flex flex-col rounded-lg bg-white p-6 shadow-lg shadow-zinc-400/50">
           <h3 className="mb-4 font-semibold text-2xl">Gastos por Categoria</h3>
           <div className="min-h-0 flex-1">
             <ChartExpenses categories={chartCategoriesData} />
           </div>
         </div>
         {/* Transações Recentes */}
-        <div className="flex flex-col rounded-lg bg-white p-6 shadow-sm">
+        <div className="flex flex-col rounded-lg bg-white p-6 shadow-lg shadow-zinc-400/50">
           <TransactionsList transactions={transactionsData} />
         </div>
       </section>
 
       {/* Seção de Metas */}
-      <section className="rounded-lg bg-white p-6 shadow-sm">
+      <section className="rounded-lg bg-white p-6 shadow-lg shadow-zinc-400/50">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="font-semibold text-gray-800 text-xl">Metas</h2>
           <button

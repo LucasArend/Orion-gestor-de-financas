@@ -1,6 +1,6 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import Header from '../components/Dashboard/header';
-import Sidebar from '../components/Dashboard/sidebar';
+import Header from '../components/Header/header';
+import Sidebar from '../components/Menu/sidebar';
 import { navItems } from '../data/nav-items';
 
 export default function DefaultLayout() {

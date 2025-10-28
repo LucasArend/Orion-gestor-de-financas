@@ -16,7 +16,7 @@ export default function Sidebar() {
             return (
               <li className="mb-2" key={item.id}>
                 <NavLink
-                  className={`flex items-center rounded-lg p-3 transition-colors ${isActive ? 'bg-[#2979FF] text-white shadow-[#2161E5]/50 shadow-lg' : 'text-gray-600 hover:bg-gray-200'}`}
+                  className={`flex items-center rounded-lg p-3 ${isActive ? 'bg-[#2979FF] text-white shadow-[#2161E5]/50 shadow-md' : 'text-gray-600 hover:bg-zinc-100 hover:text-gray-900'}`}
                   to={item.path}
                 >
                   <Icon className="mr-3 h-5 w-5" />
