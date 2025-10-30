@@ -1,13 +1,15 @@
 -- Tabela de usuários
 CREATE TABLE usuario (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    email VARCHAR(150) NOT NULL,
-    senha TEXT NOT NULL,
-    foto TEXT,
-    google_id TEXT,
-    provedor VARCHAR(50) NOT NULL,
-    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,        -- id é a chave primária
+    nome VARCHAR(50) NOT NULL,                   -- nome com tamanho máximo de 50 caracteres
+    email VARCHAR(50) NOT NULL,                  -- email com validação de tamanho e não nulo
+    senha VARCHAR(100) NOT NULL,                 -- senha com tamanho entre 60 e 100 caracteres
+    provider VARCHAR(50),                        -- provider
+    provider_id VARCHAR(50),                     -- provider_id
+    foto TEXT,                               -- foto_url (campo para armazenar a URL da foto)
+    created_at TIMESTAMP NOT NULL,               -- created_at com a data de criação
+    updated_at TIMESTAMP NOT NULL,               -- updated_at com a data de atualização
+    UNIQUE (email)                               -- Garantindo que o email seja único
 );
 
 -- Tipos de transação (ex: receita, despesa)

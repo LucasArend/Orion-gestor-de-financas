@@ -8,6 +8,7 @@ import DefaultLayout from './layouts/default-layout';
 import Dashboard from './pages/dashboard';
 import Reports from './pages/reports';
 import Settings from './pages/settings';
+import PrivateRoute from './routes/PrivateRoute';
 
 export default function App() {
   return (
@@ -16,7 +17,7 @@ export default function App() {
         <Routes>
           <Route element={<Login />} path="/" />
           <Route element={<Register />} path="/register" />
-          <Route element={<DefaultLayout />}>
+          <Route element={<PrivateRoute><DefaultLayout /></PrivateRoute>}>
             <Route element={<Dashboard />} path="/dashboard" />
             <Route element={<Transacao />} path="/transacao" />
             <Route element={<Reports />} path="/relatorios" />

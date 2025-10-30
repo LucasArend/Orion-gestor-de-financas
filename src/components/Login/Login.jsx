@@ -1,6 +1,6 @@
 import styles from '../../css/Login/Login.module.css'
 import { FcGoogle } from "react-icons/fc";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { signInWithPopup } from "firebase/auth";
@@ -8,12 +8,13 @@ import { auth, googleProvider } from '../../firebase'
 import axios from 'axios';
 
 function Login() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [erro, setError] = useState("")
-
-  const { login } = useAuth()
+  const { login, isAuthenticated } = useAuth()
+  const [form, setForm] = useState({ username: '', password: '' })
+  const [erro, setError] = useState("") 
   const navigate = useNavigate()
+
+  const onChange = (event) => 
+    setForm({ ...form, [event.target.name]: event.target.value })
 
   const loginGoogle = async () => {
     try {
@@ -32,55 +33,38 @@ function Login() {
       )
 
       console.log("Resposta do backend:", response.data)
-
+      navigate("/Dashboard")
     } catch (error) {
       console.error("Erro no login Google:", error)
+      setError("Erro ao fazer login com Google.")
     }
   }
 
-  const handleSubmit = async (event) => {
+  const onSubmit = async (event) => {
     event.preventDefault()
-
-    if (!email.trim()) {
-      setError("Digite seu e-mail.")
-      return
-    }
-
-    const emailValidation = /\S+@\S+\.\S+/
-    if (!emailValidation.test(email)) {
-      setError("Digite um e-mail válido.")
-      return
-    }
-
-    const passwordValidation = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/
-    if (!passwordValidation.test(password)) {
-      setError("A senha deve ter pelo menos 6 caracteres, incluindo 1 letra maiúscula, 1 letra minúscula e 1 número.")
-      return
-    }
-
-    if (!password.trim()) {
-      setError("Digite sua senha.")
-      return
-    }
-
-    const success = await login(email, password)
-
-    if (!success) {
-      setError("Email ou senha inválidos")
-    } else {
-      setError("")
-      navigate("/Dashboard")
+    try {
+      await login(form.username, form.password)
+      navigate('/Dashboard')
+    } catch (error) {
+      setError('Erro ao fazer login: ' + error.message)
     }
   }
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/Dashboard");
+    }
+  }, [isAuthenticated, navigate]);
 
   return (
     <div className={`${styles.container}`}>
-      <form className={styles.form} onSubmit={handleSubmit}>
+      <form className={styles.form} onSubmit={onSubmit}>
         <label htmlFor="email">Email</label>
         <input
           type="text"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          name='username'
+          value={form.username}
+          onChange={onChange}
           placeholder='Digite seu e-mail'
           className={styles.inputs}
         />
@@ -88,8 +72,9 @@ function Login() {
         <label htmlFor="password">Senha</label>
         <input
           type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          name='password'
+          value={form.password}
+          onChange={onChange}
           placeholder='Digite sua senha'
           className={styles.inputs}
         />
@@ -116,15 +101,42 @@ function Login() {
         <h1>Orion</h1>
         <p>Clareza para as suas finanças</p>
 
-        {/* IMPORTANTE!!!!!!!!!! LEMBRAR DE DELETAR */}
-              <button type="button" onClick={() => navigate("/Dashboard")} className={styles.btn}>
-                Dev Access
-              </button>
-              
       </div>
-
     </div>
   );
 }
 
 export default Login;
+
+
+  // const handleSubmit = async (event) => {
+  //   event.preventDefault()
+
+  //   if (!email.trim()) {
+  //     setError("Digite seu e-mail.")
+  //     return
+  //   }
+
+  //   const emailValidation = /\S+@\S+\.\S+/
+  //   if (!emailValidation.test(email)) {
+  //     setError("Digite um e-mail válido.")
+  //     return
+  //   }
+
+  //   const passwordValidation = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/
+  //   if (!passwordValidation.test(password)) {
+  //     setError("A senha deve ter pelo menos 6 caracteres, incluindo 1 letra maiúscula, 1 letra minúscula e 1 número.")
+  //     return
+  //   }
+
+  //   if (!password.trim()) {
+  //     setError("Digite sua senha.")
+  //     return
+  //   }
+
+  //   const success = await login(email, password)
+
+  //   if (!success) {
+  //     setError("Email ou senha inválidos")
+  //   } 
+  // }

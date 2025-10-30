@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect, useMemo, useContext } from 'react'
-import * as authApi from '../entities/auth/api'
-import { getMe } from '../entities/user/api'
+import * as authApi from '../entities/auth/api.js'
+import { getMe } from '../entities/user/api.js'
 
 const AuthContext = createContext()
 
@@ -34,13 +34,10 @@ export function AuthProvider({ children }) {
 
 
     const register = async (data) => {
-        console.log(data)
         const { token: t } = await authApi.registerUser(data)
-        setToken(t)
-        console.log(t)
+        setToken(t) 
         const me = await getMe(t)
         setUser(me)
-        console.log(me)
     }
 
     const login = async (username, password) => {
