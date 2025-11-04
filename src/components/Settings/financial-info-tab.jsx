@@ -7,26 +7,47 @@ import CountrySelect from '../Input/country-select';
 import { CurrencyDisplay } from '../Input/currency-display';
 import { CurrencyInput } from '../Input/currency-input';
 
-export default function FinancialInfoTab({ setHasUnsavedChanges }) {
+export default function FinancialInfoTab({
+  setHasUnsavedChanges,
+  setFormResetCallback,
+  userData,
+  setLatestFormData
+}) {
   const methods = useForm({
     resolver: yupResolver(financialSchema),
-    defaultValues: {
-      country: '',
-      currency: null,
-      emergencyFund: '',
-      totalIncome: '',
-    },
-    mode: 'onChange',
+    defaultValues: userData,
+    mode: 'all',
     reValidateMode: 'onChange',
   });
 
   const {
+    reset,
+    getValues,
     formState: { isDirty, isValid },
   } = methods;
 
+    useEffect(() => {
+    const resetToOriginal = () => {
+      reset(userData, { keepDirty: false });
+      setHasUnsavedChanges(false);
+    };
+    setFormResetCallback(() => resetToOriginal);
+  }, [setFormResetCallback, reset, userData, setHasUnsavedChanges]);
+
   useEffect(() => {
-    setHasUnsavedChanges(isDirty && isValid);
-  }, [isDirty, isValid, setHasUnsavedChanges]);
+    if (userData) {
+      reset(userData);
+    }
+  }, [userData, reset]);
+
+    useEffect(() => {
+      const shouldEnableSave = isDirty && isValid;
+      setHasUnsavedChanges(shouldEnableSave);
+
+      if (shouldEnableSave) {
+        setLatestFormData(getValues());
+      }
+    }, [isDirty, isValid, setHasUnsavedChanges, getValues, setLatestFormData]);
 
   return (
     <FormProvider {...methods}>

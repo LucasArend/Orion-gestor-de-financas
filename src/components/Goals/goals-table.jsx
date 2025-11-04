@@ -1,7 +1,23 @@
-export default function GoalsList({ goals }) {
+const formatCurrency = (value) => {
+  return `R$${value.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}`;
+};
+
+const formatDate = (dateString) => {
+  try {
+    const date = new Date(dateString);
+    if (Number.isNaN(date)) {
+      return dateString;
+    }
+    return date.toLocaleDateString('pt-BR');
+  } catch (_) {
+    return dateString;
+  }
+};
+
+export default function GoalsTable({ metas }) {
   return (
-    <div className="overflow-x-auto rounded-lg shadow">
-      <table className="min-w-full divide-y divide-gray-300">
+    <div className="overflow-hidden rounded-xl bg-white shadow-lg">
+      <table className="w-full border-collapse">
         <thead className="bg-gray-200">
           <tr>
             <th className="px-6 py-3 text-left font-bold text-gray-600 text-xs uppercase tracking-wider">
@@ -24,26 +40,27 @@ export default function GoalsList({ goals }) {
             </th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-200 bg-white">
-          {goals.map((goal) => (
-            <tr className="hover:bg-zinc-100" key={goal.id}>
-              <td className="px-6 py-4 text-gray-900 text-sm">
-                {goal.objective}
+        <tbody>
+          {metas.map((meta) => (
+            <tr
+              className="border-gray-200 border-t hover:bg-zinc-100"
+              key={meta.id}
+            >
+              <td className="px-6 py-4 text-gray-900">{meta.objetivo}</td>
+              <td className="px-6 py-4 text-gray-500 text-sm">
+                {formatCurrency(meta.meta)}
               </td>
               <td className="px-6 py-4 text-gray-500 text-sm">
-                R${goal.target.toFixed(2).replace('.', ',')}
+                {formatCurrency(meta.poupado)}
               </td>
               <td className="px-6 py-4 text-gray-500 text-sm">
-                R${goal.saved.toFixed(2).replace('.', ',')}
+                {formatCurrency(meta.contribuicao)}
               </td>
               <td className="px-6 py-4 text-gray-500 text-sm">
-                R${goal.contribution.toFixed(2).replace('.', ',')}
+                {formatDate(meta.previsao)}
               </td>
               <td className="px-6 py-4 text-gray-500 text-sm">
-                {goal.forecast}
-              </td>
-              <td className="px-6 py-4 text-gray-500 text-sm">
-                {goal.dueDate}
+                {formatDate(meta.dataAlmejada)}
               </td>
             </tr>
           ))}

@@ -9,7 +9,12 @@ export default function MaskedInput({
   placeholder = '',
   icon: Icone,
 }) {
-  const { control } = useFormContext();
+  const {
+    control,
+    formState: { errors },
+  } = useFormContext();
+
+  const error = errors[name];
 
   return (
     <div className="space-y-2">
@@ -20,7 +25,7 @@ export default function MaskedInput({
       <Controller
         control={control}
         name={name}
-        render={({ field: { onChange, value }, fieldState: { error } }) => (
+        render={({ field: { onChange, value } }) => (
           <div className="relative">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
               {Icone && (
@@ -29,7 +34,9 @@ export default function MaskedInput({
             </div>
             <IMaskInput
               className={`w-full rounded-lg border p-3 pr-4 pl-10 focus:border-indigo-600 focus:outline-hidden focus:ring-3 focus:ring-blue-200 ${
-                error ? 'border-red-500' : 'border-gray-300'
+                error
+                  ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
+                  : 'border-gray-300'
               }`}
               id={name}
               mask={mask}
@@ -47,9 +54,7 @@ export default function MaskedInput({
         )}
       />
 
-      <p className="h-4 text-red-500 text-sm">
-        {control._formState.errors[name]?.message}
-      </p>
+      <p className="h-4 text-red-500 text-sm">{error ? error.message : ''}</p>
     </div>
   );
 }

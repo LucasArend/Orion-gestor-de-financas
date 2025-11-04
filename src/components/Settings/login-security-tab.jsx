@@ -5,25 +5,42 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { passwordSchema } from '../../utils/validation-schema';
 import PasswordInput from '../Input/password-input';
 
-export default function LoginSecurityTab({ setHasUnsavedChanges }) {
+export default function LoginSecurityTab({
+  setHasUnsavedChanges,
+  setFormResetCallback,
+  userData
+}) {
   const methods = useForm({
-    defaultValues: {
-      password: '',
-      newPassword: '',
-      confirmNewPassword: '',
-    },
+    defaultValues: userData,
     resolver: yupResolver(passwordSchema),
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
 
   const {
+    reset,
     formState: { isDirty, isValid, errors },
   } = methods;
 
   useEffect(() => {
-    setHasUnsavedChanges(isDirty && isValid);
+    const shouldEnableSave = isDirty && isValid;
+    setHasUnsavedChanges(shouldEnableSave);
   }, [isDirty, isValid, setHasUnsavedChanges]);
+
+  useEffect(() => {
+    const resetToOriginal = () => {
+      reset(
+        {
+          password: '',
+          newPassword: '',
+          confirmNewPassword: '',
+        },
+        { keepDirty: false }
+      );
+      setHasUnsavedChanges(false);
+    };
+    setFormResetCallback(() => resetToOriginal);
+  }, [setFormResetCallback, reset, setHasUnsavedChanges]);
 
   return (
     <FormProvider {...methods}>
@@ -47,18 +64,21 @@ export default function LoginSecurityTab({ setHasUnsavedChanges }) {
             icon={LockKeyhole}
             label="Nova Senha"
             name="newPassword"
+            placeholder="Digite uma nova senha"
             type="password"
           />
           <PasswordInput
             icon={KeyRound}
             label="Confirme a Nova Senha"
             name="confirmNewPassword"
+            placeholder="Confirme a nova senha"
             type="password"
           />
           <PasswordInput
             icon={Lock}
             label="Senha Atual"
             name="password"
+            placeholder="Digite sua senha atual"
             type="password"
           />
         </div>
