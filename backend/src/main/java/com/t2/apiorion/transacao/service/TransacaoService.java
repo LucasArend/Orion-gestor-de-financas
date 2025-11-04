@@ -10,6 +10,7 @@ import com.t2.apiorion.transacao.StatusTransacao;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
 @Service
 public class TransacaoService {
@@ -27,6 +28,16 @@ public class TransacaoService {
         this.userRepository = userRepository;
         this.categoriaRepository = categoriaRepository;
         this.tipoTransacaoRepository = tipoTransacaoRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Transacao> listarTransacoesPorUsuario(Long usuarioId) {
+        // Verifica se o usuário existe (opcional, mas recomendado)
+        if (!userRepository.existsById(usuarioId)) {
+            throw new EntityNotFoundException("Usuário não encontrado");
+        }
+
+        return transacaoRepository.findByUsuarioId(usuarioId);
     }
 
     @Transactional

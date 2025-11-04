@@ -93,7 +93,8 @@ public class SecurityConfig {
                                 "/", "/index.html", "/oauth2/**", "/login/**",
                                 "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**",
                                 "/auth/**",
-                                "/actuator/health"
+                                "/actuator/health",
+                                "/api/transacoes/me"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

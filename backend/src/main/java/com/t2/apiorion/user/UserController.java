@@ -1,6 +1,8 @@
 package com.t2.apiorion.user;
 
 import com.t2.apiorion.categoria.CategoriaRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +22,7 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
-    // Rota "/me" que retorna os dados do usuário autenticado
+
     @GetMapping("/me")
     public Map<String, Object> me(Principal principal) {
         var user = userRepository.findByUsername(principal.getName()).orElseThrow();

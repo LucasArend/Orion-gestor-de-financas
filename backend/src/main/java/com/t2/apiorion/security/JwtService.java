@@ -57,4 +57,9 @@ public class JwtService {
             return false;
         }
     }
+
+    public Long getUserIdFromToken(String token) {
+        String subject = getSubject(token);
+        return Long.parseLong(subject);
+    }
 }
