@@ -2,80 +2,111 @@ import { TrashIcon } from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import Calendario from '../Common/Calendario';
+import { useAuth } from '../../context/AuthContext' 
 
-async function adicionarCategoria(nome) {
+
+async function adicionarCategoria(nome, token) {
   try {
     const response = await fetch('http://localhost:8080/categorias', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify({ nome }),
     });
+
     if (!response.ok) throw new Error('Erro ao adicionar categoria');
     toast.success('Categoria adicionada com sucesso!');
     return await response.json();
   } catch (error) {
     console.error(error);
-    alert('Erro ao adicionar categoria.');
+    toast.error('Erro ao adicionar categoria.');
     return null;
   }
 }
 
-async function editarCategoria(id, novoNome) {
+async function editarCategoria(id, novoNome, token) {
   try {
     const response = await fetch(`http://localhost:8080/categorias/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify({ nome: novoNome }),
     });
+
     if (!response.ok) throw new Error('Erro ao editar categoria');
     toast.success('Categoria editada com sucesso!');
     return await response.json();
   } catch (error) {
     console.error(error);
-    alert('Erro ao editar categoria.');
+    toast.error('Erro ao editar categoria.');
     return null;
   }
 }
 
-async function deletarCategoria(id) {
+async function deletarCategoria(id, token) {
   try {
     const response = await fetch(`http://localhost:8080/categorias/${id}`, {
       method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
+
     if (!response.ok) throw new Error('Erro ao deletar categoria');
     toast.success('Categoria removida com sucesso!');
     return true;
   } catch (error) {
     console.error(error);
-    alert('Erro ao deletar categoria.');
+    toast.error('Erro ao deletar categoria.');
     return false;
   }
 }
 
-async function deletarTransacoesPorCategoria(categoria) {
+
+async function deletarTransacoesPorCategoria(categoria, token) {
   try {
+
     const response = await fetch(
-      `http://localhost:8080/transacoes?categoria=${encodeURIComponent(categoria)}`
+      `http://localhost:8080/transacoes?categoria=${encodeURIComponent(categoria)}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
+
     if (!response.ok)
       throw new Error('Erro ao buscar transações por categoria');
+
     const transacoes = await response.json();
+
 
     for (const t of transacoes) {
       const res = await fetch(`http://localhost:8080/transacoes/${t.id}`, {
         method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+
       if (!res.ok) throw new Error('Erro ao deletar transação vinculada');
     }
+
     return true;
   } catch (error) {
     console.error(error);
-    alert('Erro ao deletar transações da categoria.');
+    toast.error('Erro ao deletar transações da categoria.');
     return false;
   }
 }
 
+
 function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions }) {
+  const { user, token } = useAuth();
   const [tipoSelecionado, setTipoSelecionado] = useState('renda');
   const [dataSelecionada, setDataSelecionada] = useState(null);
   const [valor, setValor] = useState('');
@@ -97,17 +128,29 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions }) {
   const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
-    async function fetchCategorias() {
-      try {
-        const response = await fetch('http://localhost:8080/categorias');
-        const data = await response.json();
-        setCategorias(data);
-      } catch (error) {
-        console.error('Erro ao carregar categorias:', error);
-      }
+  if (!token) return;
+
+  async function fetchCategorias() {
+    try {
+      const response = await fetch('http://localhost:8080/categorias', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error('Erro ao carregar categorias');
+
+      const data = await response.json();
+      setCategorias(data);
+    } catch (error) {
+      console.error('Erro ao carregar categorias:', error);
+      toast.error('Não foi possível carregar as categorias.');
     }
-    fetchCategorias();
-  }, []);
+  }
+
+  fetchCategorias();
+}, [token]);
+
 
   const prefixo = adicionandoCategoria ? 'Nova categoria: ' : 'Novo nome: ';
 
@@ -124,12 +167,14 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions }) {
   }
 
   async function handleAdicionarCategoria() {
+    
     if (!novaCategoriaNome.trim()) {
       alert('Digite o nome da nova categoria.');
       return;
     }
 
-    const novaCat = await adicionarCategoria(novaCategoriaNome.trim());
+    const novaCat = await adicionarCategoria(novaCategoriaNome.trim(), token);
+
     if (!novaCat) return;
 
     setCategorias((prev) => [...prev, novaCat]);
@@ -146,8 +191,10 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions }) {
 
     const categoriaAtualizada = await editarCategoria(
       editandoCategoria.id,
-      novoNomeCategoria.trim()
+      novoNomeCategoria.trim(),
+      token
     );
+
     if (!categoriaAtualizada) return;
 
     setCategorias((prev) =>
@@ -174,11 +221,14 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions }) {
     if (!confirmDeleteChecked) return;
 
     const transacoesOk = await deletarTransacoesPorCategoria(
-      categoriaParaDeletar.nome
+      categoriaParaDeletar.nome,
+      token
     );
+
     if (!transacoesOk) return;
 
-    const sucesso = await deletarCategoria(categoriaParaDeletar.id);
+    const sucesso = await deletarCategoria(categoriaParaDeletar.id, token);
+
 
     if (sucesso) {
       setCategorias((prev) =>
@@ -195,39 +245,64 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions }) {
     }
   }
 
-  function handleAdicionarTransacao() {
-    if (adicionandoCategoria || editandoCategoria) return;
+async function handleAdicionarTransacao() {
+  if (adicionandoCategoria || editandoCategoria) return;
 
-    if (!(valor && categoriaSelecionada && descricao && dataSelecionada)) {
-      alert('Preencha todos os campos obrigatórios.');
-      return;
+  if (!(valor && categoriaSelecionada && descricao && dataSelecionada)) {
+    alert('Preencha todos os campos obrigatórios.');
+    return;
+  }
+
+  const categoriaObj = categorias.find((c) => c.nome === categoriaSelecionada);
+  if (!categoriaObj) {
+    alert('Categoria inválida. Selecione uma categoria existente.');
+    return;
+  }
+
+  if (!token || !user) {
+    alert('Você precisa estar logado para adicionar uma transação.');
+    return;
+  }
+
+  const novaTransacao = {
+    descricao,
+    valor: Number(valor),
+    dataVencimento: dataSelecionada.toISOString(),
+    quantidadeParcelas: parcelas ? Number(parcelas) : 1,
+    status: 'PENDENTE',
+    usuarioId: user.id,
+    categoriaId: categoriaObj.id,
+    tipoTransacaoId: tipoSelecionado === 'renda' ? 1 : 2,
+  };
+
+  try {
+    const res = await fetch('http://localhost:8080/api/transacoes', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`, // vem direto do contexto
+      },
+      body: JSON.stringify(novaTransacao),
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`Erro ao salvar transação: ${errorText}`);
     }
 
-    const novaTransacao = {
-      tipo: tipoSelecionado,
-      valor: Number(valor),
-      categoria: categoriaSelecionada,
-      descricao,
-      parcelas: parcelas ? Number(parcelas) : 1,
-      data: dataSelecionada.toISOString(),
-    };
+    const data = await res.json();
 
-    fetch('http://localhost:8080/transacoes', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(novaTransacao),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        onAdd(data);
-        onClose();
-        resetForm();
-      })
-      .catch((error) => {
-        console.error('Erro ao enviar transação:', error);
-        alert('Erro ao enviar transação.');
-      });
+    toast.success('Transação adicionada com sucesso!');
+    onAdd(data);
+    onClose();
+    resetForm();
+  } catch (error) {
+    console.error('Erro ao enviar transação:', error);
+    alert('Erro ao enviar transação.');
   }
+}
+
+
 
   function resetForm() {
     setValor('');

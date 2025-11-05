@@ -2,12 +2,21 @@ import { ChevronDown } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { name } from '../../data/data-tests';
 import Avatar from '../Avatar/avatar';
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from "../../context/AuthContext";
 
 export default function Header({ pageTitle }) {
   const [open, setOpen] = useState(false);
+  const { logout } = useAuth()
+  const navigate = useNavigate()
 
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
+
+  const handleLogout = () => {
+    logout()
+    navigate('/') 
+  }
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -68,7 +77,7 @@ export default function Header({ pageTitle }) {
               >
                 Configurações
               </button>
-              <button
+              <button onClick={handleLogout}
                 className="w-full rounded-lg px-3 py-2 text-left text-red-600 text-sm hover:bg-gray-50"
                 type="button"
               >
