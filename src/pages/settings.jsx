@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Notification from '../components/Notications/notifications';
 import FinancialInfoTab from '../components/Settings/financial-info-tab';
 import LoginSecurityTab from '../components/Settings/login-security-tab';
 import Tab from '../components/Settings/menu-tab';
@@ -7,7 +8,7 @@ import PersonalInfoTab from '../components/Settings/personal-info-tab';
 const settingsTabs = [
   { id: 'profile', name: 'Meu Perfil', component: PersonalInfoTab },
   { id: 'security', name: 'Login e Segurança', component: LoginSecurityTab },
-  { id: 'notifications', name: 'Finanças', component: FinancialInfoTab },
+  { id: 'financial', name: 'Finanças', component: FinancialInfoTab },
 ];
 
 export default function Settings() {
@@ -18,6 +19,14 @@ export default function Settings() {
 
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [latestFormData, setLatestFormData] = useState({});
+  const [formReset, setFormReset] = useState(null);
+
+  const [notification, setNotification] = useState(null);
+
+  const showNotification = (type, message) => {
+    setNotification({ type, message });
+  };
 
   useEffect(() => {
     setUserData({
@@ -26,25 +35,41 @@ export default function Settings() {
       username: 'pedro.avila',
       phone: '51991234567',
       bio: 'Desenvolvedor front-end apaixonado por tecnologia.',
+      password: '',
+      newPassword: '',
+      confirmNewPassword: '',
+      country: '',
+      currency: '',
+      emergencyFund: '',
+      totalIncome: '',
     });
   }, []);
 
   const handleSave = () => {
+    if (activeTab === 'security') {
+      formReset();
+    }
+    setUserData(latestFormData);
     setHasUnsavedChanges(false);
-    alert('Alterações salvas com sucesso!');
+    showNotification('success', 'Alterações salvas com sucesso!');
   };
 
   const handleCancel = () => {
+    if (formReset) {
+      formReset();
+    }
     setHasUnsavedChanges(false);
-    alert('Alterações canceladas.');
+    setLatestFormData(userData);
+    showNotification('error', 'Alterações canceladas.');
   };
-
-  if (!userData) {
-    return <p>Carregando dados...</p>;
-  }
 
   return (
     <div className="space-y-6">
+      <Notification
+        notification={notification}
+        onClose={() => setNotification(null)}
+      />
+
       <div className="rounded-lg bg-white px-8 py-6 shadow-sm">
         <h2 className="mb-4 font-bold text-2xl text-gray-800">Configurações</h2>
 
@@ -66,7 +91,9 @@ export default function Settings() {
         {/* Conteúdo da Aba Ativa */}
         <div className="mt-7">
           <ActiveComponent
+            setFormResetCallback={setFormReset}
             setHasUnsavedChanges={setHasUnsavedChanges}
+            setLatestFormData={setLatestFormData}
             userData={userData}
           />
         </div>

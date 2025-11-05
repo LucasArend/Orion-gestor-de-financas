@@ -1,4 +1,5 @@
 import { AlertCircle, Plus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function RemindersList({ reminders }) {
   const maxItems = 5;
@@ -6,6 +7,7 @@ export default function RemindersList({ reminders }) {
   const remindersToShow = shouldShowButton
     ? reminders.slice(0, maxItems)
     : reminders;
+  const navigate = useNavigate();
 
   return (
     <div className="flex h-full flex-col rounded-lg bg-white p-6 text-gray-800 shadow-sm">
@@ -14,6 +16,7 @@ export default function RemindersList({ reminders }) {
         <h3 className="font-semibold text-gray-800 text-xl">Lembretes</h3>
         <button
           className="flex items-center space-x-2 rounded-lg bg-zinc-200 px-3 py-2 text-sm text-zinc-700 shadow-lg shadow-zinc-400/50 transition-colors hover:bg-zinc-300"
+          onClick={() => navigate('/lembretes')}
           type="button"
         >
           <Plus className="h-4 w-4 text-zinc-700" />
@@ -48,6 +51,7 @@ export default function RemindersList({ reminders }) {
         <div className="flex flex-col items-center pt-2 pr-3 pl-3 text-center">
           <button
             className="flex w-full items-center justify-center rounded-lg bg-[#2979FF] py-2 font-semibold text-sm text-white shadow-[#2161E5]/50 shadow-lg transition-colors hover:bg-[#2161E5]"
+            onClick={() => navigate('/lembretes')}
             type="button"
           >
             Mostrar mais

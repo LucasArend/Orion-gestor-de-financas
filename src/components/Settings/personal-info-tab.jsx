@@ -8,7 +8,12 @@ import MaskedInput from '../Input/masked-input';
 import TextAreaInput from '../Input/text-area-input';
 import TextInput from '../Input/text-input';
 
-export default function PersonalInfoTab({ userData, setHasUnsavedChanges }) {
+export default function PersonalInfoTab({
+  userData,
+  setHasUnsavedChanges,
+  setLatestFormData,
+  setFormResetCallback,
+}) {
   const methods = useForm({
     defaultValues: userData,
     resolver: yupResolver(personalInfoSchema),
@@ -16,9 +21,17 @@ export default function PersonalInfoTab({ userData, setHasUnsavedChanges }) {
     reValidateMode: 'onChange',
   });
 
-  const { formState, reset, watch } = methods;
-  const { isDirty, isValid } = formState;
+  const { formState, reset, watch, getValues } = methods;
+  const { isValid, isDirty } = formState;
   const fullName = watch('fullName');
+
+  useEffect(() => {
+    const resetToOriginal = () => {
+      reset(userData, { keepDirty: false });
+      setHasUnsavedChanges(false);
+    };
+    setFormResetCallback(() => resetToOriginal);
+  }, [setFormResetCallback, reset, userData, setHasUnsavedChanges]);
 
   useEffect(() => {
     if (userData) {
@@ -27,8 +40,13 @@ export default function PersonalInfoTab({ userData, setHasUnsavedChanges }) {
   }, [userData, reset]);
 
   useEffect(() => {
-    setHasUnsavedChanges(isDirty && isValid);
-  }, [isDirty, isValid, setHasUnsavedChanges]);
+    const shouldEnableSave = isDirty && isValid;
+    setHasUnsavedChanges(shouldEnableSave);
+
+    if (shouldEnableSave) {
+      setLatestFormData(getValues());
+    }
+  }, [isDirty, isValid, setHasUnsavedChanges, getValues, setLatestFormData]);
 
   return (
     <FormProvider {...methods}>
@@ -60,7 +78,12 @@ export default function PersonalInfoTab({ userData, setHasUnsavedChanges }) {
 
         {/* Campos */}
         <div className="grid grid-cols-1 gap-6 pt-2 md:grid-cols-2">
-          <TextInput icon={UserRound} label="Nome Completo" name="fullName" />
+          <TextInput
+            icon={UserRound}
+            label="Nome Completo"
+            name="fullName"
+            placeholder="Digite seu nome"
+          />
           <TextInput
             icon={Mail}
             label="E-mail"
@@ -68,7 +91,12 @@ export default function PersonalInfoTab({ userData, setHasUnsavedChanges }) {
             placeholder="exemplo@email.com"
             type="email"
           />
-          <TextInput icon={AtSign} label="Nome de Usuário" name="username" />
+          <TextInput
+            icon={AtSign}
+            label="Nome de Usuário"
+            name="username"
+            placeholder="Digite seu nome de usuário"
+          />
           <MaskedInput
             icon={Smartphone}
             label="Celular"
@@ -78,7 +106,7 @@ export default function PersonalInfoTab({ userData, setHasUnsavedChanges }) {
           />
         </div>
 
-        <TextAreaInput label="Bio" name="bio" value="" />
+        <TextAreaInput label="Bio" name="bio" />
       </form>
     </FormProvider>
   );

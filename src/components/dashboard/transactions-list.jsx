@@ -1,4 +1,5 @@
 import { ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { transactionIcons } from '../../data/transaction-icons';
 
 const TransactionItem = ({ type, description, value, isPositive }) => {
@@ -33,6 +34,7 @@ export default function TransactionsList({ transactions }) {
   const transactionsToShow = shouldShowButton
     ? transactions.slice(0, maxItems)
     : transactions;
+  const navigate = useNavigate();
 
   return (
     <div>
@@ -41,6 +43,7 @@ export default function TransactionsList({ transactions }) {
         {shouldShowButton && (
           <button
             className="flex items-center font-semibold text-gray-800 text-sm hover:underline"
+            onClick={() => navigate('/transacao')}
             type="button"
           >
             Ver todos

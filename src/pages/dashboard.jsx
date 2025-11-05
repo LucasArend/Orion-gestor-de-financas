@@ -1,4 +1,5 @@
 import { Plus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import ChartExpenses from '../components/Dashboard/expenses-chart';
 import GoalsList from '../components/Dashboard/goals';
 import RemindersList from '../components/Dashboard/reminder-list';
@@ -15,12 +16,17 @@ import {
 import { getTextColor } from '../utils/get-text-color';
 
 export default function Dashboard() {
+  const navigate = useNavigate();
+  const now = new Date();
+  const formattingOptions = { month: 'long', year: 'numeric' };
+  const today = now.toLocaleString('pt-BR', formattingOptions);
+
   return (
     <div className="space-y-5">
       <section>
         <h1 className="font-bold text-3xl text-gray-700">Olá, {name.name}</h1>
         <p className="mt-1 mb-6 text-gray-500">
-          Aqui está sua visão geral financeira para janeiro de 2025
+          Aqui está sua visão geral financeira para {today}
         </p>
       </section>
 
@@ -61,7 +67,7 @@ export default function Dashboard() {
         </div>
 
         {/* Container para a Lista de Lembretes */}
-        <div className="shadow-lg shadow-zinc-400/50">
+        <div className="rounded-lg shadow-lg shadow-zinc-400/50">
           <RemindersList className="lg:col-span-2" reminders={reminderData} />
         </div>
       </section>
@@ -87,6 +93,7 @@ export default function Dashboard() {
           <h2 className="font-semibold text-gray-800 text-xl">Metas</h2>
           <button
             className="flex items-center space-x-2 rounded-lg bg-[#2979FF] px-4 py-2 text-white shadow-[#2161E5]/50 shadow-lg transition-colors hover:bg-[#2161E5]"
+            onClick={() => navigate('/metas')}
             type="button"
           >
             <Plus className="h-4 w-4" />
