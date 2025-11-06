@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import com.t2.apiorion.user.dto.ChangePasswordRequest;
 
 import java.security.Principal;
 import java.util.Map;
@@ -14,7 +15,7 @@ import java.util.Map;
 public class UserController {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;  // Injeção do PasswordEncoder
+    private final PasswordEncoder passwordEncoder;
 
     public UserController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -33,14 +34,11 @@ public class UserController {
         );
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/me")
     @SecurityRequirement(name = "bearerAuth")
-    public Map<String, Object> updateUser(@PathVariable Long id, @RequestBody User updatedUser, Principal principal) {
-        var existingUser = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+    public Map<String, Object> updateUser(@RequestBody User updatedUser, Principal principal) {
+        var existingUser = userRepository.findByUsername(principal.getName()).orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (!existingUser.getUsername().equals(principal.getName())) {
-            throw new RuntimeException("You can only update your own profile");
-        }
 
         existingUser.setName(updatedUser.getName());
         existingUser.setUsername(updatedUser.getUsername());
@@ -58,6 +56,30 @@ public class UserController {
                 "name", existingUser.getName(),
                 "username", existingUser.getUsername(),
                 "roles", existingUser.getRoles()
+        );
+    }
+
+    @PutMapping("/password")
+    @SecurityRequirement(name = "bearerAuth")
+    public Map<String, Object> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest, Principal principal) {
+        var existingUser = userRepository.findByUsername(principal.getName()).orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Verificar se a senha atual fornecida é válida
+        if (!passwordEncoder.matches(changePasswordRequest.getCurrentPassword(), existingUser.getPassword())) {
+            throw new RuntimeException("Current password is incorrect");
+        }
+
+        // Validar a nova senha (você pode adicionar regras adicionais, como tamanho mínimo, etc.)
+        if (changePasswordRequest.getNewPassword() == null || changePasswordRequest.getNewPassword().isEmpty()) {
+            throw new RuntimeException("New password cannot be empty");
+        }
+
+        // Atualizar a senha do usuário
+        existingUser.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+        userRepository.save(existingUser);
+
+        return Map.of(
+                "message", "Password changed successfully"
         );
     }
 

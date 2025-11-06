@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { AtSign, Mail, Smartphone, UserRound } from 'lucide-react';
 import { useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { personalInfoSchema } from '../../utils/validation-schema';
+import { personalInfoSchema } from '../../utils/validation-schema';  // Certifique-se de que o schema esteja correto
 import Avatar from '../Avatar/avatar';
 import MaskedInput from '../Input/masked-input';
 import TextAreaInput from '../Input/text-area-input';
@@ -15,7 +15,7 @@ export default function PersonalInfoTab({
   setFormResetCallback,
 }) {
   const methods = useForm({
-    defaultValues: userData,
+    defaultValues: userData,  // Passando os dados para o React Hook Form
     resolver: yupResolver(personalInfoSchema),
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -23,8 +23,9 @@ export default function PersonalInfoTab({
 
   const { formState, reset, watch, getValues } = methods;
   const { isValid, isDirty } = formState;
-  const fullName = watch('fullName');
+  const fullName = watch('fullName');  // Para exibir o nome completo no Avatar
 
+  // Usando o efeito para resetar o formulário com os dados do usuário
   useEffect(() => {
     const resetToOriginal = () => {
       reset(userData, { keepDirty: false });
@@ -56,7 +57,7 @@ export default function PersonalInfoTab({
         <div className="flex items-center space-x-6">
           <Avatar
             key="user-avatar"
-            name={fullName || ''}
+            name={fullName || ''}  // Exibindo o nome completo no Avatar
             style={'h-28 w-28 text-6xl'}
           />
 

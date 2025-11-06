@@ -52,10 +52,13 @@ export function AuthProvider({ children }) {
     }
 
     const logout = () => {
-        setToken(null)  
-        setUser(null)   
-        localStorage.removeItem(TOKEN_KEY)  
-    }
+        setToken(null);
+        setUser(null);
+
+        localStorage.removeItem(TOKEN_KEY);
+
+        navigate("/");
+    };
 
     const value = useMemo(() => ({
         user,

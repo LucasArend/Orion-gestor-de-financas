@@ -1,15 +1,24 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Asterisk, KeyRound, Lock, LockKeyhole } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { passwordSchema } from '../../utils/validation-schema';
 import PasswordInput from '../Input/password-input';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function LoginSecurityTab({
   setHasUnsavedChanges,
   setFormResetCallback,
   userData
 }) {
+  const { token, logout } = useAuth(); 
+  const navigate = useNavigate();
+
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
+
   const methods = useForm({
     defaultValues: userData,
     resolver: yupResolver(passwordSchema),
@@ -19,6 +28,7 @@ export default function LoginSecurityTab({
 
   const {
     reset,
+    handleSubmit,
     formState: { isDirty, isValid, errors },
   } = methods;
 
@@ -42,6 +52,56 @@ export default function LoginSecurityTab({
     setFormResetCallback(() => resetToOriginal);
   }, [setFormResetCallback, reset, setHasUnsavedChanges]);
 
+  // Função para chamar a API de troca de senha
+  const onSubmit = async (data) => {
+    const { password, newPassword } = data;
+    setError('');
+    setSuccessMessage('');
+    setLoadingSubmit(true);
+
+    try {
+      const response = await fetch('http://localhost:8080/users/password', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ currentPassword: password, newPassword }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setSuccessMessage(result.message || 'Senha alterada com sucesso!');
+        setError('');
+
+        try {
+          await logout(); 
+        } catch (e) {
+        }
+
+
+        setTimeout(() => {
+          navigate('/');
+        }, 700);
+      } else {
+        let errMsg = 'Erro ao alterar a senha';
+        try {
+          const result = await response.json();
+          errMsg = result.error || result.message || errMsg;
+        } catch (e) {
+        }
+        setError(errMsg);
+        setSuccessMessage('');
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Ocorreu um erro ao alterar a senha. Tente novamente.');
+      setSuccessMessage('');
+    } finally {
+      setLoadingSubmit(false);
+    }
+  };
+
   return (
     <FormProvider {...methods}>
       <div className="space-y-6">
@@ -58,7 +118,7 @@ export default function LoginSecurityTab({
           </p>
         </div>
 
-        {/* Campos */}
+
         <div className="grid grid-cols-1 gap-6 pt-2 md:grid-cols-2">
           <PasswordInput
             icon={LockKeyhole}
@@ -89,6 +149,30 @@ export default function LoginSecurityTab({
             Corrija os campos destacados antes de salvar
           </p>
         )}
+
+        {error && (
+          <p className="flex justify-end text-red-400 text-sm">
+            <Asterisk className="h-3 w-3" />
+            {error}
+          </p>
+        )}
+        {successMessage && (
+          <p className="flex justify-end text-green-400 text-sm">
+            {successMessage}
+          </p>
+        )}
+
+
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={handleSubmit(onSubmit)}
+            className="px-6 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 disabled:opacity-50"
+            disabled={!isDirty || !isValid || loadingSubmit}
+          >
+            {loadingSubmit ? 'Enviando...' : 'Alterar Senha'}
+          </button>
+        </div>
       </div>
     </FormProvider>
   );
