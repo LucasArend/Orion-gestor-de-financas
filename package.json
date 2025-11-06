@@ -7,7 +7,7 @@
     "orion": "concurrently \"npm run backend\" \"npm run frontend\"",
     "frontend": "vite",
     "backend": "node ./scripts/run-backend.cjs",
-    "dev": "vite",
+    "dev": "vite --host 0.0.0.0",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
