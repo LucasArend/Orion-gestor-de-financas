@@ -5,7 +5,7 @@ import Calendario from '../Common/Calendario';
 
 async function enviarTransacaoParaBackend(transacao) {
   try {
-    const response = await fetch('http://localhost:8080/transacoes', {
+    const response = await fetch('http://localhost:8080/api/transacoes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(transacao),
@@ -22,9 +22,9 @@ async function enviarTransacaoParaBackend(transacao) {
   }
 }
 
-function NewTransactionButton({ onAdd }) {
+function NewTransactionButton({ onAdd, categorias, tipos, usuarioLogado }) {
   const [open, setOpen] = useState(false);
-  const [tipoSelecionado, setTipoSelecionado] = useState('renda');
+  const [tipoSelecionado, setTipoSelecionado] = useState('');
   const [dataSelecionada, setDataSelecionada] = useState(null);
   const [valor, setValor] = useState('');
   const [categoriaSelecionada, setCategoriaSelecionada] = useState('');
@@ -32,18 +32,20 @@ function NewTransactionButton({ onAdd }) {
   const [parcelas, setParcelas] = useState('');
 
   async function handleAdicionarTransacao() {
-    if (!(valor && categoriaSelecionada && descricao && dataSelecionada)) {
+    if (!(valor && categoriaSelecionada && descricao && dataSelecionada && tipoSelecionado)) {
       alert('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
 
     const novaTransacao = {
-      tipo: tipoSelecionado,
-      valor: Number(valor),
-      categoria: categoriaSelecionada,
       descricao,
-      parcelas: parcelas ? Number(parcelas) : 1,
-      data: dataSelecionada.toISOString(),
+      valor: Number(valor),
+      dataVencimento: dataSelecionada.toISOString(),
+      quantidadeParcelas: parcelas ? Number(parcelas) : 1,
+      status: 'PENDENTE',
+      usuarioId: usuarioLogado.id,
+      categoriaId: Number(categoriaSelecionada),
+      tipoTransacaoId: Number(tipoSelecionado),
     };
 
     const resposta = await enviarTransacaoParaBackend(novaTransacao);
@@ -60,7 +62,7 @@ function NewTransactionButton({ onAdd }) {
     setDescricao('');
     setParcelas('');
     setDataSelecionada(null);
-    setTipoSelecionado('renda');
+    setTipoSelecionado('');
   }
 
   return (
@@ -82,30 +84,21 @@ function NewTransactionButton({ onAdd }) {
               <div className={styles.title}>
                 <p>Tipo da transação</p>
                 <div className={styles.options}>
-                  <label
-                    className={`${styles.option} ${tipoSelecionado === 'renda' ? styles.renda : ''}`}
-                  >
-                    <input
-                      checked={tipoSelecionado === 'renda'}
-                      name="tipo"
-                      onChange={() => setTipoSelecionado('renda')}
-                      type="radio"
-                      value="renda"
-                    />
-                    <span className={styles.labelText}>Renda</span>
-                  </label>
-                  <label
-                    className={`${styles.option} ${tipoSelecionado === 'despesa' ? styles.despesa : ''}`}
-                  >
-                    <input
-                      checked={tipoSelecionado === 'despesa'}
-                      name="tipo"
-                      onChange={() => setTipoSelecionado('despesa')}
-                      type="radio"
-                      value="despesa"
-                    />
-                    <span className={styles.labelText}>Despesa</span>
-                  </label>
+                  {tipos.map((tipo) => (
+                    <label
+                      key={tipo.id}
+                      className={`${styles.option} ${tipoSelecionado === tipo.id ? styles.renda : ''}`}
+                    >
+                      <input
+                        checked={tipoSelecionado === tipo.id}
+                        name="tipo"
+                        onChange={() => setTipoSelecionado(tipo.id)}
+                        type="radio"
+                        value={tipo.id}
+                      />
+                      <span className={styles.labelText}>{tipo.nome}</span>
+                    </label>
+                  ))}
                 </div>
               </div>
 
@@ -126,18 +119,17 @@ function NewTransactionButton({ onAdd }) {
                   className={styles.selectCategory}
                   id="categoria"
                   name="categoria"
-                  onChange={(event) =>
-                    setCategoriaSelecionada(event.target.value)
-                  }
+                  onChange={(event) => setCategoriaSelecionada(event.target.value)}
                   value={categoriaSelecionada}
                 >
                   <option disabled value="">
                     Selecione a categoria
                   </option>
-                  <option value="Salário">Salário</option>
-                  <option value="Alimentação">Alimentação</option>
-                  <option value="Transporte">Transporte</option>
-                  <option value="Lazer">Lazer</option>
+                  {categorias.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.nome}
+                    </option>
+                  ))}
                 </select>
               </div>
 

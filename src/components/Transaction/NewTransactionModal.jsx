@@ -2,8 +2,7 @@ import { TrashIcon } from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import Calendario from '../Common/Calendario';
-import { useAuth } from '../../context/AuthContext' 
-
+import { useAuth } from '../../context/AuthContext';
 
 async function adicionarCategoria(nome, token) {
   try {
@@ -38,7 +37,6 @@ async function editarCategoria(id, novoNome, token) {
     });
 
     if (!response.ok) throw new Error('Erro ao editar categoria');
-    toast.success('Categoria editada com sucesso!');
     return await response.json();
   } catch (error) {
     console.error(error);
@@ -66,10 +64,8 @@ async function deletarCategoria(id, token) {
   }
 }
 
-
 async function deletarTransacoesPorCategoria(categoria, token) {
   try {
-
     const response = await fetch(
       `http://localhost:8080/transacoes?categoria=${encodeURIComponent(categoria)}`,
       {
@@ -79,11 +75,9 @@ async function deletarTransacoesPorCategoria(categoria, token) {
       }
     );
 
-    if (!response.ok)
-      throw new Error('Erro ao buscar transações por categoria');
+    if (!response.ok) throw new Error('Erro ao buscar transações por categoria');
 
     const transacoes = await response.json();
-
 
     for (const t of transacoes) {
       const res = await fetch(`http://localhost:8080/transacoes/${t.id}`, {
@@ -104,7 +98,6 @@ async function deletarTransacoesPorCategoria(categoria, token) {
   }
 }
 
-
 function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions }) {
   const { user, token } = useAuth();
   const [tipoSelecionado, setTipoSelecionado] = useState('renda');
@@ -119,7 +112,7 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions }) {
   const [novaCategoriaNome, setNovaCategoriaNome] = useState('');
 
   const [editandoCategoria, setEditandoCategoria] = useState(null);
-  const [novoNomeCategoria, setNovoNomeCategoria] = useState('');
+  const [nomeCategoriaEditando, setNomeCategoriaEditando] = useState('');
 
   const [modalDeleteOpen, setModalDeleteOpen] = useState(false);
   const [categoriaParaDeletar, setCategoriaParaDeletar] = useState(null);
@@ -128,53 +121,34 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions }) {
   const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
-  if (!token) return;
+    if (!token) return;
 
-  async function fetchCategorias() {
-    try {
-      const response = await fetch('http://localhost:8080/categorias', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    async function fetchCategorias() {
+      try {
+        const response = await fetch('http://localhost:8080/categorias', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-      if (!response.ok) throw new Error('Erro ao carregar categorias');
+        if (!response.ok) throw new Error('Erro ao carregar categorias');
 
-      const data = await response.json();
-      setCategorias(data);
-    } catch (error) {
-      console.error('Erro ao carregar categorias:', error);
-      toast.error('Não foi possível carregar as categorias.');
+        const data = await response.json();
+        setCategorias(data);
+      } catch (error) {
+        console.error('Erro ao carregar categorias:', error);
+        toast.error('Não foi possível carregar as categorias.');
+      }
     }
-  }
 
-  fetchCategorias();
-}, [token]);
-
-
-  const prefixo = adicionandoCategoria ? 'Nova categoria: ' : 'Novo nome: ';
-
-  function handleNovaCategoriaChange(e) {
-    const valorInput = e.target.value;
-    if (!valorInput.startsWith(prefixo)) return;
-    const nome = valorInput.slice(prefixo.length);
-
-    if (adicionandoCategoria) {
-      setNovaCategoriaNome(nome);
-    } else if (editandoCategoria) {
-      setNovoNomeCategoria(nome);
-    }
-  }
+    fetchCategorias();
+  }, [token]);
 
   async function handleAdicionarCategoria() {
-    
     if (!novaCategoriaNome.trim()) {
-      alert('Digite o nome da nova categoria.');
+      toast.error('Digite o nome da nova categoria.');
       return;
     }
 
     const novaCat = await adicionarCategoria(novaCategoriaNome.trim(), token);
-
     if (!novaCat) return;
 
     setCategorias((prev) => [...prev, novaCat]);
@@ -184,23 +158,21 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions }) {
   }
 
   async function handleEditarCategoria() {
-    if (!novoNomeCategoria.trim()) {
-      alert('Digite o novo nome da categoria.');
+    if (!nomeCategoriaEditando.trim()) {
+      toast.error('Digite o novo nome da categoria.');
       return;
     }
 
     const categoriaAtualizada = await editarCategoria(
       editandoCategoria.id,
-      novoNomeCategoria.trim(),
+      nomeCategoriaEditando.trim(),
       token
     );
 
     if (!categoriaAtualizada) return;
 
     setCategorias((prev) =>
-      prev.map((c) =>
-        c.id === categoriaAtualizada.id ? categoriaAtualizada : c
-      )
+      prev.map((c) => (c.id === categoriaAtualizada.id ? categoriaAtualizada : c))
     );
 
     if (categoriaSelecionada === editandoCategoria.nome) {
@@ -208,7 +180,8 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions }) {
     }
 
     setEditandoCategoria(null);
-    setNovoNomeCategoria('');
+    setNomeCategoriaEditando('');
+    toast.success('Categoria editada com sucesso!');
   }
 
   function abrirModalDeleteCategoria(categoria) {
@@ -229,80 +202,71 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions }) {
 
     const sucesso = await deletarCategoria(categoriaParaDeletar.id, token);
 
-
     if (sucesso) {
-      setCategorias((prev) =>
-        prev.filter((c) => c.id !== categoriaParaDeletar.id)
-      );
+      setCategorias((prev) => prev.filter((c) => c.id !== categoriaParaDeletar.id));
       if (categoriaSelecionada === categoriaParaDeletar.nome) {
         setCategoriaSelecionada('');
       }
       setModalDeleteOpen(false);
 
-      if (onUpdateTransactions) {
-        onUpdateTransactions();
+      if (onUpdateTransactions) onUpdateTransactions();
+    }
+  }
+
+  async function handleAdicionarTransacao() {
+    if (adicionandoCategoria || editandoCategoria) return;
+    if (!(valor && categoriaSelecionada && descricao && dataSelecionada)) {
+      toast.error('Preencha todos os campos obrigatórios.');
+      return;
+    }
+
+    const categoriaObj = categorias.find((c) => c.nome === categoriaSelecionada);
+    if (!categoriaObj) {
+      toast.error('Categoria inválida.');
+      return;
+    }
+
+    if (!token || !user) {
+      toast.error('Você precisa estar logado.');
+      return;
+    }
+
+    const novaTransacao = {
+      descricao,
+      valor: Number(valor),
+      dataVencimento: dataSelecionada.toISOString(),
+      quantidadeParcelas: parcelas ? Number(parcelas) : 1,
+      status: 'PENDENTE',
+      usuarioId: user.id,
+      categoriaId: categoriaObj.id,
+      tipoTransacaoId: tipoSelecionado === 'renda' ? 1 : 2,
+    };
+
+    try {
+      const res = await fetch('http://localhost:8080/api/transacoes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(novaTransacao),
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Erro ao salvar transação: ${errorText}`);
       }
+
+      const data = await res.json();
+      toast.success('Transação adicionada com sucesso!');
+      onAdd(data);
+      onClose();
+      resetForm();
+    } catch (error) {
+      console.error('Erro ao enviar transação:', error);
+      toast.error('Erro ao enviar transação.');
     }
   }
-
-async function handleAdicionarTransacao() {
-  if (adicionandoCategoria || editandoCategoria) return;
-
-  if (!(valor && categoriaSelecionada && descricao && dataSelecionada)) {
-    alert('Preencha todos os campos obrigatórios.');
-    return;
-  }
-
-  const categoriaObj = categorias.find((c) => c.nome === categoriaSelecionada);
-  if (!categoriaObj) {
-    alert('Categoria inválida. Selecione uma categoria existente.');
-    return;
-  }
-
-  if (!token || !user) {
-    alert('Você precisa estar logado para adicionar uma transação.');
-    return;
-  }
-
-  const novaTransacao = {
-    descricao,
-    valor: Number(valor),
-    dataVencimento: dataSelecionada.toISOString(),
-    quantidadeParcelas: parcelas ? Number(parcelas) : 1,
-    status: 'PENDENTE',
-    usuarioId: user.id,
-    categoriaId: categoriaObj.id,
-    tipoTransacaoId: tipoSelecionado === 'renda' ? 1 : 2,
-  };
-
-  try {
-    const res = await fetch('http://localhost:8080/api/transacoes', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`, // vem direto do contexto
-      },
-      body: JSON.stringify(novaTransacao),
-    });
-
-    if (!res.ok) {
-      const errorText = await res.text();
-      throw new Error(`Erro ao salvar transação: ${errorText}`);
-    }
-
-    const data = await res.json();
-
-    toast.success('Transação adicionada com sucesso!');
-    onAdd(data);
-    onClose();
-    resetForm();
-  } catch (error) {
-    console.error('Erro ao enviar transação:', error);
-    alert('Erro ao enviar transação.');
-  }
-}
-
-
 
   function resetForm() {
     setValor('');
@@ -314,7 +278,7 @@ async function handleAdicionarTransacao() {
     setAdicionandoCategoria(false);
     setNovaCategoriaNome('');
     setEditandoCategoria(null);
-    setNovoNomeCategoria('');
+    setNomeCategoriaEditando('');
     setConfirmDeleteChecked(false);
   }
 
@@ -369,16 +333,26 @@ async function handleAdicionarTransacao() {
               <input
                 className="w-full rounded border border-gray-300 px-3 py-2"
                 id="category"
-                onChange={handleNovaCategoriaChange}
+                onChange={(e) =>
+                  editandoCategoria
+                    ? setNomeCategoriaEditando(e.target.value)
+                    : setNovaCategoriaNome(e.target.value)
+                }
                 type="text"
-                value={`${prefixo}${adicionandoCategoria ? novaCategoriaNome : novoNomeCategoria}`}
+                value={
+                  editandoCategoria ? nomeCategoriaEditando : novaCategoriaNome
+                }
+                placeholder={editandoCategoria ? "Novo Nome" : "Nova Categoria"}
               />
+
               <div className="mt-4 flex justify-center gap-4">
                 <button
                   className="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400"
                   onClick={() => {
                     setAdicionandoCategoria(false);
                     setEditandoCategoria(null);
+                    setNovaCategoriaNome('');
+                    setNomeCategoriaEditando('');
                   }}
                   type="button"
                 >
@@ -386,14 +360,11 @@ async function handleAdicionarTransacao() {
                 </button>
                 <button
                   className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-                  onClick={() => {
-                    if (adicionandoCategoria) {
-                      handleAdicionarCategoria();
-                    }
-                    if (editandoCategoria) {
-                      handleEditarCategoria();
-                    }
-                  }}
+                  onClick={
+                    editandoCategoria
+                      ? handleEditarCategoria
+                      : handleAdicionarCategoria
+                  }
                   type="button"
                 >
                   Salvar
@@ -401,189 +372,188 @@ async function handleAdicionarTransacao() {
               </div>
             </>
           ) : (
-            <div className="relative">
-              <button
-                className="w-full rounded border border-gray-300 px-3 py-2 text-left"
-                onClick={() => setShowDropdown(!showDropdown)}
-                type="button"
-              >
-                {categoriaSelecionada || 'Selecione uma categoria'}
-              </button>
+            <>
+              <div className="relative mt-1">
+                <input
+                  id="category"
+                  className="w-full cursor-pointer rounded border border-gray-300 px-3 py-2"
+                  onClick={() => setShowDropdown((prev) => !prev)}
+                  placeholder="Selecione uma categoria"
+                  readOnly
+                  value={categoriaSelecionada}
+                />
 
-              {showDropdown && (
-                <div className="absolute z-10 mt-1 max-h-40 w-full overflow-y-auto rounded border border-gray-300 bg-white shadow">
-                  {categorias.map((cat) => (
-                    <div
-                      className="flex cursor-pointer items-center justify-between px-3 py-1 hover:bg-gray-100"
-                      key={cat.id}
+                {showDropdown && (
+                  <ul className="absolute top-full z-10 max-h-60 w-full overflow-y-auto rounded border bg-white p-2 shadow-lg">
+                    {categorias.map((cat) => (
+                      <div
+  className="flex cursor-pointer items-center justify-between px-3 py-1 hover:bg-gray-100"
+  key={cat.id}
+>
+  <span
+    className="flex-1"
+    onClick={() => {
+      setCategoriaSelecionada(cat.nome);
+      setShowDropdown(false);
+    }}
+  >
+    {cat.nome}
+  </span>
+  <div className="flex gap-2">
+    <button
+      className="text-blue-500 hover:text-blue-700"
+      onClick={(e) => {
+        e.stopPropagation();
+        setEditandoCategoria(cat);
+        setNovoNomeCategoria(cat.nome);
+        setShowDropdown(false);
+      }}
+      type="button"
+    >
+      ✏️
+    </button>
+    <button
+      className="text-red-500 hover:text-red-700"
+      onClick={(e) => {
+        e.stopPropagation();
+        abrirModalDeleteCategoria(cat);
+      }}
+      type="button"
+    >
+      <TrashIcon className="h-5 w-5" />
+    </button>
+  </div>
+</div>
+
+                    ))}
+                    <li
+                      className="mt-1 cursor-pointer rounded p-2 hover:bg-gray-100 text-green-600"
                       onClick={() => {
-                        setCategoriaSelecionada(cat.nome);
+                        setAdicionandoCategoria(true);
                         setShowDropdown(false);
+                        setNovaCategoriaNome('');
                       }}
                     >
-                      <span>{cat.nome}</span>
-                      <div className="flex gap-2">
-                        <button
-                          className="text-blue-500 hover:text-blue-700"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setEditandoCategoria(cat);
-                            setNovoNomeCategoria(cat.nome);
-                            setShowDropdown(false);
-                          }}
-                          type="button"
-                        >
-                          ✏️
-                        </button>
-                        <button
-                          className="text-red-500 hover:text-red-700"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            abrirModalDeleteCategoria(cat);
-                          }}
-                          type="button"
-                        >
-                          <TrashIcon className="h-5 w-5" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                  <div
-                    className="cursor-pointer px-3 py-2 text-blue-600 text-sm hover:text-blue-800"
-                    onClick={() => {
-                      setAdicionandoCategoria(true);
-                      setShowDropdown(false);
-                    }}
-                  >
-                    + Adicionar categoria
-                  </div>
-                </div>
-              )}
-            </div>
+                      + Adicionar categoria
+                    </li>
+                  </ul>
+                )}
+              </div>
+            </>
           )}
         </div>
 
-        {!(adicionandoCategoria || editandoCategoria) && (
-          <>
-            <div>
-              <label
-                className="mb-1 block font-medium text-sm"
-                htmlFor="transaction-value"
-              >
-                Valor
-              </label>
+        <div>
+          <label className="mb-1 block font-medium text-sm" htmlFor="valor">
+            Valor
+          </label>
+          <input
+            className="w-full rounded border border-gray-300 px-3 py-2"
+            id="valor"
+            type="number"
+            onChange={(e) => setValor(e.target.value)}
+            value={valor}
+          />
+        </div>
+
+        <div>
+          <label className="mb-1 block font-medium text-sm" htmlFor="descricao">
+            Descrição
+          </label>
+          <input
+            className="w-full rounded border border-gray-300 px-3 py-2"
+            id="descricao"
+            type="text"
+            onChange={(e) => setDescricao(e.target.value)}
+            value={descricao}
+          />
+        </div>
+
+        <div className="flex gap-4">
+          {/* Parcelas */}
+          <div className="flex-1">
+            <label className="mb-1 block font-medium text-sm" htmlFor="installments">
+              Parcelas
+            </label>
+            <input
+              className="w-full rounded border border-gray-300 px-3 py-2"
+              id="installments"
+              min={1}
+              onChange={(e) => setParcelas(e.target.value)}
+              type="number"
+              value={parcelas}
+            />
+          </div>
+
+          {/* Calendário */}
+          <div className="flex-1">
+            <Calendario
+              label="Data da transação"
+              value={dataSelecionada}
+              onChange={setDataSelecionada}
+            />
+          </div>
+        </div>
+
+        <div className="mt-4 flex justify-center gap-4">
+          <button
+            className="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400"
+            onClick={onClose}
+          >
+            Cancelar
+          </button>
+          <button
+            className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+            onClick={handleAdicionarTransacao}
+          >
+            Salvar
+          </button>
+        </div>
+      </div>
+
+      {/* Modal de confirmação de exclusão */}
+      {modalDeleteOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/70 p-4"
+          onClick={() => setModalDeleteOpen(false)}
+        >
+          <div
+            className="flex w-full max-w-md flex-col space-y-4 rounded-lg bg-white p-6 shadow-lg"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-lg font-semibold">Confirmar exclusão</h3>
+            <p>
+              Tem certeza que deseja deletar a categoria{' '}
+              <span className="font-bold">{categoriaParaDeletar?.nome}</span> e
+              todas as transações vinculadas?
+            </p>
+            <label className="flex items-center gap-2">
               <input
-                className="w-full rounded border border-gray-300 px-3 py-2"
-                id="transaction-value"
-                onChange={(e) => setValor(e.target.value)}
-                type="number"
-                value={valor}
+                type="checkbox"
+                checked={confirmDeleteChecked}
+                onChange={(e) => setConfirmDeleteChecked(e.target.checked)}
               />
-            </div>
+              Sim, estou ciente
+            </label>
 
-            <div>
-              <label
-                className="mb-1 block font-medium text-sm"
-                htmlFor="description"
-              >
-                Descrição
-              </label>
-              <input
-                className="w-full rounded border border-gray-300 px-3 py-2"
-                id="description"
-                onChange={(e) => setDescricao(e.target.value)}
-                type="text"
-                value={descricao}
-              />
-            </div>
-
-            <div className="flex gap-4">
-              <div className="flex-1">
-                <label
-                  className="mb-1 block font-medium text-sm"
-                  htmlFor="installments"
-                >
-                  Parcelas
-                </label>
-                <input
-                  className="w-full rounded border border-gray-300 px-3 py-2"
-                  id="installments"
-                  min={1}
-                  onChange={(e) => setParcelas(e.target.value)}
-                  type="number"
-                  value={parcelas}
-                />
-              </div>
-              <div className="flex-1">
-                <Calendario
-                  label="Data da transação"
-                  onChange={setDataSelecionada}
-                  value={dataSelecionada}
-                />
-              </div>
-            </div>
-
-            <div className="mt-4 flex justify-end gap-4">
+            <div className="flex justify-end gap-4">
               <button
-                className="rounded-lg bg-red-500 px-4 py-2 text-white shadow-lg shadow-red-600/50 transition-colors hover:bg-red-600"
-                onClick={onClose}
-                type="button"
+                className="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400"
+                onClick={() => setModalDeleteOpen(false)}
               >
                 Cancelar
               </button>
               <button
-                className="rounded-lg bg-[#2979FF] px-4 py-2 text-white shadow-[#2161E5]/50 shadow-lg transition-colors hover:bg-[#2161E5]"
-                onClick={handleAdicionarTransacao}
-                type="button"
+                className="rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700 disabled:opacity-50"
+                disabled={!confirmDeleteChecked}
+                onClick={confirmarDeleteCategoria}
               >
-                Salvar
+                Deletar
               </button>
             </div>
-          </>
-        )}
-
-        {modalDeleteOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-            <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
-              <h3 className="mb-4 font-semibold text-lg">Confirmar exclusão</h3>
-              <p className="mb-4">
-                Tem certeza que deseja excluir a categoria{' '}
-                <strong>{categoriaParaDeletar?.nome}</strong>?<br />
-                Isso também irá remover todas as transações vinculadas a ela.
-              </p>
-              <label className="mb-4 flex items-center gap-2">
-                <input
-                  checked={confirmDeleteChecked}
-                  onChange={(e) => setConfirmDeleteChecked(e.target.checked)}
-                  type="checkbox"
-                />
-                Confirmo que desejo excluir
-              </label>
-              <div className="flex justify-end gap-4">
-                <button
-                  className="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400"
-                  onClick={() => setModalDeleteOpen(false)}
-                  type="button"
-                >
-                  Cancelar
-                </button>
-                <button
-                  className={`rounded px-4 py-2 text-white ${
-                    confirmDeleteChecked
-                      ? 'bg-red-600 hover:bg-red-700'
-                      : 'cursor-not-allowed bg-red-300'
-                  }`}
-                  disabled={!confirmDeleteChecked}
-                  onClick={confirmarDeleteCategoria}
-                  type="button"
-                >
-                  Excluir
-                </button>
-              </div>
-            </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,20 +1,24 @@
-FROM maven:3.9-eclipse-temurin-21 AS build
-WORKDIR /app
+# Etapa de build com Maven + JDK 21
+FROM maven:3.9.9-eclipse-temurin-21 AS build
 
-COPY pom.xml ./
-RUN mvn -B -q -e -DskipTests dependency:go-offline
 
-COPY src ./src
-RUN mvn -B -DskipTests clean package
-
-FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 
-COPY --from=build /app/target/*.jar /app/app.jar
+# Copia tudo do backend
+COPY . /app
+
+# Compila e empacota
+RUN mvn package -DskipTests
+
+# Etapa final: apenas JDK 21 para rodar a aplicação
+FROM eclipse-temurin:21-jdk
+
+WORKDIR /app
+
+# Copia o .jar do build anterior
+COPY --from=build /app/target/*.jar app.jar
 
 EXPOSE 8080
 
-ENV JAVA_OPTS="SPRING_PROFILES_ACTIVE="default""
-
-ENTRYPOINT ["/bin/sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar"]
+CMD ["java", "-jar", "app.jar"]

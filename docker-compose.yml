@@ -1,23 +1,52 @@
-version: '3.8'
+version: '3.9'
 
 services:
-  orion-db:
+  db:
     image: postgres:15
-    container_name: orion-postgres
-    restart: always
+    container_name: orion-db
     environment:
-      POSTGRES_USER: orion_user
-      POSTGRES_PASSWORD: orion_pass
-      POSTGRES_DB: orion_db
+      POSTGRES_DB: orion
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: user
     ports:
       - "5432:5432"
     volumes:
-      - orion_pgdata:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - orion-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: orion-backend
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: orion
+      DB_USER: postgres
+      DB_PASSWORD: user
+      SECURITY_JWT_SECRET: "12345678901234567890123456789012"
+      SECURITY_JWT_EXPIRATION_MILLIS: 86400000
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      - orion-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: orion-frontend
+    ports:
+      - "5173:5173"
     networks:
       - orion-network
 
 volumes:
-  orion_pgdata:
+  postgres_data:
 
 networks:
   orion-network:

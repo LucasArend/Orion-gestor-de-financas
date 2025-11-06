@@ -1,9 +1,9 @@
 import { Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import ChartExpenses from '../components/Dashboard/expenses-chart';
-import GoalsList from '../components/Dashboard/goals';
-import RemindersList from '../components/Dashboard/reminder-list';
-import TransactionsList from '../components/Dashboard/transactions-list';
+import ChartExpenses from '../components/dashboard/expenses-chart';
+import GoalsList from '../components/dashboard/goals';
+import RemindersList from '../components/dashboard/reminder-list';
+import TransactionsList from '../components/dashboard/transactions-list';
 import { cardInfoDashboard } from '../data/dashboard-card-info';
 import {
   cardData,

@@ -5,8 +5,10 @@ import ConfirmModal from "../Common/ConfirmModal";
 import { toast, Toaster } from "react-hot-toast";
 import { IoFunnelOutline } from "react-icons/io5";
 import { HiMagnifyingGlass } from "react-icons/hi2";
+import { useAuth } from "../../context/AuthContext";
 
 function Transaction() {
+  const { token } = useAuth(); 
   const [transacoes, setTransacoes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [newModalOpen, setNewModalOpen] = useState(false);
@@ -16,55 +18,82 @@ function Transaction() {
   const [category, setCategory] = useState("");
   const [type, setType] = useState("");
 
+  // 🔹 Busca todas as transações do usuário logado
   const fetchTransacoes = useCallback(async () => {
+    if (!token) return; // 🔹 evita requisição sem token
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:8080/transacoes");
+      const response = await fetch("http://localhost:8080/api/transacoes/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       if (!response.ok) throw new Error("Erro ao buscar transações");
       const data = await response.json();
-      setTransacoes(data);
+      setTransacoes(data ?? []);
     } catch (error) {
       console.error("Erro ao carregar transações:", error);
       toast.error("Erro ao carregar transações");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     fetchTransacoes();
   }, [fetchTransacoes]);
 
-  // Filtros dinâmicos de categoria
-  const categories = Array.from(new Set(transacoes.map(t => t.categoria))).sort();
+  const categories = Array.from(
+    new Set(transacoes.map((t) => t.categoria?.nome ?? "Sem categoria"))
+  ).sort();
 
-  // Adiciona transação nova
+
   async function handleAddTransacao(novaTransacao) {
-    try {
-      const response = await fetch("http://localhost:8080/transacoes", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(novaTransacao),
-      });
-      if (!response.ok) throw new Error("Erro ao adicionar transação");
-      const data = await response.json();
-      setTransacoes(prev => [...prev, data]);
-      toast.success("Transação adicionada!");
-    } catch (error) {
-      console.error(error);
-      toast.error("Erro ao adicionar transação");
-    }
-  }
+  if (!token) return;
 
-  // Remove transação
+  try {
+    const response = await fetch("http://localhost:8080/api/transacoes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(novaTransacao),
+    });
+
+    if (!response.ok) throw new Error("Erro ao adicionar transação");
+
+    const data = await response.json();
+
+
+    setTransacoes((prev) => [...prev, data]);
+
+
+    toast.success("Transação adicionada!");
+
+
+    setNewModalOpen(false);
+  } catch (error) {
+    console.error(error);
+    toast.error("Erro ao adicionar transação");
+  }
+}
+
+
   async function handleConfirmarRemocao(id) {
+    if (!token) return;
     const toastId = toast.loading("Removendo transação...");
     try {
-      const response = await fetch(`http://localhost:8080/transacoes/${id}`, {
+      const response = await fetch(`http://localhost:8080/api/transacoes/${id}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+
       if (!response.ok) throw new Error();
-      setTransacoes(prev => prev.filter(t => t.id !== id));
+      setTransacoes((prev) => prev.filter((t) => t.id !== id));
       toast.success("Transação removida!", { id: toastId });
     } catch {
       toast.error("Erro ao remover transação", { id: toastId });
@@ -78,10 +107,10 @@ function Transaction() {
       <Toaster position="top-right" />
 
       <div className="w-full max-w-4xl">
-        {/* Filtros */}
+        {/* 🔹 Filtros */}
         <div className="bg-white p-6 rounded-lg shadow-md w-full mb-5">
           <div className="flex items-center mb-5">
-            <IoFunnelOutline className="text-2xl mr-1"/>
+            <IoFunnelOutline className="text-2xl mr-1" />
             <span className="text-lg font-semibold">Filtros</span>
           </div>
 
@@ -95,7 +124,7 @@ function Transaction() {
                 placeholder="Buscar descrição..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="border border-gray-200 rounded p-2 flex-1 py-1.5 pl-7 pr-3" 
+                className="border border-gray-200 rounded p-2 flex-1 py-1.5 pl-7 pr-3"
               />
             </div>
 
@@ -105,20 +134,25 @@ function Transaction() {
               className="border border-gray-200 rounded p-2 flex-1 cursor-pointer"
             >
               <option value="">Todas as categorias</option>
-              {categories.map(c => <option key={c} value={c}>{c}</option>)}
+              {categories.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
             </select>
 
             <select
               value={type}
               onChange={(e) => setType(e.target.value)}
-              className="border border-gray-200  rounded p-2 flex-1 cursor-pointer"
+              className="border border-gray-200 rounded p-2 flex-1 cursor-pointer"
             >
               <option value="">Todos os tipos</option>
-              <option value="renda">Renda</option>
-              <option value="despesa">Despesa</option>
+              <option value="RENDA">Renda</option>
+              <option value="DESPESA">Despesa</option>
             </select>
           </div>
         </div>
+
 
         <TransactionList
           transacoes={transacoes}
@@ -134,14 +168,14 @@ function Transaction() {
         />
       </div>
 
-      {/* Modal de nova transação */}
+      {/* 🔹 Modal de nova transação */}
       <NewTransactionModal
         open={newModalOpen}
         onClose={() => setNewModalOpen(false)}
-        onAdd={handleAddTransacao} // ❗ Atualiza lista global
+        onAdd={handleAddTransacao}
       />
 
-      {/* Modal de confirmação */}
+      {/* 🔹 Modal de confirmação */}
       <ConfirmModal
         open={confirmModalOpen}
         onClose={() => setConfirmModalOpen(false)}

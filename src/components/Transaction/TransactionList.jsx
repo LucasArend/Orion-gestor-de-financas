@@ -17,8 +17,15 @@ function TransactionList({
     const matchesSearch = (t.descricao ?? '')
       .toLowerCase()
       .includes((search ?? '').toLowerCase());
-    const matchesCategory = category ? t.categoria === category : true;
-    const matchesType = type ? t.tipo === type : true;
+
+    const matchesCategory = category
+      ? t.categoria?.nome === category
+      : true;
+
+    const matchesType = type
+      ? t.tipoTransacao?.nome === type
+      : true;
+
     return matchesSearch && matchesCategory && matchesType;
   });
 
@@ -53,7 +60,7 @@ function TransactionList({
           <tbody>
             <AnimatePresence>
               {filtered.map((transacao) => {
-                const isRenda = transacao.tipo === 'renda';
+                const isRenda = transacao.tipoTransacao?.nome.toLowerCase() === 'renda';
 
                 return (
                   <motion.tr
@@ -72,7 +79,7 @@ function TransactionList({
                             : 'bg-red-100 text-red-700'
                         }`}
                       >
-                        {transacao.tipo}
+                        {transacao.tipoTransacao?.nome ?? 'N/A'}
                       </span>
                     </td>
                     <td className="p-2">{transacao.descricao}</td>
@@ -86,9 +93,9 @@ function TransactionList({
                         currency: 'BRL',
                       }).format(transacao.valor)}
                     </td>
-                    <td className="p-2">{transacao.categoria}</td>
+                    <td className="p-2">{transacao.categoria?.nome ?? 'N/A'}</td>
                     <td className="p-2">
-                      {new Date(transacao.data).toLocaleDateString()}
+                      {new Date(transacao.dataVencimento).toLocaleDateString()}
                     </td>
                     <td className="w-[80px] p-2 text-center align-middle">
                       <div className="flex items-center justify-center">

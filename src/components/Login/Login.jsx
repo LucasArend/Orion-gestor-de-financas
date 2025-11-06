@@ -108,35 +108,3 @@ function Login() {
 
 export default Login;
 
-
-  // const handleSubmit = async (event) => {
-  //   event.preventDefault()
-
-  //   if (!email.trim()) {
-  //     setError("Digite seu e-mail.")
-  //     return
-  //   }
-
-  //   const emailValidation = /\S+@\S+\.\S+/
-  //   if (!emailValidation.test(email)) {
-  //     setError("Digite um e-mail válido.")
-  //     return
-  //   }
-
-  //   const passwordValidation = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/
-  //   if (!passwordValidation.test(password)) {
-  //     setError("A senha deve ter pelo menos 6 caracteres, incluindo 1 letra maiúscula, 1 letra minúscula e 1 número.")
-  //     return
-  //   }
-
-  //   if (!password.trim()) {
-  //     setError("Digite sua senha.")
-  //     return
-  //   }
-
-  //   const success = await login(email, password)
-
-  //   if (!success) {
-  //     setError("Email ou senha inválidos")
-  //   } 
-  // }

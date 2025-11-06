@@ -22,6 +22,15 @@ public class CategoriaService {
     }
 
     @Transactional
+    public Categoria atualizarCategoria(Long id, CategoriaRequest request) {
+        Categoria categoria = categoriaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Categoria não encontrada com id " + id));
+
+        categoria.setNome(request.getNome());
+        return categoriaRepository.save(categoria);
+    }
+
+    @Transactional
     public Categoria criarCategoria(CategoriaRequest request) {
         Categoria categoria = new Categoria();
         categoria.setNome(request.getNome());
