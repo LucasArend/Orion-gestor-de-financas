@@ -5,9 +5,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import com.t2.apiorion.user.dto.ChangePasswordRequest;
+import com.t2.apiorion.user.dto.UpdateUserRequest;
 
 import java.security.Principal;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @Tag(name = "users")
 @RestController
@@ -17,11 +19,13 @@ public class UserController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    // Construtor
     public UserController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
+    // Rota para obter as informações do usuário logado
     @GetMapping("/me")
     @SecurityRequirement(name = "bearerAuth")
     public Map<String, Object> me(Principal principal) {
@@ -34,21 +38,36 @@ public class UserController {
         );
     }
 
+    // Rota para atualizar o usuário (nome, username e roles)
     @PutMapping("/me")
     @SecurityRequirement(name = "bearerAuth")
-    public Map<String, Object> updateUser(@RequestBody User updatedUser, Principal principal) {
+    public Map<String, Object> updateUser(@RequestBody UpdateUserRequest updatedUser, Principal principal) {
         var existingUser = userRepository.findByUsername(principal.getName()).orElseThrow(() -> new RuntimeException("User not found"));
 
+        // Verifica se o username é válido e único
+        if (updatedUser.getUsername() != null && !updatedUser.getUsername().isEmpty()) {
+            if (!isValidEmail(updatedUser.getUsername())) {
+                throw new RuntimeException("Invalid email format");
+            }
 
-        existingUser.setName(updatedUser.getName());
-        existingUser.setUsername(updatedUser.getUsername());
+            if (!updatedUser.getUsername().equals(existingUser.getUsername()) && userRepository.existsByUsername(updatedUser.getUsername())) {
+                throw new RuntimeException("Username already exists");
+            }
 
-        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
-            existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+            existingUser.setUsername(updatedUser.getUsername());
         }
 
-        existingUser.setRoles(updatedUser.getRoles());
+        // Atualiza o nome se fornecido
+        if (updatedUser.getName() != null) {
+            existingUser.setName(updatedUser.getName());
+        }
 
+        // Atualiza as roles se fornecidas
+        if (updatedUser.getRoles() != null && !updatedUser.getRoles().isEmpty()) {
+            existingUser.setRoles(updatedUser.getRoles());
+        }
+
+        // Salva o usuário atualizado
         userRepository.save(existingUser);
 
         return Map.of(
@@ -59,6 +78,7 @@ public class UserController {
         );
     }
 
+    // Rota para alterar a senha do usuário
     @PutMapping("/password")
     @SecurityRequirement(name = "bearerAuth")
     public Map<String, Object> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest, Principal principal) {
@@ -69,7 +89,7 @@ public class UserController {
             throw new RuntimeException("Current password is incorrect");
         }
 
-        // Validar a nova senha (você pode adicionar regras adicionais, como tamanho mínimo, etc.)
+        // Validar a nova senha
         if (changePasswordRequest.getNewPassword() == null || changePasswordRequest.getNewPassword().isEmpty()) {
             throw new RuntimeException("New password cannot be empty");
         }
@@ -83,10 +103,17 @@ public class UserController {
         );
     }
 
+    // Rota para obter todos os usuários (admin)
     @GetMapping
     @SecurityRequirement(name = "bearerAuth")
     public Map<String, Object> getAllUsers() {
         var users = userRepository.findAll();
         return Map.of("users", users);
+    }
+
+    private boolean isValidEmail(String username) {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        return pattern.matcher(username).matches();
     }
 }

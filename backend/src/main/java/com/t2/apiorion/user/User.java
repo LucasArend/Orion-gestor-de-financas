@@ -65,6 +65,7 @@ public class User {
         this.updatedAt = Instant.now();
     }
 
+
     public Long getId() { return id; }
 
     public void setId(Long id) { this.id = id; }
@@ -82,6 +83,14 @@ public class User {
     public void setPassword(String password) { this.password = password; }
 
     public Set<String> getRoles() { return roles; }
+
+    public String getFoto() {
+        return foto;
+    }
+
+    public void setFoto(String foto) {
+        this.foto = foto;
+    }
 
     public void setRoles(Set<String> roles) { this.roles = roles; }
 

@@ -18,9 +18,9 @@ function Transaction() {
   const [category, setCategory] = useState("");
   const [type, setType] = useState("");
 
-  // 🔹 Busca todas as transações do usuário logado
+
   const fetchTransacoes = useCallback(async () => {
-    if (!token) return; // 🔹 evita requisição sem token
+    if (!token) return; 
     setLoading(true);
     try {
       const response = await fetch("http://localhost:8080/api/transacoes/me", {

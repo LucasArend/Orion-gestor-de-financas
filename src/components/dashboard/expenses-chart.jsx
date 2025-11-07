@@ -2,21 +2,21 @@ import { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { expensesChartOptions } from '../../data/expenses-category-options';
 import { makeExpensesByCategoryData } from '../../utils/chart-data-factory';
-import { useAuth } from '../../context/AuthContext';  // Ajuste conforme sua estrutura
+import { useAuth } from '../../context/AuthContext';  
 import axios from 'axios';
 
-// Função para agrupar as transações por categoria e somar os valores
+
 const groupTransactionsByCategory = (transactions) => {
   const grouped = {};
 
   transactions.forEach((transaction) => {
     console.log("Transação sendo processada:", transaction);
 
-    // Verifique se o tipoTransacao.id é 2 (Despesas) e o status é "PENDENTE"
+    
     if (transaction.tipoTransacao.id === 2 && transaction.status === 'PENDENTE' && transaction.valor > 0) {
       const categoryId = transaction.categoria.id;
 
-      // Agrupar as transações por categoria
+      
       if (grouped[categoryId]) {
         grouped[categoryId].valor += transaction.valor;
       } else {
@@ -28,13 +28,13 @@ const groupTransactionsByCategory = (transactions) => {
     }
   });
 
-  // Converte o objeto para um array de categorias
+  
   const result = Object.keys(grouped).map((categoryId) => ({
     nome: grouped[categoryId].nome,
     valor: grouped[categoryId].valor,
   }));
 
-  console.log("Dados agrupados:", result);  // Verifique o que foi agrupado
+  console.log("Dados agrupados:", result);  
 
   return result;
 };
@@ -42,11 +42,11 @@ const groupTransactionsByCategory = (transactions) => {
 const processChartData = (groupedData) => {
   console.log("Dados agrupados recebidos para processamento:", groupedData);
 
-  const labels = groupedData.map(item => item.nome);  // Nomes das categorias
-  const data = groupedData.map(item => item.valor);   // Valores das categorias
+  const labels = groupedData.map(item => item.nome);  
+  const data = groupedData.map(item => item.valor);   
 
-  console.log("Labels processados:", labels);   // Verifique se os labels estão corretos
-  console.log("Data processados:", data);       // Verifique se os dados estão corretos
+  console.log("Labels processados:", labels);   
+  console.log("Data processados:", data);       
 
   return { labels, data };
 };
@@ -68,10 +68,8 @@ export default function ChartExpenses() {
 
         console.log("Transações recebidas:", response.data);  // Verificando a resposta da API
 
-        // Filtra e agrupa as transações de "Despesas"
         const groupedData = groupTransactionsByCategory(response.data);
 
-        // Processa os dados para o gráfico
         const processedData = processChartData(groupedData);
 
         setTransactions(processedData);

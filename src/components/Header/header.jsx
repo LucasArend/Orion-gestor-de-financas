@@ -9,6 +9,7 @@ export default function Header({ pageTitle }) {
   const [open, setOpen] = useState(false);
   const { logout } = useAuth()
   const navigate = useNavigate()
+  const { user, isAuthenticated } = useAuth();
 
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
@@ -51,11 +52,11 @@ export default function Header({ pageTitle }) {
           >
             <Avatar
               key="user-avatar"
-              name={name.name || ''}
+              name={user.name}
               style={'h-8 w-8 text-sm'}
             />
             <span className="font-medium text-gray-700 text-sm sm:block">
-              {name.name}
+              {user.name}
             </span>
             <ChevronDown className="h-5 w-5" />
           </button>
