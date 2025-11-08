@@ -12,7 +12,7 @@ export default function PasswordInput({
   const [showPassword, setShowPassword] = useState(false);
   const timerRef = useRef(null);
   const inputRef = useRef(null);
-  const timer = 50000;
+  const timer = 5000;
 
   const handleToggle = () => {
     const cursorPosition = inputRef.current?.selectionStart || 0;

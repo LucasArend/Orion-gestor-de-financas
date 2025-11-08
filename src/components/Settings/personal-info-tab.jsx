@@ -1,21 +1,19 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { AtSign, Mail, Smartphone, UserRound } from 'lucide-react';
+import { Mail, UserRound } from 'lucide-react';
 import { useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { personalInfoSchema } from '../../utils/validation-schema';  // Certifique-se de que o schema esteja correto
+import { personalInfoSchema } from '../../utils/validation-schema';
 import Avatar from '../Avatar/avatar';
-import MaskedInput from '../Input/masked-input';
-import TextAreaInput from '../Input/text-area-input';
 import TextInput from '../Input/text-input';
 
 export default function PersonalInfoTab({
   userData,
   setHasUnsavedChanges,
-  setLatestFormData,
   setFormResetCallback,
+  registerFormGetter,
 }) {
   const methods = useForm({
-    defaultValues: userData,  // Passando os dados para o React Hook Form
+    defaultValues: userData,
     resolver: yupResolver(personalInfoSchema),
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -23,9 +21,12 @@ export default function PersonalInfoTab({
 
   const { formState, reset, watch, getValues } = methods;
   const { isValid, isDirty } = formState;
-  const fullName = watch('fullName');  // Para exibir o nome completo no Avatar
+  const fullName = watch('fullName');
 
-  // Usando o efeito para resetar o formulário com os dados do usuário
+  useEffect(() => {
+    registerFormGetter(() => getValues());
+  }, [registerFormGetter, getValues]);
+
   useEffect(() => {
     const resetToOriginal = () => {
       reset(userData, { keepDirty: false });
@@ -43,11 +44,7 @@ export default function PersonalInfoTab({
   useEffect(() => {
     const shouldEnableSave = isDirty && isValid;
     setHasUnsavedChanges(shouldEnableSave);
-
-    if (shouldEnableSave) {
-      setLatestFormData(getValues());
-    }
-  }, [isDirty, isValid, setHasUnsavedChanges, getValues, setLatestFormData]);
+  }, [isDirty, isValid, setHasUnsavedChanges]);
 
   return (
     <FormProvider {...methods}>
@@ -57,7 +54,7 @@ export default function PersonalInfoTab({
         <div className="flex items-center space-x-6">
           <Avatar
             key="user-avatar"
-            name={fullName || ''}  // Exibindo o nome completo no Avatar
+            name={fullName || ''} // Exibindo o nome completo no Avatar
             style={'h-28 w-28 text-6xl'}
           />
 
@@ -92,22 +89,7 @@ export default function PersonalInfoTab({
             placeholder="exemplo@email.com"
             type="email"
           />
-          <TextInput
-            icon={AtSign}
-            label="Nome de Usuário"
-            name="username"
-            placeholder="Digite seu nome de usuário"
-          />
-          <MaskedInput
-            icon={Smartphone}
-            label="Celular"
-            mask="(00) 0 0000-0000"
-            name="phone"
-            placeholder="(XX) X XXXX-XXXX"
-          />
         </div>
-
-        <TextAreaInput label="Bio" name="bio" />
       </form>
     </FormProvider>
   );

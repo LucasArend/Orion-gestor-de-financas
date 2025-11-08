@@ -1,17 +1,5 @@
 // Dados que devem vir do backend, dados fictícios
 
-export const chartCategoriesData = [
-  { nome: 'Contas', valor: 789 },
-  { nome: 'Transporte', valor: 238 },
-  { nome: 'Mercado', valor: 544 },
-  { nome: 'Aluguel', valor: 1500 },
-  { nome: 'Lazer', valor: 250 },
-  { nome: 'Natação', valor: 100 },
-  { nome: 'Academia', valor: 150 },
-  { nome: 'Pet', valor: 80 },
-  { nome: 'Carro', valor: 2000 },
-];
-
 export const transactionsData = [
   { id: 1, type: 'Transferência', description: 'Mercado', value: -1200.99 },
   { id: 2, type: 'Freelance', description: 'Trabalho', value: 859.99 },
@@ -22,9 +10,6 @@ export const transactionsData = [
   { id: 7, type: 'Uber', description: 'Transporte', value: -35.0 },
 ];
 
-export const name = { name: 'Pedro Avila' };
-
-// cada item pode ser uma coluna do BD
 export const cardData = [
   {
     id: 1,

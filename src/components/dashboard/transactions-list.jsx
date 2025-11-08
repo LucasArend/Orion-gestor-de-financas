@@ -1,8 +1,9 @@
 import { ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { transactionIcons } from '../../data/transaction-icons';
+import { useTransactionsMe } from '../../services/api-hooks';
 
-const TransactionItem = ({ type, description, value, isPositive }) => {
+const TransactionItem = ({ description, category, value, isPositive }) => {
   const status = isPositive ? 'positive' : 'negative';
   const { icon: Icon, color, bgColor } = transactionIcons[status];
 
@@ -14,11 +15,12 @@ const TransactionItem = ({ type, description, value, isPositive }) => {
           <Icon className={`h-5 w-5 ${color}`} />
         </div>
         <div className="ml-4">
-          <p className="font-semibold text-gray-800">{type}</p>
-          <p className="text-gray-500 text-sm">{description}</p>
+          <p className="font-semibold text-gray-800">{description}</p>
+          <p className="text-gray-500 text-sm">{category}</p>
         </div>
       </div>
       <p className={`font-semibold ${color}`}>
+        {isPositive ? '' : '-'}
         {new Intl.NumberFormat('pt-BR', {
           style: 'currency',
           currency: 'BRL',
@@ -28,13 +30,22 @@ const TransactionItem = ({ type, description, value, isPositive }) => {
   );
 };
 
-export default function TransactionsList({ transactions }) {
+export default function TransactionsList() {
+  const { data: transactions = [], isLoading } = useTransactionsMe();
   const maxItems = 5;
   const shouldShowButton = transactions.length > maxItems;
   const transactionsToShow = shouldShowButton
     ? transactions.slice(0, maxItems)
     : transactions;
   const navigate = useNavigate();
+
+  if (isLoading) {
+    return <p className="text-gray-500">Carregando transações...</p>;
+  }
+
+  if (!transactions.length) {
+    return <p className="text-gray-500">Nenhuma transação encontrada.</p>;
+  }
 
   return (
     <div>
@@ -52,15 +63,20 @@ export default function TransactionsList({ transactions }) {
         )}
       </div>
       <div className="space-y-2">
-        {transactionsToShow.map((transaction) => (
-          <TransactionItem
-            description={transaction.description}
-            isPositive={transaction.value >= 0}
-            key={transaction.id}
-            type={transaction.type}
-            value={transaction.value}
-          />
-        ))}
+        {transactionsToShow.map((transaction) => {
+          const isExpense =
+            transaction.tipoTransacao?.nome?.toLowerCase() === 'despesa';
+
+          return (
+            <TransactionItem
+              category={transaction.categoria?.nome}
+              isPositive={!isExpense}
+              key={transaction.id}
+              description={transaction.descricao}
+              value={Math.abs(transaction.valor)}
+            />
+          );
+        })}
       </div>
     </div>
   );

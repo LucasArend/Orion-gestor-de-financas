@@ -1,9 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import Notification from '../components/Notications/notifications';
 import FinancialInfoTab from '../components/Settings/financial-info-tab';
 import LoginSecurityTab from '../components/Settings/login-security-tab';
 import Tab from '../components/Settings/menu-tab';
 import PersonalInfoTab from '../components/Settings/personal-info-tab';
+import {
+  useUpdatePassword,
+  useUpdateUserMe,
+  useUserMe,
+} from '../services/api-hooks';
 
 const settingsTabs = [
   { id: 'profile', name: 'Meu Perfil', component: PersonalInfoTab },
@@ -13,28 +18,70 @@ const settingsTabs = [
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState(settingsTabs[0].id);
-  const ActiveComponent = settingsTabs.find(
-    (tab) => tab.id === activeTab
-  ).component;
-
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [userData, setUserData] = useState(null);
-  const [latestFormData, setLatestFormData] = useState({});
   const [formReset, setFormReset] = useState(null);
-
   const [notification, setNotification] = useState(null);
+  const formGetterRef = useRef(null);
+
+  const { data: user, isLoading, isError } = useUserMe();
+  const updateUser = useUpdateUserMe();
+  const updatePassword = useUpdatePassword();
 
   const showNotification = (type, message) => {
     setNotification({ type, message });
   };
 
-  useEffect(() => {
-    setUserData({
-      fullName: 'Pedro Henrique Avila',
-      email: 'pedro.avila@email.com',
-      username: 'pedro.avila',
-      phone: '51991234567',
-      bio: 'Desenvolvedor front-end apaixonado por tecnologia.',
+  const handleSave = async () => {
+    if (!formGetterRef.current) {
+      return;
+    }
+
+    try {
+      const formData = formGetterRef.current();
+
+      let payload = {};
+
+      if (activeTab === 'profile') {
+        payload = {
+          name: formData.fullName,
+          username: formData.email,
+          roles: ['USER'],
+        };
+
+        await updateUser.mutateAsync(payload);
+      } else if (activeTab === 'security') {
+        payload = {
+          currentPassword: formData.password,
+          newPassword: formData.newPassword,
+        };
+        await updatePassword.mutateAsync(payload);
+        formReset();
+      } else if (activeTab === 'financial') {
+        payload = {
+          name: formData.fullName,
+          username: formData.email,
+          roles: ['USER'],
+        };
+      }
+
+      setHasUnsavedChanges(false);
+      showNotification('success', 'Alterações salvas com sucesso!');
+    } catch (error) {
+      console.error(error);
+      showNotification('error', 'Erro ao salvar alterações.');
+    }
+  };
+
+  const handleCancel = () => {
+    formReset?.();
+    setHasUnsavedChanges(false);
+    showNotification('error', 'Alterações canceladas.');
+  };
+
+  const userData = useMemo(
+    () => ({
+      fullName: user?.name,
+      email: user?.username,
       password: '',
       newPassword: '',
       confirmNewPassword: '',
@@ -42,26 +89,18 @@ export default function Settings() {
       currency: '',
       emergencyFund: '',
       totalIncome: '',
-    });
-  }, []);
+    }),
+    [user]
+  );
 
-  const handleSave = () => {
-    if (activeTab === 'security') {
-      formReset();
-    }
-    setUserData(latestFormData);
-    setHasUnsavedChanges(false);
-    showNotification('success', 'Alterações salvas com sucesso!');
-  };
+  const ActiveComponent = useMemo(
+    () => settingsTabs.find((tab) => tab.id === activeTab).component,
+    [activeTab]
+  );
 
-  const handleCancel = () => {
-    if (formReset) {
-      formReset();
-    }
-    setHasUnsavedChanges(false);
-    setLatestFormData(userData);
-    showNotification('error', 'Alterações canceladas.');
-  };
+  if (isError) {
+    return <p>Erro ao carregar dados do usuário.</p>;
+  }
 
   return (
     <div className="space-y-6">
@@ -91,9 +130,9 @@ export default function Settings() {
         {/* Conteúdo da Aba Ativa */}
         <div className="mt-7">
           <ActiveComponent
+            registerFormGetter={(getter) => (formGetterRef.current = getter)}
             setFormResetCallback={setFormReset}
             setHasUnsavedChanges={setHasUnsavedChanges}
-            setLatestFormData={setLatestFormData}
             userData={userData}
           />
         </div>
