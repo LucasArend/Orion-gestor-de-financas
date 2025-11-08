@@ -7,7 +7,6 @@ import { number, object, ref, string } from 'yup';
 const SEQUENTIAL_PATTERN =
   /(012|123|234|345|456|567|678|789|987|876|765|654|543|432|321|210)/;
 const brPhoneSize = 11;
-const bioSize = 300;
 
 export const personalInfoSchema = object().shape({
   fullName: string()
@@ -15,35 +14,10 @@ export const personalInfoSchema = object().shape({
     .test('not-empty', 'O nome é obrigatório.', (value) => value.length > 0)
     .required('O nome é obrigatório.'),
 
-  username: string()
-    .transform((value) => (value ? value.trim() : ''))
-    .test(
-      'not-empty',
-      'O nome de usuário é obrigatório.',
-      (value) => value.length > 0
-    )
-    .required('O nome de usuário é obrigatório.'),
-
   email: string()
     .transform((value) => (value ? value.trim() : ''))
     .email('Informe um e-mail válido.')
     .required('O e-mail é obrigatório.'),
-
-  phone: string()
-    .transform((value) => (value ? value.replace(/\D/g, '') : ''))
-    .test(
-      'required',
-      'O número de celular é obrigatório.',
-      (value) => value && value.length > 0
-    )
-    .test(
-      'length',
-      'O celular deve ter DDD + 9 dígitos.',
-      (value) => !value || value.length === brPhoneSize
-    )
-    .required('O número de celular é obrigatório.'),
-
-  bio: string().max(bioSize, 'Máximo de 300 caracteres.').nullable(),
 });
 
 const passwordMin = 8;
@@ -142,7 +116,7 @@ export const goalSchema = object()
 const descriptionSize = 3;
 
 export const reminderSchema = object().shape({
-  descriptionReminder:string()
+  descriptionReminder: string()
     .required('A descrição é obrigatória')
     .min(descriptionSize, 'A descrição deve ter pelo menos 3 caracteres'),
   date: string().required('Selecione uma data válida'),

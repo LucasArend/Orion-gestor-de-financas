@@ -7,15 +7,14 @@ import TransactionsList from '../components/dashboard/transactions-list';
 import { cardInfoDashboard } from '../data/dashboard-card-info';
 import {
   cardData,
-  chartCategoriesData,
   goalData,
-  name,
   reminderData,
-  transactionsData,
 } from '../data/data-tests';
+import { useUserMe } from '../services/api-hooks';
 import { getTextColor } from '../utils/get-text-color';
 
 export default function Dashboard() {
+  const { data: users } = useUserMe();
   const navigate = useNavigate();
   const now = new Date();
   const formattingOptions = { month: 'long', year: 'numeric' };
@@ -24,7 +23,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-5">
       <section>
-        <h1 className="font-bold text-3xl text-gray-700">Olá, {name.name}</h1>
+        <h1 className="font-bold text-3xl text-gray-700">Olá, {users?.name}</h1>
         <p className="mt-1 mb-6 text-gray-500">
           Aqui está sua visão geral financeira para {today}
         </p>
@@ -78,12 +77,12 @@ export default function Dashboard() {
         <div className="flex flex-col rounded-lg bg-white p-6 shadow-lg shadow-zinc-400/50">
           <h3 className="mb-4 font-semibold text-2xl">Gastos por Categoria</h3>
           <div className="min-h-0 flex-1">
-            <ChartExpenses categories={chartCategoriesData} />
+            <ChartExpenses />
           </div>
         </div>
         {/* Transações Recentes */}
         <div className="flex flex-col rounded-lg bg-white p-6 shadow-lg shadow-zinc-400/50">
-          <TransactionsList transactions={transactionsData} />
+          <TransactionsList />
         </div>
       </section>
 

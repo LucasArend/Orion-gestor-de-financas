@@ -3,7 +3,6 @@
 */
 import {
   ArrowRightLeft,
-  BellPlus,
   Goal,
   LayoutDashboard,
   LineChart,
@@ -16,6 +15,5 @@ export const navItems = [
   { id: 2, name: 'Transações', icon: ArrowRightLeft, path: '/transacao' },
   { id: 3, name: 'Relatórios', icon: LineChart, path: '/relatorios' },
   { id: 4, name: 'Metas', icon: Goal, path: '/metas' },
-  { id: 5, name: 'Lembretes', icon: BellPlus, path: '/lembretes' },
   { id: 6, name: 'Configurações', icon: Settings, path: '/configuracoes' },
 ];
