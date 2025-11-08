@@ -93,6 +93,7 @@ export const makeYearlyExpense = (labels, recentMonths) => {
         pointRadius: 5,
         pointHoverRadius: 7,
 
+        // Pontos individuais coloridos
         pointBackgroundColor: (ctx) => {
           const value = ctx.raw;
           return value < 0 ? '#FF5252' : '#2979FF';
@@ -102,14 +103,30 @@ export const makeYearlyExpense = (labels, recentMonths) => {
           return value < 0 ? '#FF5252' : '#2979FF';
         },
 
+        // Cor da linha entre pontos
         segment: {
           borderColor: (ctx) => {
-            const y1 = ctx.p0.parsed.y;
-            const y2 = ctx.p1.parsed.y;
-            return y1 < 0 || y2 < 0 ? '#FF5252' : '#2979FF';
+            const y1 = ctx.p0?.parsed?.y;
+            const y2 = ctx.p1?.parsed?.y;
+
+            if (typeof y1 !== "number" || typeof y2 !== "number") return "#2979FF";
+
+            // Ambos positivos → azul
+            if (y1 > 0 && y2 > 0) return "#2979FF";
+
+            // Ambos negativos → vermelho
+            if (y1 < 0 && y2 < 0) return "#FF5252";
+
+            // Cruza o zero
+            if (y1 < 0 && y2 > 0) return "#2979FF"; // negativo → positivo
+            if (y1 > 0 && y2 < 0) return "#FF5252"; // positivo → negativo
+
+            // fallback
+            return "#2979FF";
           },
         },
 
+        // Gradiente de fundo com divisão em torno do zero
         backgroundColor: (context) => {
           const chart = context.chart;
           const { ctx, chartArea, scales } = chart;
@@ -117,12 +134,14 @@ export const makeYearlyExpense = (labels, recentMonths) => {
 
           const { top, bottom } = chartArea;
           const { y } = scales;
-
           const zeroY = y.getPixelForValue(0);
           const gradient = ctx.createLinearGradient(0, bottom, 0, top);
 
+          // Parte vermelha (negativos)
           gradient.addColorStop(0, 'rgba(255,82,82,0.3)');
           gradient.addColorStop((bottom - zeroY) / (bottom - top), 'rgba(255,82,82,0.0)');
+
+          // Parte azul (positivos)
           gradient.addColorStop((bottom - zeroY) / (bottom - top), 'rgba(66,165,245,0.0)');
           gradient.addColorStop(1, 'rgba(66,165,245,0.4)');
 
@@ -136,7 +155,7 @@ export const makeYearlyExpense = (labels, recentMonths) => {
       maintainAspectRatio: false,
       scales: {
         y: {
-          beginAtZero: false, 
+          beginAtZero: false,
           ticks: {
             callback: (value) => `R$${value}`,
           },
@@ -158,6 +177,8 @@ export const makeYearlyExpense = (labels, recentMonths) => {
     },
   };
 };
+
+
 
 
 
