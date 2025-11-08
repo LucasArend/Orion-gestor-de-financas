@@ -98,7 +98,6 @@ function Calendario({ value, onChange, label }) {
                   onChange(date);
                   setIsOpen(false);
                 }}
-                disabled={{ after: new Date() }}
               />
             )}
           </div>
