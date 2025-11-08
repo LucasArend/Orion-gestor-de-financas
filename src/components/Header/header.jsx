@@ -1,23 +1,22 @@
 import { ChevronDown } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { name } from '../../data/data-tests';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import Avatar from '../Avatar/avatar';
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from "../../context/AuthContext";
 
 export default function Header({ pageTitle }) {
   const [open, setOpen] = useState(false);
-  const { logout } = useAuth()
-  const navigate = useNavigate()
-  const { user, isAuthenticated } = useAuth();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
 
   const handleLogout = () => {
-    logout()
-    navigate('/') 
-  }
+    logout();
+    navigate('/');
+  };
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -68,18 +67,14 @@ export default function Header({ pageTitle }) {
             >
               <button
                 className="w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-50"
-                type="button"
-              >
-                Perfil
-              </button>
-              <button
-                className="w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-50"
+                onClick={() => navigate('/configuracoes')}
                 type="button"
               >
                 Configurações
               </button>
-              <button onClick={handleLogout}
+              <button
                 className="w-full rounded-lg px-3 py-2 text-left text-red-600 text-sm hover:bg-gray-50"
+                onClick={handleLogout}
                 type="button"
               >
                 Sair
