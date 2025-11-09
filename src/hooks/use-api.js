@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { endpoints } from './endpoints';
-import { useApiClient } from './orion-api';
+import { endpoints } from '../services/endpoints';
+import { useApiClient } from '../services/orion-api';
 
 export function useFetchData(key, url) {
   const api = useApiClient();
@@ -49,4 +49,32 @@ export function useUpdatePassword() {
 
 export function useTransactionsMe() {
   return useFetchData('transactionsMe', endpoints.transaction.transactionMe);
+}
+
+export function useSavings() {
+  return useFetchData('emergencyFund', endpoints.savings.reserva);
+}
+
+export function useUpdateSavings() {
+  return useApiMutation('put', endpoints.savings.reserva, 'emergencyFund');
+}
+
+export function useCreateSavings() {
+  return useApiMutation('post', endpoints.savings.reserva, 'emergencyFund');
+}
+
+export function useIncome() {
+  return useFetchData('totalIncome', endpoints.income.saldo);
+}
+
+export function useUpdateIncome() {
+  return useApiMutation('put', endpoints.income.saldo, 'totalIncome');
+}
+
+export function useCreateIncome() {
+  return useApiMutation('post', endpoints.income.saldo, 'totalIncome');
+}
+
+export function useGoals() {
+  return useFetchData('goals', endpoints.goals.list)
 }

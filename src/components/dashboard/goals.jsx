@@ -1,4 +1,26 @@
+//import { useGoals } from '../../hooks/use-api';
+
 export default function GoalsList({ goals }) {
+  const formatCurrency = (value) =>
+    new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(value);
+
+  const formatDate = (dateString) => {
+    try {
+      const date = new Date(dateString);
+      if (Number.isNaN(date)) {
+        return dateString;
+      }
+      return date.toLocaleDateString('pt-BR');
+    } catch (_) {
+      return dateString;
+    }
+  };
+
+  //const { data: goals } = useGoals();
+
   return (
     <div className="overflow-x-auto rounded-lg shadow">
       <table className="min-w-full divide-y divide-gray-300">
@@ -31,19 +53,19 @@ export default function GoalsList({ goals }) {
                 {goal.objective}
               </td>
               <td className="px-6 py-4 text-gray-500 text-sm">
-                R${goal.target.toFixed(2).replace('.', ',')}
+                {formatCurrency(goal.target)}
               </td>
               <td className="px-6 py-4 text-gray-500 text-sm">
-                R${goal.saved.toFixed(2).replace('.', ',')}
+                {formatCurrency(goal.saved)}
               </td>
               <td className="px-6 py-4 text-gray-500 text-sm">
-                R${goal.contribution.toFixed(2).replace('.', ',')}
+                {formatCurrency(goal.contribution)}
               </td>
               <td className="px-6 py-4 text-gray-500 text-sm">
-                {goal.forecast}
+                {formatDate(goal.forecast)}
               </td>
               <td className="px-6 py-4 text-gray-500 text-sm">
-                {goal.dueDate}
+                {formatDate(goal.dueDate)}
               </td>
             </tr>
           ))}
