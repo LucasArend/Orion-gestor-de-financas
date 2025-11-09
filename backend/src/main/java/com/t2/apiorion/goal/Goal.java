@@ -6,6 +6,7 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -37,10 +38,12 @@ public class Goal {
     private BigDecimal saved = BigDecimal.ZERO;
 
     private Instant data;
-
     private LocalDate expectedData;
-
     private LocalDate dataForecast;
+
+    // ✅ Novo campo
+    @Column(name = "goal_date")
+    private LocalDate goalDate;
 
     @NotNull
     @DecimalMin(value = "0.00", message = "Contribution must be greater than zero")
@@ -89,6 +92,9 @@ public class Goal {
 
     public BigDecimal getContribution() { return contribution; }
     public void setContribution(BigDecimal contribution) { this.contribution = contribution; }
+
+    public LocalDate getGoalDate() { return goalDate; }
+    public void setGoalDate(LocalDate goalDate) { this.goalDate = goalDate; }
 
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
