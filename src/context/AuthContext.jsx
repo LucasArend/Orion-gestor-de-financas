@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useMemo, useContext } from 'react'
+import { createContext, useState, useEffect, useMemo, useContext, navigate } from 'react'
 import * as authApi from '../entities/auth/api'
 import { getMe } from '../entities/user/api'
 
@@ -51,14 +51,19 @@ export function AuthProvider({ children }) {
         
     }
 
-    const logout = () => {
+    const logout = async () => {
+    try {
+        await authApi.logout(); 
+    } catch (error) {
+        console.error("Erro ao tentar logout:", error);
+    } finally {
         setToken(null);
         setUser(null);
-
         localStorage.removeItem(TOKEN_KEY);
 
         navigate("/");
-    };
+    }
+};
 
     const value = useMemo(() => ({
         user,

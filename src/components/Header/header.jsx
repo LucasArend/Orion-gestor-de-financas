@@ -15,7 +15,6 @@ export default function Header({ pageTitle }) {
 
   const handleLogout = () => {
     logout();
-    navigate('/');
   };
 
   useEffect(() => {

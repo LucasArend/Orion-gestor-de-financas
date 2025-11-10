@@ -1,6 +1,7 @@
 package com.t2.apiorion.security;
 
 import com.t2.apiorion.user.UserRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -44,7 +45,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService () {
+    public UserDetailsService userDetailsService() {
         return username -> userRepository.findByUsername(username)
                 .map(u -> (UserDetails) org.springframework.security.core.userdetails.User
                         .withUsername(u.getUsername())
@@ -72,9 +73,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of(
-                "http://localhost:5173"
-        ));
+        config.setAllowedOriginPatterns(List.of("http://localhost:5173"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
@@ -88,6 +87,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(Customizer.withDefaults())
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/", "/index.html", "/oauth2/**", "/login/**",
@@ -98,14 +98,23 @@ public class SecurityConfig {
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-                .oauth2Login(oauth -> oauth
-                        .loginPage("/oauth2/authorization/github")
-                        .defaultSuccessUrl("/loginSuccess", true)
-                )
-                .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authenticationProvider(authenticationProvider(userDetailsService(), passwordEncoder()))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+
+//                .oauth2Login(oauth -> oauth
+//                        .loginPage("/oauth2/authorization/github")
+//                        .defaultSuccessUrl("http://localhost:5173/dashboard", true)
+//                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .clearAuthentication(true)
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setStatus(HttpServletResponse.SC_OK);
+                        })
+                );
 
         return http.build();
     }

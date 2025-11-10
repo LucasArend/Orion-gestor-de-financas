@@ -126,27 +126,28 @@ export const makeYearlyExpense = (labels, recentMonths) => {
           },
         },
 
-        // Gradiente de fundo com divisão em torno do zero
-        backgroundColor: (context) => {
-          const chart = context.chart;
-          const { ctx, chartArea, scales } = chart;
-          if (!chartArea) return null;
+          backgroundColor: (context) => {
+            const chart = context.chart;
+            const { ctx, chartArea, scales } = chart;
+            if (!chartArea) return null;
 
-          const { top, bottom } = chartArea;
-          const { y } = scales;
-          const zeroY = y.getPixelForValue(0);
-          const gradient = ctx.createLinearGradient(0, bottom, 0, top);
+            const { top, bottom } = chartArea;
+            const { y } = scales;
+            const zeroY = y.getPixelForValue(0);
 
-          // Parte vermelha (negativos)
-          gradient.addColorStop(0, 'rgba(255,82,82,0.3)');
-          gradient.addColorStop((bottom - zeroY) / (bottom - top), 'rgba(255,82,82,0.0)');
+            let offset = (bottom - zeroY) / (bottom - top);
+            offset = Math.min(1, Math.max(0, offset)); // <-- garante que fique no intervalo válido
 
-          // Parte azul (positivos)
-          gradient.addColorStop((bottom - zeroY) / (bottom - top), 'rgba(66,165,245,0.0)');
-          gradient.addColorStop(1, 'rgba(66,165,245,0.4)');
+            const gradient = ctx.createLinearGradient(0, bottom, 0, top);
 
-          return gradient;
-        },
+            gradient.addColorStop(0, 'rgba(255,82,82,0.3)');
+            gradient.addColorStop(offset, 'rgba(255,82,82,0.0)');
+            gradient.addColorStop(offset, 'rgba(66,165,245,0.0)');
+            gradient.addColorStop(1, 'rgba(66,165,245,0.4)');
+
+            return gradient;
+          },
+
       },
     ],
 

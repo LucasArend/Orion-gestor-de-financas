@@ -8,7 +8,7 @@ import styles from '../../css/Login/Login.module.css';
 import { auth, googleProvider } from '../../firebase';
 
 function Login() {
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, loading } = useAuth();
   const [form, setForm] = useState({ username: '', password: '' });
   const [erro, setError] = useState('');
   const navigate = useNavigate();
@@ -50,11 +50,11 @@ function Login() {
     }
   };
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/dashboard');
-    }
-  }, [isAuthenticated, navigate]);
+useEffect(() => {
+  if (!loading && isAuthenticated) {
+    //navigate('/dashboard');
+  }
+}, [isAuthenticated, loading, navigate]);
 
   return (
     <div className={`${styles.container}`}>
