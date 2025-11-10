@@ -29,9 +29,10 @@ public class GoalService {
         goal.setUser(user);
         goal.setObjective(goalRequest.getObjective());
         goal.setGoal(goalRequest.getGoal());
-        goal.setSaved(BigDecimal.ZERO); // Inicialmente o valor salvo é zero
+        goal.setSaved(BigDecimal.ZERO);
         goal.setContribution(goalRequest.getContribution());
         goal.setExpectedData(goalRequest.getExpectedData());
+        goal.setGoalDate(goalRequest.getGoalDate()); // ✅ novo campo
 
         return goalRepository.save(goal);
     }
@@ -42,9 +43,6 @@ public class GoalService {
                 .orElseThrow(() -> new RuntimeException("Meta não encontrada ou usuário não autorizado"));
 
         goal.addContribution(valorContribuicao);
-
         return goalRepository.save(goal);
     }
-
-    // Outros métodos de serviço como atualizar meta, verificar progresso, etc.
 }

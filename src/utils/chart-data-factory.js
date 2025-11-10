@@ -79,41 +79,116 @@ export const makeIncomeVsSpendingData = (totalSalary, totalSpending) => ({
   ],
 });
 
-export const makeYearlyExpense = (labels, recentMonths) => ({
-  labels,
-  datasets: [
-    {
-      label: 'Gastos Totais',
-      data: recentMonths.map((i) => Number(i.totalExpense) || 0),
-      borderColor: '#2979FF',
-      pointStyle: 'circle',
-      pointBackgroundColor: 'rgb(85,145,248)',
-      pointBorderColor: 'rgba(33, 97, 229, 0.7)',
-      pointHoverBackgroundColor: 'rgb(4,102,200)',
-      pointHoverBorderColor: 'rgba(33, 97, 229, 0.5)',
-      backgroundColor: (context) => {
-        const chart = context.chart;
-        const { ctx, chartArea } = chart;
-        if (!chartArea) {
-          return null;
-        }
-        const gradient = ctx.createLinearGradient(
-          0,
-          chartArea.bottom,
-          0,
-          chartArea.top
-        );
-        gradient.addColorStop(0, 'rgba(66, 165, 245, 0.2)');
-        gradient.addColorStop(1, 'rgba(66, 165, 245, 0.6)');
-        return gradient;
+export const makeYearlyExpense = (labels, recentMonths) => {
+  const balances = recentMonths.map((i) => Number(i.totalBalance) || 0);
+
+  return {
+    labels,
+    datasets: [
+      {
+        label: 'Saldo Mensal',
+        data: balances,
+        fill: true,
+        tension: 0.4,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+
+        // Pontos individuais coloridos
+        pointBackgroundColor: (ctx) => {
+          const value = ctx.raw;
+          return value < 0 ? '#FF5252' : '#2979FF';
+        },
+        pointBorderColor: (ctx) => {
+          const value = ctx.raw;
+          return value < 0 ? '#FF5252' : '#2979FF';
+        },
+
+        // Cor da linha entre pontos
+        segment: {
+          borderColor: (ctx) => {
+            const y1 = ctx.p0?.parsed?.y;
+            const y2 = ctx.p1?.parsed?.y;
+
+            if (typeof y1 !== "number" || typeof y2 !== "number") return "#2979FF";
+
+            // Ambos positivos → azul
+            if (y1 > 0 && y2 > 0) return "#2979FF";
+
+            // Ambos negativos → vermelho
+            if (y1 < 0 && y2 < 0) return "#FF5252";
+
+            // Cruza o zero
+            if (y1 < 0 && y2 > 0) return "#2979FF"; // negativo → positivo
+            if (y1 > 0 && y2 < 0) return "#FF5252"; // positivo → negativo
+
+            // fallback
+            return "#2979FF";
+          },
+        },
+
+        // Gradiente de fundo com divisão em torno do zero
+        backgroundColor: (context) => {
+          const chart = context.chart;
+          const { ctx, chartArea, scales } = chart;
+          if (!chartArea) return null;
+
+          const { top, bottom } = chartArea;
+          const { y } = scales;
+          const zeroY = y.getPixelForValue(0);
+          const gradient = ctx.createLinearGradient(0, bottom, 0, top);
+
+          // Parte vermelha (negativos)
+          gradient.addColorStop(0, 'rgba(255,82,82,0.3)');
+          gradient.addColorStop((bottom - zeroY) / (bottom - top), 'rgba(255,82,82,0.0)');
+
+          // Parte azul (positivos)
+          gradient.addColorStop((bottom - zeroY) / (bottom - top), 'rgba(66,165,245,0.0)');
+          gradient.addColorStop(1, 'rgba(66,165,245,0.4)');
+
+          return gradient;
+        },
       },
-      fill: true,
-      tension: 0.4,
-      pointRadius: 5,
-      pointHoverRadius: 7,
+    ],
+
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: false,
+          ticks: {
+            callback: (value) => `R$${value}`,
+          },
+          grid: {
+            color: 'rgba(0, 0, 0, 0.1)',
+          },
+        },
+        x: {
+          grid: {
+            display: false,
+          },
+        },
+      },
+      plugins: {
+        legend: {
+          display: false,
+        },
+      },
     },
-  ],
-});
+  };
+};
+
+
+
+
+
+
+
+
+
+
+
+
 
 export const makeMonthlyIncomeExpense = (labels, recentMonths) => ({
   labels,

@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.security.Principal;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/economias")
@@ -16,21 +18,53 @@ public class EconomiaController {
         this.economiaService = economiaService;
     }
 
-    @PostMapping("/{usuarioId}")
-    public ResponseEntity<Economia> criarEconomia(@PathVariable Long usuarioId) {
-        Economia economia = economiaService.criarEconomia(usuarioId);
+    // ======== SALDO ========
+
+    @PostMapping("/saldo")
+    public ResponseEntity<Economia> criarOuDefinirSaldo(Principal principal, @RequestBody Map<String, BigDecimal> body) {
+        String username = principal.getName();
+        BigDecimal valor = body.get("valor");
+        Economia economia = economiaService.definirSaldo(username, valor);
         return ResponseEntity.ok(economia);
     }
 
-    @PutMapping("/{usuarioId}/saldo")
-    public ResponseEntity<Economia> atualizarSaldo(@PathVariable Long usuarioId, @RequestBody BigDecimal novoSaldo) {
-        Economia economia = economiaService.atualizarSaldo(usuarioId, novoSaldo);
+    @PutMapping("/saldo")
+    public ResponseEntity<Economia> atualizarSaldo(Principal principal, @RequestBody Map<String, BigDecimal> body) {
+        String username = principal.getName();
+        BigDecimal valor = body.get("valor");
+        Economia economia = economiaService.atualizarSaldo(username, valor);
         return ResponseEntity.ok(economia);
     }
 
-    @PutMapping("/{usuarioId}/reserva")
-    public ResponseEntity<Economia> atualizarReserva(@PathVariable Long usuarioId, @RequestBody BigDecimal novaReserva) {
-        Economia economia = economiaService.atualizarReservaEmergencia(usuarioId, novaReserva);
+    @GetMapping("/saldo")
+    public ResponseEntity<BigDecimal> obterSaldo(Principal principal) {
+        String username = principal.getName();
+        BigDecimal saldo = economiaService.obterSaldo(username);
+        return ResponseEntity.ok(saldo);
+    }
+
+    // ======== RESERVA ========
+
+    @PostMapping("/reserva")
+    public ResponseEntity<Economia> criarOuDefinirReserva(Principal principal, @RequestBody Map<String, BigDecimal> body) {
+        String username = principal.getName();
+        BigDecimal valor = body.get("valor");
+        Economia economia = economiaService.definirReserva(username, valor);
         return ResponseEntity.ok(economia);
+    }
+
+    @PutMapping("/reserva")
+    public ResponseEntity<Economia> atualizarReserva(Principal principal, @RequestBody Map<String, BigDecimal> body) {
+        String username = principal.getName();
+        BigDecimal valor = body.get("valor");
+        Economia economia = economiaService.atualizarReservaEmergencia(username, valor);
+        return ResponseEntity.ok(economia);
+    }
+
+    @GetMapping("/reserva")
+    public ResponseEntity<BigDecimal> obterReserva(Principal principal) {
+        String username = principal.getName();
+        BigDecimal reserva = economiaService.obterReserva(username);
+        return ResponseEntity.ok(reserva);
     }
 }
