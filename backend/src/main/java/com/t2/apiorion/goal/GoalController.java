@@ -23,32 +23,38 @@ public class GoalController {
         this.userRepository = userRepository;
     }
 
-    // Criar nova meta
     @PostMapping
     public ResponseEntity<?> createGoal(@Valid @RequestBody GoalRequest goalRequest,
-                                        @AuthenticationPrincipal User user) {
+                                        @AuthenticationPrincipal String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
         Goal goal = new Goal();
         goal.setObjective(goalRequest.getObjective());
         goal.setGoal(goalRequest.getGoal());
         goal.setSaved(goalRequest.getSaved());
         goal.setContribution(goalRequest.getContribution());
         goal.setExpectedData(goalRequest.getExpectedData());
-        goal.setGoalDate(goalRequest.getGoalDate()); // ✅ novo campo
+        goal.setGoalDate(goalRequest.getGoalDate());
         goal.setUser(user);
 
         Goal savedGoal = goalRepository.save(goal);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedGoal);
     }
 
-    // Buscar todas as metas do usuário autenticado
     @GetMapping
-    public ResponseEntity<?> getGoals(@AuthenticationPrincipal User user) {
+    public ResponseEntity<?> getGoals(@AuthenticationPrincipal String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
         return ResponseEntity.ok(goalRepository.findByUser(user));
     }
 
-    // Buscar uma meta específica
     @GetMapping("/{id}")
-    public ResponseEntity<?> getGoal(@PathVariable Long id, @AuthenticationPrincipal User user) {
+    public ResponseEntity<?> getGoal(@PathVariable Long id,
+                                     @AuthenticationPrincipal String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
         Optional<Goal> goalOpt = goalRepository.findById(id);
         if (goalOpt.isEmpty() || !goalOpt.get().getUser().equals(user)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -57,11 +63,13 @@ public class GoalController {
         return ResponseEntity.ok(goalOpt.get());
     }
 
-    // Atualizar uma meta
     @PutMapping("/{id}")
     public ResponseEntity<?> updateGoal(@PathVariable Long id,
                                         @Valid @RequestBody GoalRequest goalRequest,
-                                        @AuthenticationPrincipal User user) {
+                                        @AuthenticationPrincipal String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
         Optional<Goal> goalOpt = goalRepository.findById(id);
         if (goalOpt.isEmpty() || !goalOpt.get().getUser().equals(user)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -74,15 +82,18 @@ public class GoalController {
         goal.setSaved(goalRequest.getSaved());
         goal.setContribution(goalRequest.getContribution());
         goal.setExpectedData(goalRequest.getExpectedData());
-        goal.setGoalDate(goalRequest.getGoalDate()); // ✅ novo campo
+        goal.setGoalDate(goalRequest.getGoalDate());
 
         Goal updatedGoal = goalRepository.save(goal);
         return ResponseEntity.ok(updatedGoal);
     }
 
-    // Deletar uma meta
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteGoal(@PathVariable Long id, @AuthenticationPrincipal User user) {
+    public ResponseEntity<?> deleteGoal(@PathVariable Long id,
+                                        @AuthenticationPrincipal String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
         Optional<Goal> goalOpt = goalRepository.findById(id);
         if (goalOpt.isEmpty() || !goalOpt.get().getUser().equals(user)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

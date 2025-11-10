@@ -27,10 +27,8 @@ public class GoalRequest {
 
     private LocalDate expectedData;
 
-    // ✅ Novo campo
     private LocalDate goalDate;
 
-    // Getters e Setters
     public String getObjective() { return objective; }
     public void setObjective(String objective) { this.objective = objective; }
 
