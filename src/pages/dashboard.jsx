@@ -5,15 +5,13 @@ import GoalsList from '../components/dashboard/goals';
 import RemindersList from '../components/dashboard/reminder-list';
 import TransactionsList from '../components/dashboard/transactions-list';
 import { cardInfoDashboard } from '../data/dashboard-card-info';
-import {
-  cardData,
-  goalData,
-  reminderData,
-} from '../data/data-tests';
-import { useUserMe } from '../services/api-hooks';
+import { goalData, reminderData } from '../data/data-tests';
+import { useUserMe } from '../hooks/use-api';
+import { useDashboardData } from '../hooks/use-dashboard-data';
 import { getTextColor } from '../utils/get-text-color';
 
 export default function Dashboard() {
+  const { cardData } = useDashboardData();
   const { data: users } = useUserMe();
   const navigate = useNavigate();
   const now = new Date();

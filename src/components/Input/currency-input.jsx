@@ -47,7 +47,14 @@ export function CurrencyInput({ name, label, icon: Icone }) {
     }).format(number);
   };
 
-  const parseCurrency = (value) => value.replace(/\D/g, '');
+  const parseCurrency = (value) => {
+    if (!value) {
+      return '';
+    }
+    const onlyNumbers = value.replace(/[^\d,]/g, '');
+    const normalized = onlyNumbers.replace(',', '.');
+    return normalized;
+  };
 
   useEffect(() => {
     const val = watch(name);
