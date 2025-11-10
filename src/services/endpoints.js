@@ -8,4 +8,13 @@ export const endpoints = {
   transaction: {
     transactionMe: '/api/transacoes/me',
   },
+  savings:{
+    reserva: '/economias/reserva'
+  },
+  income:{
+    saldo: '/economias/saldo'
+  },
+  goals: {
+    list: '/goals'
+  }
 };

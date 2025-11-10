@@ -5,10 +5,16 @@ import LoginSecurityTab from '../components/Settings/login-security-tab';
 import Tab from '../components/Settings/menu-tab';
 import PersonalInfoTab from '../components/Settings/personal-info-tab';
 import {
+  useCreateIncome,
+  useCreateSavings,
+  useIncome,
+  useSavings,
+  useUpdateIncome,
   useUpdatePassword,
+  useUpdateSavings,
   useUpdateUserMe,
   useUserMe,
-} from '../services/api-hooks';
+} from '../hooks/use-api';
 
 const settingsTabs = [
   { id: 'profile', name: 'Meu Perfil', component: PersonalInfoTab },
@@ -23,12 +29,53 @@ export default function Settings() {
   const [notification, setNotification] = useState(null);
   const formGetterRef = useRef(null);
 
-  const { data: user, isLoading, isError } = useUserMe();
+  const { data: user, isError } = useUserMe();
+  const { data: saving } = useSavings();
+  const { data: income } = useIncome();
+  const updateIncome = useUpdateIncome();
+  const updateSavings = useUpdateSavings();
+  const createIncome = useCreateIncome();
+  const createSavings = useCreateSavings();
   const updateUser = useUpdateUserMe();
   const updatePassword = useUpdatePassword();
 
   const showNotification = (type, message) => {
     setNotification({ type, message });
+  };
+
+  const handleProfileSave = async (formData) => {
+    const payload = {
+      name: formData.fullName,
+      username: formData.email,
+      roles: ['USER'],
+    };
+    await updateUser.mutateAsync(payload);
+  };
+
+  const handleSecuritySave = async (formData) => {
+    const payload = {
+      currentPassword: formData.password,
+      newPassword: formData.newPassword,
+    };
+    await updatePassword.mutateAsync(payload);
+    formReset();
+  };
+
+  const handleFinancialSave = async (formData) => {
+    const parsedEmergency = Number.parseFloat(formData.emergencyFund);
+    const parsedIncome = Number.parseFloat(formData.totalIncome);
+
+    if (saving) {
+      await updateSavings.mutateAsync({ valor: parsedEmergency });
+    } else {
+      await createSavings.mutateAsync({ valor: parsedEmergency });
+    }
+
+    if (income) {
+      await updateIncome.mutateAsync({ valor: parsedIncome });
+    } else {
+      await createIncome.mutateAsync({ valor: parsedIncome });
+    }
   };
 
   const handleSave = async () => {
@@ -39,29 +86,12 @@ export default function Settings() {
     try {
       const formData = formGetterRef.current();
 
-      let payload = {};
-
       if (activeTab === 'profile') {
-        payload = {
-          name: formData.fullName,
-          username: formData.email,
-          roles: ['USER'],
-        };
-
-        await updateUser.mutateAsync(payload);
+        await handleProfileSave(formData);
       } else if (activeTab === 'security') {
-        payload = {
-          currentPassword: formData.password,
-          newPassword: formData.newPassword,
-        };
-        await updatePassword.mutateAsync(payload);
-        formReset();
+        await handleSecuritySave(formData);
       } else if (activeTab === 'financial') {
-        payload = {
-          name: formData.fullName,
-          username: formData.email,
-          roles: ['USER'],
-        };
+        await handleFinancialSave(formData);
       }
 
       setHasUnsavedChanges(false);
@@ -87,10 +117,10 @@ export default function Settings() {
       confirmNewPassword: '',
       country: '',
       currency: '',
-      emergencyFund: '',
-      totalIncome: '',
+      emergencyFund: saving,
+      totalIncome: income,
     }),
-    [user]
+    [user, saving, income]
   );
 
   const ActiveComponent = useMemo(

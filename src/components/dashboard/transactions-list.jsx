@@ -1,7 +1,7 @@
 import { ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { transactionIcons } from '../../data/transaction-icons';
-import { useTransactionsMe } from '../../services/api-hooks';
+import { useTransactionsMe } from '../../hooks/use-api';
 
 const TransactionItem = ({ description, category, value, isPositive }) => {
   const status = isPositive ? 'positive' : 'negative';
@@ -70,9 +70,9 @@ export default function TransactionsList() {
           return (
             <TransactionItem
               category={transaction.categoria?.nome}
+              description={transaction.descricao}
               isPositive={!isExpense}
               key={transaction.id}
-              description={transaction.descricao}
               value={Math.abs(transaction.valor)}
             />
           );

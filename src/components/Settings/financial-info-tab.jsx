@@ -11,7 +11,7 @@ export default function FinancialInfoTab({
   setHasUnsavedChanges,
   setFormResetCallback,
   userData,
-  setLatestFormData
+  registerFormGetter
 }) {
   const methods = useForm({
     resolver: yupResolver(financialSchema),
@@ -27,6 +27,10 @@ export default function FinancialInfoTab({
   } = methods;
 
     useEffect(() => {
+      registerFormGetter(() => getValues());
+    }, [registerFormGetter, getValues]);
+
+  useEffect(() => {
     const resetToOriginal = () => {
       reset(userData, { keepDirty: false });
       setHasUnsavedChanges(false);
@@ -40,14 +44,11 @@ export default function FinancialInfoTab({
     }
   }, [userData, reset]);
 
-    useEffect(() => {
-      const shouldEnableSave = isDirty && isValid;
-      setHasUnsavedChanges(shouldEnableSave);
+  useEffect(() => {
+    const shouldEnableSave = isDirty && isValid;
+    setHasUnsavedChanges(shouldEnableSave);
 
-      if (shouldEnableSave) {
-        setLatestFormData(getValues());
-      }
-    }, [isDirty, isValid, setHasUnsavedChanges, getValues, setLatestFormData]);
+  }, [isDirty, isValid, setHasUnsavedChanges]);
 
   return (
     <FormProvider {...methods}>

@@ -6,5 +6,10 @@ export function getTextColor(title, value){
   if (title === 'Despesas Totais') {
     return 'text-zinc-600'
   }
+
+    if (title === 'Gastos Totais') {
+      return 'text-red-600';
+    }
+
     return value >= 0 ? 'text-green-600' : 'text-red-600';
 }
