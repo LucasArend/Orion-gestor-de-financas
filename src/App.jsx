@@ -24,16 +24,16 @@ export default function App() {
             <Route element={<Register />} path="/register" />
             <Route
               element={
-                <PrivateRoute>
-                  <DefaultLayout />
-                </PrivateRoute>
+                <PrivateRoute />
               }
             >
-              <Route element={<Dashboard />} path="/dashboard" />
-              <Route element={<Transacao />} path="/transacao" />
-              <Route element={<Reports />} path="/relatorios" />
-              <Route element={<Goals />} path="/metas" />
-              <Route element={<Settings />} path="/configuracoes" />
+              <Route element={<DefaultLayout />}>
+                <Route element={<Dashboard />} path="/dashboard" />
+                <Route element={<Transacao />} path="/transacao" />
+                <Route element={<Reports />} path="/relatorios" />
+                <Route element={<Goals />} path="/metas" />
+                <Route element={<Settings />} path="/configuracoes" />
+              </Route>
             </Route>
             <Route element={<NotFound />} path="*" />
           </Routes>

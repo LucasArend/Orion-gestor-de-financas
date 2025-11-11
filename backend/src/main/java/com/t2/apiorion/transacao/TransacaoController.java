@@ -59,7 +59,7 @@ public class TransacaoController {
                 .orElseThrow(() -> new EntityNotFoundException("Transação não encontrada"));
 
         if (!transacao.getUsuario().getId().equals(usuario.getId())) {
-            return ResponseEntity.status(403).build(); // proibido acessar transações de outros usuários
+            return ResponseEntity.status(403).build();
         }
 
         Transacao updated = transacaoService.atualizarTransacao(id, request);

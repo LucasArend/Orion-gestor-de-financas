@@ -8,7 +8,7 @@ import { HiMagnifyingGlass } from "react-icons/hi2";
 import { useAuth } from "../../context/AuthContext";
 
 function Transaction() {
-  const { token } = useAuth(); 
+  const { token } = useAuth();
   const [transacoes, setTransacoes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [newModalOpen, setNewModalOpen] = useState(false);
@@ -18,9 +18,8 @@ function Transaction() {
   const [category, setCategory] = useState("");
   const [type, setType] = useState("");
 
-
   const fetchTransacoes = useCallback(async () => {
-    if (!token) return; 
+    if (!token) return;
     setLoading(true);
     try {
       const response = await fetch("http://localhost:8080/api/transacoes/me", {
@@ -48,38 +47,31 @@ function Transaction() {
     new Set(transacoes.map((t) => t.categoria?.nome ?? "Sem categoria"))
   ).sort();
 
-
   async function handleAddTransacao(novaTransacao) {
-  if (!token) return;
+    if (!token) return;
 
-  try {
-    const response = await fetch("http://localhost:8080/api/transacoes", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(novaTransacao),
-    });
+    try {
+      const response = await fetch("http://localhost:8080/api/transacoes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(novaTransacao),
+      });
 
-    if (!response.ok) throw new Error("Erro ao adicionar transação");
+      if (!response.ok) throw new Error("Erro ao adicionar transação");
 
-    const data = await response.json();
+      const data = await response.json();
+      setTransacoes((prev) => [...prev, data]);
 
-
-    setTransacoes((prev) => [...prev, data]);
-
-
-    toast.success("Transação adicionada!");
-
-
-    setNewModalOpen(false);
-  } catch (error) {
-    console.error(error);
-    toast.error("Erro ao adicionar transação");
+      toast.success("Transação adicionada!");
+      setNewModalOpen(false);
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao adicionar transação");
+    }
   }
-}
-
 
   async function handleConfirmarRemocao(id) {
     if (!token) return;
@@ -102,12 +94,43 @@ function Transaction() {
     }
   }
 
+  // Função para atualizar o status da transação
+  async function handleChangeStatus(id, newStatus) {
+  if (!token) return;
+  const toastId = toast.loading("Atualizando status...");
+
+  try {
+    const response = await fetch(`http://localhost:8080/api/transacoes/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status: newStatus }),
+    });
+
+    if (!response.ok) throw new Error("Erro ao atualizar status");
+
+    setTransacoes((prev) =>
+      prev.map((transacao) =>
+        transacao.id === id ? { ...transacao, status: newStatus } : transacao
+      )
+    );
+
+    toast.success("Status atualizado!", { id: toastId });
+  } catch (error) {
+    console.error("Erro ao atualizar status:", error);
+    console.log("ID:", id, "Novo status:", newStatus);
+    toast.error("Erro ao atualizar status", { id: toastId });
+  }
+}
+
   return (
     <div className="flex flex-col items-center px-6">
       <Toaster position="top-right" />
 
       <div className="w-full max-w-4xl">
-        {/* 🔹 Filtros */}
+
         <div className="bg-white p-6 rounded-lg shadow-md w-full mb-5">
           <div className="flex items-center mb-5">
             <IoFunnelOutline className="text-2xl mr-1" />
@@ -140,7 +163,6 @@ function Transaction() {
                 </option>
               ))}
             </select>
-
             <select
               value={type}
               onChange={(e) => setType(e.target.value)}
@@ -152,8 +174,6 @@ function Transaction() {
             </select>
           </div>
         </div>
-
-
         <TransactionList
           transacoes={transacoes}
           loading={loading}
@@ -165,17 +185,16 @@ function Transaction() {
             setConfirmModalOpen(true);
           }}
           onOpen={() => setNewModalOpen(true)}
+          onChangeStatus={handleChangeStatus} 
         />
       </div>
 
-      {/* 🔹 Modal de nova transação */}
       <NewTransactionModal
         open={newModalOpen}
         onClose={() => setNewModalOpen(false)}
         onAdd={handleAddTransacao}
       />
 
-      {/* 🔹 Modal de confirmação */}
       <ConfirmModal
         open={confirmModalOpen}
         onClose={() => setConfirmModalOpen(false)}

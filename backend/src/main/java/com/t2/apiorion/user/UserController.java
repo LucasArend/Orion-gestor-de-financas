@@ -19,13 +19,11 @@ public class UserController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // Construtor
     public UserController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    // Rota para obter as informações do usuário logado
     @GetMapping("/me")
     @SecurityRequirement(name = "bearerAuth")
     public Map<String, Object> me(Principal principal) {
