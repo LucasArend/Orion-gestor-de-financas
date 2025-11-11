@@ -1,0 +1,44 @@
+@baseUrl = http://localhost:8080
+
+### 1️⃣ Login do usuário existente
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "henry.frotte@geradornv.com.br",
+  "password": "Teste@2389"
+}
+
+> {% client.global.set("token", response.body.token); %}
+> {% client.global.set("tokenType", response.body.tokenType); %}
+
+### 3️⃣ Verificar usuário autenticado
+GET {{baseUrl}}/users
+Authorization: {{tokenType}} {{token}}
+
+### 2️⃣ POST autenticado para criar meta
+POST {{baseUrl}}/goals
+Content-Type: application/json
+Authorization: {{tokenType}} {{token}}
+
+{
+  "objective": "Paris",
+  "goal": 7000.00,
+  "saved": 0,
+  "contribution": 500.00,
+  "expectedData": "2027-01-10",
+  "goalDate": "2028-01-10"
+}
+
+###
+GET {{baseUrl}}/api/transacoes/me
+Authorization: {{tokenType}} {{token}}
+
+###
+PUT {{baseUrl}}/economias/saldo
+Content-Type: application/json
+Authorization: {{tokenType}} {{token}}
+
+{
+  "valor": 0
+}

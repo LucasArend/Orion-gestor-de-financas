@@ -1,7 +1,7 @@
 import { Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import GoalsList from '../components/Dashboard/goals-list';
 import ChartExpenses from '../components/dashboard/expenses-chart';
-import GoalsList from '../components/dashboard/goals';
 import RemindersList from '../components/dashboard/reminder-list';
 import TransactionsList from '../components/dashboard/transactions-list';
 import { cardInfoDashboard } from '../data/dashboard-card-info';
@@ -65,7 +65,7 @@ export default function Dashboard() {
 
         {/* Container para a Lista de Lembretes */}
         <div className="rounded-lg shadow-lg shadow-zinc-400/50">
-          <RemindersList className="lg:col-span-2" reminders={reminderData} />
+          <RemindersList className="lg:col-span-2" />
         </div>
       </section>
 

@@ -67,8 +67,10 @@ export default function Settings() {
 
     if (saving) {
       await updateSavings.mutateAsync({ valor: parsedEmergency });
+      console.log('caio no PUT');
     } else {
       await createSavings.mutateAsync({ valor: parsedEmergency });
+      console.log('caio no POST');
     }
 
     if (income) {
