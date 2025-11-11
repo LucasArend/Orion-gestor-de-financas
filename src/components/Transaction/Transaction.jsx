@@ -23,9 +23,7 @@ function Transaction() {
     setLoading(true);
     try {
       const response = await fetch("http://localhost:8080/api/transacoes/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) throw new Error("Erro ao buscar transações");
@@ -79,9 +77,7 @@ function Transaction() {
     try {
       const response = await fetch(`http://localhost:8080/api/transacoes/${id}`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) throw new Error();
@@ -94,43 +90,47 @@ function Transaction() {
     }
   }
 
-  // Função para atualizar o status da transação
+  // ✅ Atualizar o status da transação
   async function handleChangeStatus(id, newStatus) {
-  if (!token) return;
-  const toastId = toast.loading("Atualizando status...");
+    if (!token) return;
+    const toastId = toast.loading("Atualizando status...");
 
-  try {
-    const response = await fetch(`http://localhost:8080/api/transacoes/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ status: newStatus }),
-    });
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/transacoes/${id}/status`, // <-- rota corrigida
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ status: newStatus }),
+        }
+      );
 
-    if (!response.ok) throw new Error("Erro ao atualizar status");
+      if (!response.ok) throw new Error("Erro ao atualizar status");
 
-    setTransacoes((prev) =>
-      prev.map((transacao) =>
-        transacao.id === id ? { ...transacao, status: newStatus } : transacao
-      )
-    );
+      const updated = await response.json();
 
-    toast.success("Status atualizado!", { id: toastId });
-  } catch (error) {
-    console.error("Erro ao atualizar status:", error);
-    console.log("ID:", id, "Novo status:", newStatus);
-    toast.error("Erro ao atualizar status", { id: toastId });
+      // Atualiza o estado local com o retorno do backend
+      setTransacoes((prev) =>
+        prev.map((t) => (t.id === id ? updated : t))
+      );
+
+      toast.success("Status atualizado!", { id: toastId });
+    } catch (error) {
+      console.error("Erro ao atualizar status:", error);
+      console.log("ID:", id, "Novo status:", newStatus);
+      toast.error("Erro ao atualizar status", { id: toastId });
+    }
   }
-}
 
   return (
     <div className="flex flex-col items-center px-6">
       <Toaster position="top-right" />
 
       <div className="w-full max-w-4xl">
-
+        {/* Filtros */}
         <div className="bg-white p-6 rounded-lg shadow-md w-full mb-5">
           <div className="flex items-center mb-5">
             <IoFunnelOutline className="text-2xl mr-1" />
@@ -163,6 +163,7 @@ function Transaction() {
                 </option>
               ))}
             </select>
+
             <select
               value={type}
               onChange={(e) => setType(e.target.value)}
@@ -174,6 +175,8 @@ function Transaction() {
             </select>
           </div>
         </div>
+
+        {/* Lista de transações */}
         <TransactionList
           transacoes={transacoes}
           loading={loading}
@@ -185,10 +188,11 @@ function Transaction() {
             setConfirmModalOpen(true);
           }}
           onOpen={() => setNewModalOpen(true)}
-          onChangeStatus={handleChangeStatus} 
+          onChangeStatus={handleChangeStatus}
         />
       </div>
 
+      {/* Modais */}
       <NewTransactionModal
         open={newModalOpen}
         onClose={() => setNewModalOpen(false)}

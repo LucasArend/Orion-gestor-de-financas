@@ -1,22 +1,21 @@
-// Dados que devem vir do backend, dados fictícios
 
-// export const reminderData = [
-//   { id: 1, text: 'Conta de água vence em 3 dias', date: '4 dias atrás' },
-//   { id: 2, text: 'Conta de internet vence amanhã', date: '3 dias atrás' },
-//   {
-//     id: 3,
-//     text: 'Sua despesas esta semana estão 15% acima do habitual',
-//     date: '1 dia atrás',
-//   },
-//   {
-//     id: 4,
-//     text: 'Revisar orçamento mensal para próximo mês',
-//     date: '15h atrás',
-//   },
-//   { id: 5, text: 'Revisar saldo e gastos', date: '2h atrás' },
-//   { id: 6, text: 'Renovar assinatura de software', date: '1h atrás' },
-//   { id: 7, text: 'Comprar presente de aniversário', date: '10min atrás' },
-// ];
+export const reminderData = [
+  { id: 1, text: 'Conta de água vence em 3 dias', date: '4 dias atrás' },
+  { id: 2, text: 'Conta de internet vence amanhã', date: '3 dias atrás' },
+  {
+    id: 3,
+    text: 'Sua despesas esta semana estão 15% acima do habitual',
+    date: '1 dia atrás',
+  },
+  {
+    id: 4,
+    text: 'Revisar orçamento mensal para próximo mês',
+    date: '15h atrás',
+  },
+  { id: 5, text: 'Revisar saldo e gastos', date: '2h atrás' },
+  { id: 6, text: 'Renovar assinatura de software', date: '1h atrás' },
+  { id: 7, text: 'Comprar presente de aniversário', date: '10min atrás' },
+];
 
 export const goalData = [
   {

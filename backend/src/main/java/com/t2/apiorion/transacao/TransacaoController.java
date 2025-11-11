@@ -1,6 +1,7 @@
 package com.t2.apiorion.transacao;
 
 import com.t2.apiorion.transacao.dto.TransacaoRequest;
+import com.t2.apiorion.transacao.dto.AtualizarStatusRequest;
 import com.t2.apiorion.transacao.service.TransacaoService;
 import com.t2.apiorion.user.User;
 import com.t2.apiorion.user.UserRepository;
@@ -64,6 +65,27 @@ public class TransacaoController {
 
         Transacao updated = transacaoService.atualizarTransacao(id, request);
         return ResponseEntity.ok(updated);
+    }
+
+    @PatchMapping("/{id}/status")
+    @Operation(summary = "Atualiza o status de uma transação do usuário logado")
+    public ResponseEntity<Transacao> atualizarStatusTransacao(
+            @PathVariable Long id,
+            @Valid @RequestBody AtualizarStatusRequest request,
+            @AuthenticationPrincipal String username) {
+
+        User usuario = userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+
+        Transacao transacao = transacaoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Transação não encontrada"));
+
+        if (!transacao.getUsuario().getId().equals(usuario.getId())) {
+            return ResponseEntity.status(403).build();
+        }
+
+        Transacao atualizada = transacaoService.atualizarStatus(id, request.getStatus());
+        return ResponseEntity.ok(atualizada);
     }
 
     @DeleteMapping("/{id}")
