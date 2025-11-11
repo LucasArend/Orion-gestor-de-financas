@@ -10,22 +10,14 @@ function TransactionList({
   type,
   onRemove,
   onOpen,
+  onChangeStatus,
 }) {
   if (loading) return <p>Carregando transações...</p>;
 
   const filtered = transacoes.filter((t) => {
-    const matchesSearch = (t.descricao ?? '')
-      .toLowerCase()
-      .includes((search ?? '').toLowerCase());
-
-    const matchesCategory = category
-      ? t.categoria?.nome === category
-      : true;
-
-    const matchesType = type
-      ? t.tipoTransacao?.nome === type
-      : true;
-
+    const matchesSearch = (t.descricao ?? '').toLowerCase().includes((search ?? '').toLowerCase());
+    const matchesCategory = category ? t.categoria?.nome === category : true;
+    const matchesType = type ? t.tipoTransacao?.nome === type : true;
     return matchesSearch && matchesCategory && matchesType;
   });
 
@@ -54,6 +46,7 @@ function TransactionList({
               <th className="p-2">Valor</th>
               <th className="p-2">Categoria</th>
               <th className="p-2">Data</th>
+              <th className="p-2">Status</th>
               <th className="w-[80px] p-2 text-center">Ações</th>
             </tr>
           </thead>
@@ -61,7 +54,6 @@ function TransactionList({
             <AnimatePresence>
               {filtered.map((transacao) => {
                 const isRenda = transacao.tipoTransacao?.nome.toLowerCase() === 'renda';
-
                 return (
                   <motion.tr
                     animate={{ opacity: 1, y: 0 }}
@@ -74,9 +66,7 @@ function TransactionList({
                     <td className="p-2">
                       <span
                         className={`rounded px-2 py-1 font-semibold text-xs ${
-                          isRenda
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-red-100 text-red-700'
+                          isRenda ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                         }`}
                       >
                         {transacao.tipoTransacao?.nome ?? 'N/A'}
@@ -96,6 +86,18 @@ function TransactionList({
                     <td className="p-2">{transacao.categoria?.nome ?? 'N/A'}</td>
                     <td className="p-2">
                       {new Date(transacao.dataVencimento).toLocaleDateString()}
+                    </td>
+                    <td className="p-2">
+                      <button
+                        className={`px-2 py-1 rounded ${
+                          transacao.status === 'PENDENTE'
+                            ? 'bg-yellow-200 text-yellow-800'
+                            : 'bg-green-200 text-green-800'
+                        }`}
+                        onClick={() => onChangeStatus(transacao.id, transacao.status === 'PENDENTE' ? 'CONCLUIDO' : 'PENDENTE')}
+                      >
+                        {transacao.status}
+                      </button>
                     </td>
                     <td className="w-[80px] p-2 text-center align-middle">
                       <div className="flex items-center justify-center">
