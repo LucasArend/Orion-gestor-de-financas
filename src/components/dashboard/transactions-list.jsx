@@ -40,11 +40,19 @@ export default function TransactionsList() {
   const navigate = useNavigate();
 
   if (isLoading) {
-    return <p className="text-gray-500">Carregando transações...</p>;
+    return (
+      <p className="mt-4 text-center text-gray-500">
+        Carregando suas transações...
+      </p>
+    );
   }
 
   if (!transactions.length) {
-    return <p className="text-gray-500">Nenhuma transação encontrada.</p>;
+    return (
+      <p className="mt-4 text-center text-gray-500">
+        Nenhuma transação encontrada.
+      </p>
+    );
   }
 
   return (
