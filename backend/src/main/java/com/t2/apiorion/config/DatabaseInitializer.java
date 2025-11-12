@@ -18,7 +18,7 @@ public class DatabaseInitializer {
     @Bean
     public CommandLineRunner initDatabase() {
         return args -> {
-            String[] tiposIniciais = {"renda", "despesa"};
+            String[] tiposIniciais = {"RENDA", "DESPESA"};
 
             for (String tipoNome : tiposIniciais) {
                 boolean existe = tipoTransacaoService.findByNome(tipoNome).isPresent();

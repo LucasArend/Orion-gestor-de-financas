@@ -26,9 +26,6 @@ public class TransacaoRequest {
     private String status;
 
     @NotNull
-    private Long usuarioId;
-
-    @NotNull
     private Long categoriaId;
 
     @NotNull
@@ -49,9 +46,6 @@ public class TransacaoRequest {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
-
-    public Long getUsuarioId() { return usuarioId; }
-    public void setUsuarioId(Long usuarioId) { this.usuarioId = usuarioId; }
 
     public Long getCategoriaId() { return categoriaId; }
     public void setCategoriaId(Long categoriaId) { this.categoriaId = categoriaId; }

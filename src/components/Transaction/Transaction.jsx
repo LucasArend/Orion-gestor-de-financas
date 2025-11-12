@@ -90,7 +90,6 @@ function Transaction() {
     }
   }
 
-  // ✅ Atualizar o status da transação
   async function handleChangeStatus(id, newStatus) {
     if (!token) return;
     const toastId = toast.loading("Atualizando status...");
@@ -197,6 +196,7 @@ function Transaction() {
         open={newModalOpen}
         onClose={() => setNewModalOpen(false)}
         onAdd={handleAddTransacao}
+        fetchTransacoes={fetchTransacoes}
       />
 
       <ConfirmModal

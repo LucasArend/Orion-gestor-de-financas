@@ -41,8 +41,7 @@ public class TransacaoController {
         User usuario = userRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
 
-        request.setUsuarioId(usuario.getId());
-        Transacao transacao = transacaoService.criarTransacao(request);
+        Transacao transacao = transacaoService.criarTransacao(request, usuario);
         return ResponseEntity.ok(transacao);
     }
 

@@ -44,5 +44,13 @@ export default function MonthlyIncomeExpenseChart() {
   const labels = getChartLabels(recentMonths);
   const chartData = makeMonthlyIncomeExpense(labels, recentMonths);
 
+      if (!labels.length) {
+    return (
+      <div className="flex justify-center items-center h-64 text-gray-500 text-lg font-medium">
+        Nenhuma transação encontrada
+      </div>
+    );
+  }
+
   return <Bar data={chartData} options={monthlyChartOptions} />;
 }

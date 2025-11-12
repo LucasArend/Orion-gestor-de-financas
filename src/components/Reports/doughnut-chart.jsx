@@ -13,7 +13,7 @@ export default function DoughnutChart() {
     const categoryCount = {};
 
     transactions.forEach((t) => {
-      if (t.tipoTransacao?.id === 2) { // apenas despesas
+      if (t.tipoTransacao?.id === 2) { 
         const categoryName = t.categoria?.nome || "Outros";
         categoryMap[categoryName] = (categoryMap[categoryName] || 0) + t.valor;
         categoryCount[categoryName] = (categoryCount[categoryName] || 0) + 1;
@@ -32,7 +32,6 @@ export default function DoughnutChart() {
 
   const chartData = makeCategoryDoughnutData(labels, values);
 
-  // opções do gráfico (tooltip e legenda customizados)
   const doughnutChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -40,13 +39,13 @@ export default function DoughnutChart() {
       legend: {
         position: "bottom",
         labels: {
-          boxWidth: 16,      // ícones um pouco maiores
-          padding: 20,       // mais espaço entre itens
+          boxWidth: 16,      
+          padding: 20,       
           font: {
-            size: 14,        // <-- aumente aqui o tamanho da fonte
-            weight: "600",   // deixa o texto mais legível
+            size: 14,        
+            weight: "600",   
           },
-          color: "#333",     // cor do texto (opcional)
+          color: "#333",     
         },
       },
       tooltip: {
@@ -74,6 +73,14 @@ export default function DoughnutChart() {
       },
     },
   };
+
+    if (!labels.length || !values.length) {
+    return (
+      <div className="flex justify-center items-center h-64 text-gray-500 text-lg font-medium">
+        Nenhuma despesa encontrada
+      </div>
+    );
+  }
 
   return (
     <div className="flex justify-center items-center h-full">

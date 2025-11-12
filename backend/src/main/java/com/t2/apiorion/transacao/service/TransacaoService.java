@@ -3,6 +3,7 @@ package com.t2.apiorion.transacao.service;
 import com.t2.apiorion.transacao.Transacao;
 import com.t2.apiorion.transacao.TransacaoRepository;
 import com.t2.apiorion.transacao.dto.TransacaoRequest;
+import com.t2.apiorion.user.User;
 import com.t2.apiorion.user.UserRepository;
 import com.t2.apiorion.categoria.CategoriaRepository;
 import com.t2.apiorion.tipoTransacao.TipoTransacaoRepository;
@@ -41,9 +42,9 @@ public class TransacaoService {
     }
 
     @Transactional
-    public Transacao criarTransacao(TransacaoRequest request) {
+    public Transacao criarTransacao(TransacaoRequest request, User usuario) {
         StatusTransacao status = (request.getStatus() != null)
-                ? StatusTransacao.valueOf(request.getStatus())
+                ? StatusTransacao.valueOf(request.getStatus().toUpperCase())
                 : StatusTransacao.PENDENTE;
 
         Transacao transacao = new Transacao();
@@ -52,9 +53,7 @@ public class TransacaoService {
         transacao.setDataVencimento(request.getDataVencimento());
         transacao.setQuantidadeParcelas(request.getQuantidadeParcelas());
         transacao.setStatus(status);
-
-        transacao.setUsuario(userRepository.findById(request.getUsuarioId())
-                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado")));
+        transacao.setUsuario(usuario);
 
         transacao.setCategoria(categoriaRepository.findById(request.getCategoriaId())
                 .orElseThrow(() -> new EntityNotFoundException("Categoria não encontrada")));
@@ -75,7 +74,7 @@ public class TransacaoService {
         transacao.setDataVencimento(request.getDataVencimento());
         transacao.setQuantidadeParcelas(request.getQuantidadeParcelas());
         transacao.setStatus(request.getStatus() != null
-                ? StatusTransacao.valueOf(request.getStatus())
+                ? StatusTransacao.valueOf(request.getStatus().toUpperCase())
                 : transacao.getStatus());
 
         return transacaoRepository.save(transacao);

@@ -98,7 +98,7 @@ async function deletarTransacoesPorCategoria(categoria, token) {
   }
 }
 
-function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions }) {
+function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions, fetchTransacoes }) {
   const { user, token } = useAuth();
   const [tipoSelecionado, setTipoSelecionado] = useState('renda');
   const [dataSelecionada, setDataSelecionada] = useState(null);
@@ -237,7 +237,6 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions }) {
       dataVencimento: dataSelecionada.toISOString(),
       quantidadeParcelas: parcelas ? Number(parcelas) : 1,
       status: 'PENDENTE',
-      usuarioId: user.id,
       categoriaId: categoriaObj.id,
       tipoTransacaoId: tipoSelecionado === 'renda' ? 1 : 2,
     };
@@ -251,7 +250,7 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions }) {
         },
         body: JSON.stringify(novaTransacao),
       });
-
+      console.log("Transação sendo enviada:", novaTransacao);
       if (!res.ok) {
         const errorText = await res.text();
         throw new Error(`Erro ao salvar transação: ${errorText}`);
@@ -259,7 +258,7 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions }) {
 
       const data = await res.json();
       toast.success('Transação adicionada com sucesso!');
-      onAdd(data);
+      if (fetchTransacoes) await fetchTransacoes();
       onClose();
       resetForm();
     } catch (error) {
@@ -405,7 +404,7 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions }) {
       onClick={(e) => {
         e.stopPropagation();
         setEditandoCategoria(cat);
-        setNovoNomeCategoria(cat.nome);
+        setNomeCategoriaEditando(cat.nome);
         setShowDropdown(false);
       }}
       type="button"
