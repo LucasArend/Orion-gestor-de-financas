@@ -43,5 +43,13 @@ export default function YearlyExpenseChart() {
   const labels = getChartLabels(recentMonths);
   const yearlyData = makeYearlyExpense(labels, recentMonths);
 
+      if (!labels.length) {
+    return (
+      <div className="flex justify-center items-center h-64 text-gray-500 text-lg font-medium">
+        Nenhuma transação encontrada
+      </div>
+    );
+  }
+
   return <Line data={yearlyData} options={yearlyChartOptions} />;
 }

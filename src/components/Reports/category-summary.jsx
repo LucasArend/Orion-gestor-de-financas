@@ -93,6 +93,8 @@ export default function CategorySummary() {
     { month: "long", year: "numeric" }
   );
 
+
+
   return (
     <div className="flex flex-col items-center space-y-6">
       {/* 🔹 Dropdown de seleção de mês */}
@@ -128,6 +130,8 @@ export default function CategorySummary() {
           })}
         </select>
       </div>
+
+      
 
       <div className="flex flex-col gap-6 lg:flex-row w-full">
         {/* 🔹 Gráfico de despesas */}

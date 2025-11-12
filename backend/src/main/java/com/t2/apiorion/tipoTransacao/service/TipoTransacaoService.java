@@ -18,31 +18,24 @@ public class TipoTransacaoService {
         this.tipoTransacaoRepository = tipoTransacaoRepository;
     }
 
-    /**
-     * Cria um novo TipoTransacao
-     */
+
     @Transactional
     public TipoTransacao criarTipoTransacao(TipoTransacaoRequest request) {
         TipoTransacao tipoTransacao = new TipoTransacao();
         tipoTransacao.setNome(request.getNome());
 
-        // Campos de auditoria
         tipoTransacao.setCreatedAt(Instant.now());
         tipoTransacao.setUpdatedAt(Instant.now());
 
         return tipoTransacaoRepository.save(tipoTransacao);
     }
 
-    /**
-     * Retorna a quantidade de tipos de transação no banco
-     */
+
     public long count() {
         return tipoTransacaoRepository.count();
     }
 
-    /**
-     * Procura TipoTransacao por nome
-     */
+
     public Optional<TipoTransacao> findByNome(String nome) {
         return tipoTransacaoRepository.findAll()
                 .stream()

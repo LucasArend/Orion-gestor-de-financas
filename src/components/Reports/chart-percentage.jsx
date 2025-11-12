@@ -8,11 +8,10 @@ export default function ChartPercentage() {
   const { transactions, loading, error } = useTransactions();
   const [selectedMonth, setSelectedMonth] = useState(() =>
     new Date().toISOString().slice(0, 7)
-  ); // formato YYYY-MM
+  ); 
 
   const percent = 100;
 
-  // 🔹 Extrai lista de meses únicos disponíveis nas transações
   const availableMonths = useMemo(() => {
     if (!transactions?.length) return [];
 
@@ -24,11 +23,9 @@ export default function ChartPercentage() {
       )
     );
 
-    // Ordena em ordem decrescente (mais recente primeiro)
     return months.sort((a, b) => (a < b ? 1 : -1));
   }, [transactions]);
 
-  // 🔹 Calcula renda e despesas com base no mês selecionado
   const { totalIncome, totalExpense } = useMemo(() => {
     if (!transactions?.length) return { totalIncome: 0, totalExpense: 0 };
 
@@ -49,11 +46,9 @@ export default function ChartPercentage() {
     return { totalIncome: income, totalExpense: expense };
   }, [transactions, selectedMonth]);
 
-  // 🔹 Calcula percentual de gasto
   const overallSpendingPercentage =
     totalIncome > 0 ? (totalExpense / totalIncome) * percent : 0;
 
-  // 🔹 Dados para o gráfico
   const centerCircleData = makeIncomeVsSpendingData(totalIncome, totalExpense);
 
   if (loading) return <p>Carregando dados...</p>;
@@ -61,7 +56,6 @@ export default function ChartPercentage() {
 
   return (
     <div className="flex flex-col items-center space-y-4">
-      {/* 🔹 Seletor de mês */}
       {availableMonths.length > 1 && (
         <div className="w-full text-center">
           <select
@@ -85,7 +79,6 @@ export default function ChartPercentage() {
         </div>
       )}
 
-      {/* 🔹 Gráfico central */}
       <div className="relative z-0 mb-4 h-48 w-52">
         <Doughnut data={centerCircleData} options={centerCircleOptions} />
         <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -104,7 +97,6 @@ export default function ChartPercentage() {
         </div>
       </div>
 
-      {/* 🔹 Porcentagem + Barra */}
       <div className="w-full space-y-2">
         <p className="text-center font-medium text-gray-700 text-sm">
           {overallSpendingPercentage.toFixed(2)}% da renda usada
