@@ -10,7 +10,7 @@ export const cardInfoReports = {
     title: 'Renda Total',
     Icon: CircleDollarSign,
   },
-  totalIncome: {
+  totalExpenses: {
     title: 'Despesas Totais',
     Icon: ShoppingCart,
   },

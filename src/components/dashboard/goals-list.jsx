@@ -1,6 +1,6 @@
-//import { useGoals } from '../../hooks/use-api';
+import { useGoals } from '../../hooks/use-api';
 
-export default function GoalsList({ goals }) {
+export default function GoalsList() {
   const formatCurrency = (value) =>
     new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -9,17 +9,20 @@ export default function GoalsList({ goals }) {
 
   const formatDate = (dateString) => {
     try {
-      const date = new Date(dateString);
+      if (!dateString) {
+        return '';
+      }
+      const date = new Date(`${dateString}T00:00:00`);
       if (Number.isNaN(date)) {
         return dateString;
       }
       return date.toLocaleDateString('pt-BR');
-    } catch (_) {
+    } catch {
       return dateString;
     }
   };
 
-  //const { data: goals } = useGoals();
+  const { data: goals = [] } = useGoals();
 
   return (
     <div className="overflow-x-auto rounded-lg shadow">
@@ -47,25 +50,23 @@ export default function GoalsList({ goals }) {
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200 bg-white">
-          {goals.map((goal) => (
-            <tr className="hover:bg-zinc-100" key={goal.id}>
-              <td className="px-6 py-4 text-gray-900 text-sm">
-                {goal.objective}
+          {goals.map((g) => (
+            <tr className="hover:bg-zinc-100" key={g.id}>
+              <td className="px-6 py-4 text-gray-900 text-sm">{g.objective}</td>
+              <td className="px-6 py-4 text-gray-500 text-sm">
+                {formatCurrency(g.goal)}
               </td>
               <td className="px-6 py-4 text-gray-500 text-sm">
-                {formatCurrency(goal.target)}
+                {formatCurrency(g.saved)}
               </td>
               <td className="px-6 py-4 text-gray-500 text-sm">
-                {formatCurrency(goal.saved)}
+                {formatCurrency(g.contribution)}
               </td>
               <td className="px-6 py-4 text-gray-500 text-sm">
-                {formatCurrency(goal.contribution)}
+                {formatDate(g.expectedData)}
               </td>
               <td className="px-6 py-4 text-gray-500 text-sm">
-                {formatDate(goal.forecast)}
-              </td>
-              <td className="px-6 py-4 text-gray-500 text-sm">
-                {formatDate(goal.dueDate)}
+                {formatDate(g.goalDate)}
               </td>
             </tr>
           ))}

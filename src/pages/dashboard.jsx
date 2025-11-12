@@ -1,11 +1,10 @@
 import { Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import ChartExpenses from '../components/Dashboard/expenses-chart';
 import GoalsList from '../components/Dashboard/goals-list';
-import ChartExpenses from '../components/dashboard/expenses-chart';
-import RemindersList from '../components/dashboard/reminder-list';
-import TransactionsList from '../components/dashboard/transactions-list';
+import RemindersList from '../components/Dashboard/reminder-list';
+import TransactionsList from '../components/Dashboard/transactions-list';
 import { cardInfoDashboard } from '../data/dashboard-card-info';
-import { goalData, reminderData } from '../data/data-tests';
 import { useUserMe } from '../hooks/use-api';
 import { useDashboardData } from '../hooks/use-dashboard-data';
 import { getTextColor } from '../utils/get-text-color';
@@ -97,7 +96,7 @@ export default function Dashboard() {
             <span>Adicionar Meta</span>
           </button>
         </div>
-        <GoalsList goals={goalData} />
+        <GoalsList />
       </section>
     </div>
   );
