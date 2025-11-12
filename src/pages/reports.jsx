@@ -1,40 +1,40 @@
-import { useEffect, useState } from "react";
-import CategorySummary from "../components/Reports/category-summary";
-import ChartPercentage from "../components/Reports/chart-percentage";
-import DoughnutChart from "../components/Reports/doughnut-chart";
-import MonthlyIncomeExpenseChart from "../components/Reports/monthly-chart";
-import YearlyExpenseChart from "../components/Reports/yearly-chart";
-import {
-  barChartData,
-  cardDataReports,
-} from "../data/data-tests";
-import { doughnutChartOptions } from "../data/doughnut-chart-options";
-import { cardInfoReports } from "../data/reports-card-info";
-import { makeCategoryDoughnutData } from "../utils/chart-data-factory";
-import { getTextColor } from "../utils/get-text-color";
-import { useAuth } from "../context/AuthContext";
-import { aggregateTransactionsByMonth } from "../utils/aggregateTransactions";
-
+import { useEffect, useState } from 'react';
+import CategorySummary from '../components/Reports/category-summary';
+import ChartPercentage from '../components/Reports/chart-percentage';
+import DoughnutChart from '../components/Reports/doughnut-chart';
+import MonthlyIncomeExpenseChart from '../components/Reports/monthly-chart';
+import YearlyExpenseChart from '../components/Reports/yearly-chart';
+import { useAuth } from '../context/AuthContext';
+import { doughnutChartOptions } from '../data/doughnut-chart-options';
+import { cardInfoReports } from '../data/reports-card-info';
+import { useReportsData } from '../hooks/use-reports-data';
+import { aggregateTransactionsByMonth } from '../utils/aggregateTransactions';
+import { makeCategoryDoughnutData } from '../utils/chart-data-factory';
+import { getTextColor } from '../utils/get-text-color';
 
 export default function Reports() {
   const { token } = useAuth();
   const [monthlyData, setMonthlyData] = useState([]);
+  const { cardDataReports } = useReportsData();
 
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/transacoes/me`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await fetch(
+          'http://localhost:8080/api/transacoes/me',
+          {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         const transactions = await response.json();
         const aggregated = aggregateTransactionsByMonth(transactions);
         setMonthlyData(aggregated);
       } catch (error) {
-        console.error("Erro ao buscar transações:", error);
+        console.error('Erro ao buscar transações:', error);
       }
     };
 
@@ -42,13 +42,15 @@ export default function Reports() {
   }, [token]);
 
   const percent = 100;
-  const labels = ["Transporte", "Alimentação", "Lazer", "Contas", "Outros"];
+  const labels = ['Transporte', 'Alimentação', 'Lazer', 'Contas', 'Outros'];
   const values = [2, 5, 5, 3, 4];
 
   return (
     <div className="space-y-5">
       <section>
-        <h1 className="font-bold text-3xl text-gray-700">Resultado Financeiro</h1>
+        <h1 className="font-bold text-3xl text-gray-700">
+          Resultado Financeiro
+        </h1>
         <p className="mt-1 mb-6 text-gray-500">
           Analise seus padrões de gastos e tendências financeiras
         </p>
@@ -63,8 +65,8 @@ export default function Reports() {
 
           return (
             <div
-              key={data.id}
               className="flex flex-col items-start justify-center rounded-lg bg-white p-6 shadow-lg shadow-zinc-400/50 transition-all duration-300 hover:scale-95"
+              key={data.id}
             >
               <div className="mb-4 rounded-full bg-gray-200 p-3 shadow-lg shadow-zinc-400/50">
                 <Icon className="h-8 w-8 text-[#314259]" />
@@ -79,14 +81,14 @@ export default function Reports() {
                     data.valor
                   )}`}
                 >
-                  {title === "Taxa de Poupança"
-                    ? new Intl.NumberFormat("pt-BR", {
-                        style: "percent",
+                  {title === 'Taxa de Poupança'
+                    ? new Intl.NumberFormat('pt-BR', {
+                        style: 'percent',
                         minimumFractionDigits: 2,
                       }).format(data.valor / percent)
-                    : new Intl.NumberFormat("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
+                    : new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL',
                       }).format(data.valor)}
                 </p>
               </div>
@@ -128,7 +130,10 @@ export default function Reports() {
             Balanço Financeiro Mensal
           </h3>
           <div className="flex min-h-0 flex-1 flex-col rounded-lg">
-            <MonthlyIncomeExpenseChart monthlyData={monthlyData} monthPeriod={6} />
+            <MonthlyIncomeExpenseChart
+              monthlyData={monthlyData}
+              monthPeriod={6}
+            />
           </div>
         </div>
 
