@@ -19,7 +19,7 @@ public class Categoria {
     private String nome;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id", nullable = false)
+    @JoinColumn(name = "usuario_id", nullable = true)
     private User usuario;
 
     private Instant createdAt;
@@ -37,7 +37,6 @@ public class Categoria {
         this.updatedAt = Instant.now();
     }
 
-    // Getters e Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
