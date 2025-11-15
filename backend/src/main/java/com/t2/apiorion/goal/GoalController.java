@@ -1,14 +1,15 @@
 package com.t2.apiorion.goal;
 
 import com.t2.apiorion.goal.dto.GoalRequest;
+import com.t2.apiorion.goal.service.GoalService;
 import com.t2.apiorion.user.User;
 import com.t2.apiorion.user.UserRepository;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
 import java.util.Optional;
 
 @RestController
@@ -17,10 +18,12 @@ public class GoalController {
 
     private final GoalRepository goalRepository;
     private final UserRepository userRepository;
+    private final GoalService goalService;
 
-    public GoalController(GoalRepository goalRepository, UserRepository userRepository) {
+    public GoalController(GoalRepository goalRepository, UserRepository userRepository, GoalService goalService) {
         this.goalRepository = goalRepository;
         this.userRepository = userRepository;
+        this.goalService = goalService;
     }
 
     @PostMapping
@@ -102,5 +105,16 @@ public class GoalController {
 
         goalRepository.delete(goalOpt.get());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PatchMapping("/{id}/contribute")
+    public ResponseEntity<?> aplicarContribuicao(@PathVariable Long id,
+                                                 @AuthenticationPrincipal String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        Goal updatedGoal = goalService.aplicarContribuicao(user.getId(), id);
+
+        return ResponseEntity.ok().body(updatedGoal);
     }
 }
