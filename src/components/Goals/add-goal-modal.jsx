@@ -1,41 +1,60 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { goalSchema } from '../../utils/validation-schema';
+import { useAuth } from '../../context/AuthContext';
+import axios from 'axios';
 
 function calculateProjectedDate(targetValue, monthlyContribution, accumulated) {
-  if (!(targetValue && monthlyContribution)) {
+  const numTarget = Number(targetValue) || 0;
+  const numContribution = Number(monthlyContribution) || 0;
+  const numAccumulated = Number(accumulated) || 0;
+
+  if (numContribution <= 0) {
     return '';
   }
-  const remaining = targetValue - (accumulated || 0);
-  const months = remaining / monthlyContribution;
+
+  const remaining = numTarget - numAccumulated;
+  
+  if (remaining <= 0) {
+    return new Date().toISOString().split('T')[0];
+  }
+
+  const months = remaining / numContribution;
   const now = new Date();
   now.setMonth(now.getMonth() + Math.ceil(months));
+
   return now.toISOString().split('T')[0];
 }
 
-export default function AddGoalModal({ onClose, onSuccess, onError }) {
+export default function AddGoalModal({ onClose, onSuccess, onError, onGoalAdded, initialData, onEditSubmit }) {
+  const { token } = useAuth();
+
+  const isEditing = !!initialData;
+
   const {
     control,
     reset,
     watch,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(goalSchema),
     mode: 'all',
     reValidateMode: 'onChange',
     defaultValues: {
-      description: '',
-      targetValue: '',
-      accumulated: '',
-      monthlyContribution: '',
+      description: initialData?.objective || '',
+      targetValue: initialData?.goal || '',
+      accumulated: initialData?.saved || '',
+      monthlyContribution: initialData?.contribution || '',
       projectedDate: '',
-      deadline: '',
+      deadline: initialData?.goalDate?.split('T')[0] || '',
     },
   });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const targetValue = watch('targetValue');
   const accumulated = watch('accumulated');
@@ -47,29 +66,63 @@ export default function AddGoalModal({ onClose, onSuccess, onError }) {
     accumulated
   );
 
-  const handleSave = async () => {
+  useEffect(() => {
+    if (isEditing && initialData) {
+        reset({
+            description: initialData.objective,
+            targetValue: initialData.goal,
+            accumulated: initialData.saved,
+            monthlyContribution: initialData.contribution,
+            deadline: initialData.goalDate?.split('T')[0] || '', 
+        }, { keepDefaultValues: false });
+    }
+  }, [isEditing, initialData, reset]);
 
+  useEffect(() => {
+    if(forecastDate) {
+      setValue('projectedDate', forecastDate, { shouldValidate: true })
+    } else {
+      setValue('projectedDate', '')
+    }
+  }, [forecastDate, setValue])
+
+  const handleSave = async (data) => {
     setIsSubmitting(true);
 
-    // Definir o parametro 'data' depois
-    /*const payload = {
-      objetivo: data.description,
-      meta: Number(data.targetValue),
-      poupado: Number(data.accumulated),
-      contribuicao: Number(data.monthlyContribution),
-      previsao: forecastDate,
-      dataAlmejada: data.deadline,
-    };*/
+    const payload = {
+      objective: data.description,
+      goal: Number(data.targetValue),
+      saved: Number(data.accumulated),
+      contribution: Number(data.monthlyContribution),
+      expectedData: forecastDate,
+      goalDate: data.deadline,
+    };
 
     try {
-      //const URL = 'https://seu-backend.com/api/metas';
-      //await axios.post(URL, payload);
-      const timer = 1000
-      await new Promise((resolve) => setTimeout(resolve, timer));
-      onSuccess();
+      const timer = 500
+      await new Promise((resolve) => setTimeout(resolve, timer))
+
+      if (isEditing) {
+        await onEditSubmit(initialData.id, payload)
+        onSuccess('edited')
+      } else {
+        const URL = 'http://localhost:8080/goals';
+        await axios.post(URL, payload, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        onSuccess('added')
+      }
+
+      if (onGoalAdded) {
+        onGoalAdded(data)
+      }
       reset();
       onClose();
-    } catch (_) {
+    } catch (error) {
+      console.log("Erro ao salvar meta: ", error);
       onError();
     } finally {
       setIsSubmitting(false);
@@ -104,11 +157,11 @@ export default function AddGoalModal({ onClose, onSuccess, onError }) {
         </button>
 
         <h2 className="mb-6 font-semibold text-gray-800 text-xl">
-          Adicionar Nova Meta
+          {isEditing ? 'Editar Meta' : 'Adicionar Nova Meta'}
         </h2>
 
         <form className="space-y-5" onSubmit={handleSubmit(handleSave)}>
-          {/* Objetivo */}
+          {/* Descrição */}
           <div>
             <label
               className="mb-1 block font-medium text-gray-700 text-sm"
@@ -122,6 +175,7 @@ export default function AddGoalModal({ onClose, onSuccess, onError }) {
               render={({ field }) => (
                 <input
                   {...field}
+                  value={field.value || ''}
                   className={`w-full rounded-lg border px-3 py-2 focus:border-indigo-600 focus:outline-hidden focus:ring-3 focus:ring-blue-200 ${
                     errors.description
                       ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
@@ -134,14 +188,16 @@ export default function AddGoalModal({ onClose, onSuccess, onError }) {
               )}
             />
             <p
-              className={`mt-1 text-sm ${errors.description ? 'text-red-500' : 'invisible'}`}
+              className={`mt-1 text-sm ${
+                errors.description ? 'text-red-500' : 'invisible'
+              }`}
             >
               {errors.description ? errors.description?.message : ' '}
             </p>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            {/* Meta */}
+            {/* Valor Alvo */}
             <div>
               <label
                 className="mb-1 block font-medium text-gray-700 text-sm"
@@ -155,6 +211,7 @@ export default function AddGoalModal({ onClose, onSuccess, onError }) {
                 render={({ field }) => (
                   <input
                     {...field}
+                    value={field.value || ''}
                     className={`w-full rounded-lg border px-3 py-2 focus:border-indigo-600 focus:outline-hidden focus:ring-3 focus:ring-blue-200 ${
                       errors.targetValue
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
@@ -169,13 +226,15 @@ export default function AddGoalModal({ onClose, onSuccess, onError }) {
                 )}
               />
               <p
-                className={`mt-1 text-sm ${errors.targetValue ? 'text-red-500' : 'invisible'}`}
+                className={`mt-1 text-sm ${
+                  errors.targetValue ? 'text-red-500' : 'invisible'
+                }`}
               >
                 {errors.targetValue ? errors.targetValue?.message : ' '}
               </p>
             </div>
 
-            {/* Poupado */}
+            {/* Acumulado */}
             <div>
               <label
                 className="mb-1 block font-medium text-gray-700 text-sm"
@@ -189,6 +248,7 @@ export default function AddGoalModal({ onClose, onSuccess, onError }) {
                 render={({ field }) => (
                   <input
                     {...field}
+                    value={field.value || ''}
                     className={`w-full rounded-lg border px-3 py-2 focus:border-blue-600 focus:outline-hidden focus:ring-2 focus:ring-blue-200 ${
                       errors.accumulated
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
@@ -203,13 +263,15 @@ export default function AddGoalModal({ onClose, onSuccess, onError }) {
                 )}
               />
               <p
-                className={`mt-1 text-sm ${errors.accumulated ? 'text-red-500' : 'invisible'}`}
+                className={`mt-1 text-sm ${
+                  errors.accumulated ? 'text-red-500' : 'invisible'
+                }`}
               >
                 {errors.accumulated ? errors.accumulated?.message : ' '}
               </p>
             </div>
 
-            {/* Contribuição */}
+            {/* Aporte Mensal */}
             <div>
               <label
                 className="mb-1 block font-medium text-gray-700 text-sm"
@@ -223,6 +285,7 @@ export default function AddGoalModal({ onClose, onSuccess, onError }) {
                 render={({ field }) => (
                   <input
                     {...field}
+                    value={field.value || ''}
                     className={`w-full rounded-lg border px-3 py-2 focus:border-blue-600 focus:outline-hidden focus:ring-2 focus:ring-blue-200 ${
                       errors.monthlyContribution
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
@@ -237,7 +300,9 @@ export default function AddGoalModal({ onClose, onSuccess, onError }) {
                 )}
               />
               <p
-                className={`mt-1 text-sm ${errors.monthlyContribution ? 'text-red-500' : 'invisible'}`}
+                className={`mt-1 text-sm ${
+                  errors.monthlyContribution ? 'text-red-500' : 'invisible'
+                }`}
               >
                 {errors.monthlyContribution
                   ? errors.monthlyContribution?.message
@@ -245,7 +310,7 @@ export default function AddGoalModal({ onClose, onSuccess, onError }) {
               </p>
             </div>
 
-            {/* Previsão */}
+            {/* Data Prevista (Apenas leitura) */}
             <div>
               <label
                 className="mb-1 block font-medium text-gray-700 text-sm"
@@ -260,7 +325,7 @@ export default function AddGoalModal({ onClose, onSuccess, onError }) {
                   <input
                     {...field}
                     className="w-full cursor-not-allowed rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-gray-500"
-                    disabled
+                    readOnly
                     id="projectedDate"
                     type="date"
                     value={forecastDate || ''}
@@ -269,7 +334,7 @@ export default function AddGoalModal({ onClose, onSuccess, onError }) {
               />
             </div>
 
-            {/* Data Almejada */}
+            {/* Prazo Final */}
             <div>
               <label
                 className="mb-1 block font-medium text-gray-700 text-sm"
@@ -283,6 +348,7 @@ export default function AddGoalModal({ onClose, onSuccess, onError }) {
                 render={({ field }) => (
                   <input
                     {...field}
+                    value={field.value || ''}
                     className={`w-full rounded-lg border px-3 py-2 focus:border-blue-600 focus:outline-hidden focus:ring-2 focus:ring-blue-200 ${
                       errors.deadline
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
@@ -294,7 +360,9 @@ export default function AddGoalModal({ onClose, onSuccess, onError }) {
                 )}
               />
               <p
-                className={`mt-1 text-sm ${errors.deadline ? 'text-red-500' : 'invisible'}`}
+                className={`mt-1 text-sm ${
+                  errors.deadline ? 'text-red-500' : 'invisible'
+                }`}
               >
                 {errors.deadline ? errors.deadline?.message : ' '}
               </p>
