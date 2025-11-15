@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 input::-ms-reveal,
 input::-ms-clear,
@@ -11,3 +12,4 @@ input::-webkit-inner-spin-button,
 input::-webkit-outer-spin-button {
   display: none !important;
 }
+
