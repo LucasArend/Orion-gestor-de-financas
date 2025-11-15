@@ -7,7 +7,6 @@ import GoalsTable from '../components/Goals/goals-table';
 import Notification from '../components/Notications/notifications';
 import { fieldOptions, valueOptions } from '../data/goals-options';
 import { useAuth } from '../context/AuthContext';
-import { toast, Toaster } from "react-hot-toast"
 import ConfirmModal from "../components/Common/ConfirmModal";
 import axios from 'axios'
 
@@ -47,8 +46,6 @@ export default function Goals() {
       return
     }
 
-    // const toastId = toast.loading("Editando Meta...")
-
     try {
       const URL = `http://localhost:8080/goals/${id}`
       await axios.put(URL, updateGoalData, {
@@ -58,10 +55,8 @@ export default function Goals() {
       })
 
       await fetchGoals()
-      // toast.success("Sucesso ao editar meta!", { id: toastId })
 
     } catch (error) {
-      // toast.error("Erro ao editar meta!", { id: toastId })
       console.error("Erro ao editar meta: ", error)
       throw error
     }
@@ -94,8 +89,6 @@ export default function Goals() {
 
     const idToDelete = deleteMetaId
 
-    // const toastId = toast.loading("Removendo Meta...")
-
     try {
       const URL = `http://localhost:8080/goals/${idToDelete}`
       await axios.delete(URL, {
@@ -106,12 +99,10 @@ export default function Goals() {
 
       setMetas((prev) => prev.filter((m) => m.id !== idToDelete))
 
-      // toast.success("Meta removida!", { id: toastId })
       showNotification('success', 'Meta removida com sucesso!')
       setConfirmModalOpen(false)
 
     } catch {
-      // toast.error("Erro ao remover meta!", { id: toastId })
       showNotification('error', 'Erro ao remover meta!')
     } finally {
       setDeleteMetaId(null)
@@ -156,7 +147,6 @@ export default function Goals() {
 
   return (
     <div className="space-y-6 rounded-lg bg-white p-8">
-      <Toaster position='top-right' />
 
       <Notification
         notification={notification}

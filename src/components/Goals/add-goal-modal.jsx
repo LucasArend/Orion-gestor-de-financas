@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { goalSchema } from '../../utils/validation-schema';
 import { useAuth } from '../../context/AuthContext';
-import { toast, Toaster } from "react-hot-toast"
 import axios from 'axios';
 
 function calculateProjectedDate(targetValue, monthlyContribution, accumulated) {
@@ -89,7 +88,6 @@ export default function AddGoalModal({ onClose, onSuccess, onError, onGoalAdded,
 
   const handleSave = async (data) => {
     setIsSubmitting(true);
-    // const toastId = toast.loading(isEditing ? "Editando Meta..." : "Adicionando Meta...")
 
     const payload = {
       objective: data.description,
@@ -105,8 +103,7 @@ export default function AddGoalModal({ onClose, onSuccess, onError, onGoalAdded,
       await new Promise((resolve) => setTimeout(resolve, timer))
 
       if (isEditing) {
-        await onEditSubmit(initialData.id, payload) // tirei o toast do parametro <
-        // toast.success("Meta editada com sucesso!", { id: toastId })
+        await onEditSubmit(initialData.id, payload)
         onSuccess('edited')
       } else {
         const URL = 'http://localhost:8080/goals';
@@ -117,10 +114,8 @@ export default function AddGoalModal({ onClose, onSuccess, onError, onGoalAdded,
           },
         });
         onSuccess('added')
-        // toast.success("Meta adicionada com sucesso!", { id: toastId })
       }
 
-      // onSuccess();
       if (onGoalAdded) {
         onGoalAdded(data)
       }
@@ -129,9 +124,6 @@ export default function AddGoalModal({ onClose, onSuccess, onError, onGoalAdded,
     } catch (error) {
       console.log("Erro ao salvar meta: ", error);
       onError();
-      // if (!isEditing) {
-      //   toast.error("Erro ao adicionar meta!", { id: toastId })
-      // }
     } finally {
       setIsSubmitting(false);
     }
