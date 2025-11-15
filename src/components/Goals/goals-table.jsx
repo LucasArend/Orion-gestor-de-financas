@@ -1,4 +1,4 @@
-import { TrashIcon, PencilIcon } from '@heroicons/react/24/outline';
+import { TrashIcon, PencilIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline';
 
 const formatCurrency = (value) => {
   const numericValue = value === null || value === undefined ? 0 : Number(value)
@@ -31,7 +31,7 @@ const formatDate = (dateString) => {
   }
 };
 
-export default function GoalsTable({ metas, onRemove, onEdit }) {
+export default function GoalsTable({ metas, onRemove, onEdit, onContribution }) {
   return (
     <div className="overflow-hidden rounded-xl bg-white shadow-lg">
       <table className="w-full border-collapse">
@@ -74,7 +74,14 @@ export default function GoalsTable({ metas, onRemove, onEdit }) {
                 {formatCurrency(meta.saved)}
               </td>
               <td className="px-6 py-4 text-gray-500 text-sm">
-                {formatCurrency(meta.contribution)}
+                <div className='flex gap-1'>
+                  {formatCurrency(meta.contribution)}
+                  <button className='cursor-pointer text-base text-green-600 hover:text-green-800'
+                    onClick={() => onContribution(meta)}
+                  >
+                    <CurrencyDollarIcon className="h-5 w-5" />
+                  </button>
+                </div>
               </td>
               <td className="px-6 py-4 text-gray-500 text-sm">
                 {formatDate(meta.expectedData)}

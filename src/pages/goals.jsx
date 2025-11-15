@@ -27,6 +27,29 @@ export default function Goals() {
     setNotification({ type, message });
   };
 
+  const handleContribution = async (goal) => {
+    const goalId = goal.id
+    setLoading(true)
+    
+    try {
+      const URL = `http://localhost:8080/goals/${goalId}/contribute`
+      await axios.patch(URL, { }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+
+      showNotification('success', `Aporte registrado para: ${goal.objective}`)
+
+      fetchGoals()
+    } catch (error) {
+      console.log('Erro ao enviar aporte mensal:', error)
+      showNotification('error', 'Erro ao registrar aporte.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handleEditClick = (id) => {
     const goalToEdit = metas.find((m) => m.id === id);
 
@@ -184,6 +207,7 @@ export default function Goals() {
           metas={filteredMetas}
           onRemove={handleDeleteClick}
           onEdit={handleEditClick}
+          onContribution={handleContribution}
         />
       )}
 
