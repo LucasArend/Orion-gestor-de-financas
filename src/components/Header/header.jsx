@@ -1,21 +1,18 @@
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Menu } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Avatar from '../Avatar/avatar';
 
-export default function Header({ pageTitle }) {
+export default function Header({ pageTitle, toggleSidebar }) {
   const [open, setOpen] = useState(false);
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
-  const { user } = useAuth();
 
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
 
-  const handleLogout = () => {
-    logout();
-  };
+  const handleLogout = () => logout();
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -34,16 +31,28 @@ export default function Header({ pageTitle }) {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 flex h-14 items-center justify-between border-zinc-200 border-b-1 bg-white p-8">
-      <div className="flex-1">
-        <h1 className="font-bold text-gray-900 text-xl">{pageTitle}</h1>
+    <header className="sticky top-0 z-50 flex h-14 items-center gap-4 bg-white border-b border-zinc-200 px-4 md:px-8">
+
+      {/* HAMBURGER BUTTON - MOBILE ONLY */}
+      <button
+        className="md:hidden text-gray-700"
+        onClick={toggleSidebar}
+      >
+        <Menu className="w-7 h-7" />
+      </button>
+
+      {/* Título */}
+      <div className="flex-1 overflow-hidden">
+        <h1 className="font-bold text-gray-900 text-lg md:text-xl truncate">
+          {pageTitle}
+        </h1>
       </div>
-      {/* Ícones */}
+
+      {/* Avatar e Menu */}
       <div className="flex items-center gap-3">
-        {/* Avatar */}
         <div className="relative">
           <button
-            className="flex items-center gap-2 rounded-2xl p-1.5 pr-2 hover:bg-gray-200"
+            className="flex items-center gap-2 rounded-xl p-1.5 pr-2 hover:bg-gray-200"
             onClick={() => setOpen(!open)}
             ref={buttonRef}
             type="button"
@@ -53,9 +62,11 @@ export default function Header({ pageTitle }) {
               name={user.name}
               style={'h-8 w-8 text-sm'}
             />
-            <span className="font-medium text-gray-700 text-sm sm:block">
+
+            <span className="font-medium text-gray-700 text-sm hidden sm:block">
               {user.name}
             </span>
+
             <ChevronDown className="h-5 w-5" />
           </button>
 

@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useMemo, useContext, navigate } from 'react'
+import { createContext, useState, useEffect, useMemo, useContext } from 'react'
 import * as authApi from '../entities/auth/api'
 import { getMe } from '../entities/user/api'
 
@@ -8,62 +8,78 @@ const TOKEN_KEY = 'jwt_token'
 
 export function AuthProvider({ children }) {
     const [token, setToken] = useState(() => {
+        console.log(localStorage.getItem('jwt_token'));
+        console.log(localStorage.getItem(TOKEN_KEY));
         return localStorage.getItem(TOKEN_KEY)
     })
     const [user, setUser] = useState(null)
     const [loading, setLoading] = useState(true)
 
+    
     useEffect(() => {
-        if(token) localStorage.setItem(TOKEN_KEY, token)
-        else localStorage.removeItem(TOKEN_KEY)
+        if (token) {
+            localStorage.setItem(TOKEN_KEY, token)
+        } else {
+            localStorage.removeItem(TOKEN_KEY)
+        }
     }, [token])
 
+    
     useEffect(() => {
         async function init() {
             try {
-                const me = await getMe(token)
-                setUser(me)
+                if (token) {
+                    const me = await getMe(token)
+                    setUser(me)
+                }
             } catch (error) {
                 setUser(null)
             } finally {
                 setLoading(false)
             }
-        }   
+        }
         init()
     }, [token])
 
-
+    
     const register = async (data) => {
-        console.log(data)
         const { token: t } = await authApi.registerUser(data)
         setToken(t)
-        console.log(t)
         const me = await getMe(t)
         setUser(me)
-        console.log(me)
     }
 
+    
     const login = async (username, password) => {
         const { token: t } = await authApi.loginUser({ username, password })
+        console.log('Token recebido após login:', t)
         setToken(t)
         const me = await getMe(t)
         setUser(me)
-        
+    }
+
+    
+    const loginGoogle = async (googleToken) => {
+        setToken(googleToken)
+        try {
+            const me = await getMe(googleToken)
+            setUser(me)
+        } catch (error) {
+            console.error('Erro ao carregar usuário do Google', error)
+        }
     }
 
     const logout = async () => {
-    try {
-        await authApi.logout(); 
-    } catch (error) {
-        console.error("Erro ao tentar logout:", error);
-    } finally {
-        setToken(null);
-        setUser(null);
-        localStorage.removeItem(TOKEN_KEY);
-
-        navigate("/");
+        try {
+            await authApi.logout()
+        } catch (error) {
+            console.error('Erro ao tentar logout:', error)
+        } finally {
+            setToken(null)
+            setUser(null)
+            localStorage.removeItem(TOKEN_KEY)
+        }
     }
-};
 
     const value = useMemo(() => ({
         user,
@@ -74,16 +90,15 @@ export function AuthProvider({ children }) {
         isAuthenticated: Boolean(user),
         register,
         login,
+        loginGoogle,
         logout,
     }), [user, token, loading])
-
-
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
 export function useAuth() {
     const ctx = useContext(AuthContext)
-    if(!ctx) throw new Error('useAuth must be used within an AuthProvider')
+    if (!ctx) throw new Error('useAuth must be used within an AuthProvider')
     return ctx
 }

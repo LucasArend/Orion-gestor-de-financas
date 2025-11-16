@@ -1,60 +1,59 @@
 import axios from 'axios';
-import { signInWithPopup } from 'firebase/auth';
 import { useEffect, useState } from 'react';
-import { FcGoogle } from 'react-icons/fc';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import styles from '../../css/Login/Login.module.css';
-import { auth, googleProvider } from '../../firebase';
+import { FcGoogle } from 'react-icons/fc';
+import OrionLogo from '../../assets/images/Orion.png';
 
 function Login() {
-  const { login, isAuthenticated, loading } = useAuth();
+  const { login, isAuthenticated, loading, setToken, setUser } = useAuth();
   const [form, setForm] = useState({ username: '', password: '' });
-  const [erro, setError] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  const urlParams = new URLSearchParams(window.location.search);
+const token = urlParams.get('token');
+
+  useEffect(() => {
+    // Captura o token da URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+
+    // Se houver token, armazena no contexto e navega para o dashboard
+    if (token) {
+      setToken(token);  // Armazena o token no contexto
+      navigate('/dashboard');  // Pode navegar para a página de dashboard ou manter-se na mesma
+    } else {
+      // Se não houver token, redirecionar para o login (caso necessário)
+      navigate('/');
+    }
+  }, [navigate, setToken]);
 
   const onChange = (event) =>
     setForm({ ...form, [event.target.name]: event.target.value });
 
-  const loginGoogle = async () => {
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const token = await result.user.getIdToken();
-
-      const response = await axios.post(
-        'URL_BACKEND',
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      console.log('Resposta do backend:', response.data);
-      navigate('/dashboard');
-    } catch (error) {
-      console.error('Erro no login Google:', error);
-      setError('Erro ao fazer login com Google.');
-    }
+  const loginGoogle = () => {
+    window.location.href = 'http://localhost:8080/oauth2/authorize/google';
+    setToken(googleToken);
   };
 
   const onSubmit = async (event) => {
     event.preventDefault();
+    console.log("estive no logingoogle")
     try {
       await login(form.username, form.password);
       navigate('/dashboard');
-    } catch (error) {
-      setError('Erro ao fazer login: ' + error.message);
+    } catch (err) {
+      setError('Erro ao fazer login: ' + err.message);
     }
   };
 
-useEffect(() => {
-  if (!loading && isAuthenticated) {
-    //navigate('/dashboard');
-  }
-}, [isAuthenticated, loading, navigate]);
+  useEffect(() => {
+    if (!loading && isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, loading, navigate]);
 
   return (
     <div className={`${styles.container}`}>
@@ -79,7 +78,7 @@ useEffect(() => {
           value={form.password}
         />
 
-        {erro && <p className={styles.erro}>{erro}</p>}
+        {error && <p className={styles.erro}>{error}</p>}
 
         <button className={styles.btn} type="submit">
           Entrar
@@ -108,7 +107,7 @@ useEffect(() => {
       </form>
 
       <div className={styles.right}>
-        <img alt="Ícone Orion" src="Orion.png" />
+        <img alt="Ícone Orion" src={OrionLogo} />
         <h1>Orion</h1>
         <p>Clareza para as suas finanças</p>
       </div>
