@@ -105,7 +105,7 @@ export default function Reports() {
 
         <div className="flex flex-col rounded-lg bg-white p-6 shadow-lg shadow-zinc-400/50">
           <h3 className="mb-4 font-semibold text-gray-800 text-xl">
-            Evolução dos Gastos
+            Evolução do Saldo Anual
           </h3>
           <div className="flex min-h-0 flex-1 flex-col rounded-lg">
             <YearlyExpenseChart />

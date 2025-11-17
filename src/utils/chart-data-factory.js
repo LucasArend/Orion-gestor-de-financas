@@ -1,6 +1,4 @@
-/*
- * Factory de dados para os gráficos
- */
+
 export const makeExpensesByCategoryData = (labels, data) => ({
   labels,
   datasets: [
@@ -86,45 +84,105 @@ export const makeIncomeVsSpendingData = (totalSalary, totalSpending) => ({
   ],
 });
 
-export const makeYearlyExpense = (labels, recentMonths) => ({
-  labels,
-  datasets: [
-    {
-      label: 'Gastos Totais',
-      data: recentMonths.map((i) => Number(i.totalExpense) || 0),
-      borderColor: '#FF3B30',
-      pointStyle: 'circle',
-      pointBackgroundColor: 'rgb(255, 99, 99)',
-      pointBorderColor: 'rgba(220, 20, 60, 0.7)',
-      pointHoverBackgroundColor: 'rgb(200, 30, 30)',
-      pointHoverBorderColor: 'rgba(220, 20, 60, 0.5)',
+export const makeYearlyExpense = (labels, recentMonths) => {
+  const balances = recentMonths.map((i) => Number(i.totalBalance) || 0);
 
-      backgroundColor: (context) => {
-        const chart = context.chart;
-        const { ctx, chartArea } = chart;
-        if (!chartArea) {
-          return null;
-        }
+  return {
+    labels,
+    datasets: [
+      {
+        label: "Saldo Mensal",
+        data: balances,
+        fill: true,
+        tension: 0.4,
+        pointRadius: 5,
+        pointHoverRadius: 7,
 
-        const gradient = ctx.createLinearGradient(
-          0,
-          chartArea.bottom,
-          0,
-          chartArea.top
-        );
-        gradient.addColorStop(0, 'rgba(255, 99, 99, 0.15)');
-        gradient.addColorStop(1, 'rgba(255, 99, 99, 0.5)');
 
-        return gradient;
+        pointBackgroundColor: (ctx) => {
+          const value = ctx.raw;
+          return value < 0 ? "#FF5252" : "#2979FF";
+        },
+        pointBorderColor: (ctx) => {
+          const value = ctx.raw;
+          return value < 0 ? "#FF5252" : "#2979FF";
+        },
+
+        segment: {
+          borderColor: (ctx) => {
+            const y1 = ctx.p0?.parsed?.y;
+            const y2 = ctx.p1?.parsed?.y;
+
+            if (typeof y1 !== "number" || typeof y2 !== "number")
+              return "#2979FF";
+
+            if (y1 > 0 && y2 > 0) return "#2979FF";
+
+
+            if (y1 < 0 && y2 < 0) return "#FF5252";
+
+
+            if (y1 < 0 && y2 > 0) return "#2979FF"; // negativo → positivo
+            if (y1 > 0 && y2 < 0) return "#FF5252"; // positivo → negativo
+
+            return "#2979FF";
+          },
+        },
+
+        backgroundColor: (context) => {
+          const chart = context.chart;
+          const { ctx, chartArea, scales } = chart;
+          if (!chartArea) return null;
+
+          const { top, bottom } = chartArea;
+          const { y } = scales;
+          const zeroY = y.getPixelForValue(0);
+
+          let offset = (bottom - zeroY) / (bottom - top);
+          offset = Math.min(1, Math.max(0, offset)); // garante intervalo válido
+
+          const gradient = ctx.createLinearGradient(0, bottom, 0, top);
+          gradient.addColorStop(0, "rgba(255,82,82,0.3)");
+          gradient.addColorStop(offset, "rgba(255,82,82,0.0)");
+          gradient.addColorStop(offset, "rgba(66,165,245,0.0)");
+          gradient.addColorStop(1, "rgba(66,165,245,0.4)");
+
+          return gradient;
+        },
+      },
+    ],
+
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+
+      scales: {
+        y: {
+          beginAtZero: false,
+          ticks: {
+            callback: (value) => `R$${value}`,
+          },
+          grid: {
+            color: "rgba(0, 0, 0, 0.1)",
+          },
+        },
+        x: {
+          grid: {
+            display: false,
+          },
+        },
       },
 
-      fill: true,
-      tension: 0.4,
-      pointRadius: 5,
-      pointHoverRadius: 7,
+      plugins: {
+        legend: {
+          display: false,
+        },
+      },
     },
-  ],
-});
+  };
+};
+
+
 
 export const makeMonthlyIncomeExpense = (labels, recentMonths) => ({
   labels,

@@ -1,6 +1,4 @@
-/*
- * Configurações para o gráfico de -Evolução dos Gastos- da página de RELATÓRIOS
- */
+
 export const yearlyChartOptions = (currencyCode, currencyCountry) => ({
   responsive: true,
   maintainAspectRatio: false,
