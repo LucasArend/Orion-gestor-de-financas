@@ -125,7 +125,7 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions, fetch
 
     async function fetchCategorias() {
       try {
-        const response = await fetch('http://localhost:8080/categorias', {
+        const response = await fetch('http://localhost:8080/categorias/me', {
           headers: { Authorization: `Bearer ${token}` },
         });
 

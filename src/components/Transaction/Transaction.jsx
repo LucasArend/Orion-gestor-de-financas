@@ -111,7 +111,7 @@ function Transaction() {
 
       const updated = await response.json();
 
-      // Atualiza o estado local com o retorno do backend
+      
       setTransacoes((prev) =>
         prev.map((t) => (t.id === id ? updated : t))
       );
