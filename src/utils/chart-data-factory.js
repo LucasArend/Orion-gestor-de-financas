@@ -86,18 +86,18 @@ export const makeIncomeVsSpendingData = (totalSalary, totalSpending) => ({
   ],
 });
 
-export const makeYearlyExpense = (labels, recentMonths) => ({
+export const makeYearlyBalance = (labels, recentMonths) => ({
   labels,
   datasets: [
     {
-      label: 'Gastos Totais',
-      data: recentMonths.map((i) => Number(i.totalExpense) || 0),
-      borderColor: '#FF3B30',
+      label: 'Balanço Mensal',
+      data: recentMonths.map((i) => Number(i.balance) || 0),
+      borderColor: '#2979FF',
       pointStyle: 'circle',
-      pointBackgroundColor: 'rgb(255, 99, 99)',
-      pointBorderColor: 'rgba(220, 20, 60, 0.7)',
-      pointHoverBackgroundColor: 'rgb(200, 30, 30)',
-      pointHoverBorderColor: 'rgba(220, 20, 60, 0.5)',
+      pointBackgroundColor: 'rgb(85,145,248)',
+      pointBorderColor: 'rgba(33, 97, 229, 0.7)',
+      pointHoverBackgroundColor: 'rgb(4,102,200)',
+      pointHoverBorderColor: 'rgba(33, 97, 229, 0.5)',
 
       backgroundColor: (context) => {
         const chart = context.chart;
@@ -112,8 +112,8 @@ export const makeYearlyExpense = (labels, recentMonths) => ({
           0,
           chartArea.top
         );
-        gradient.addColorStop(0, 'rgba(255, 99, 99, 0.15)');
-        gradient.addColorStop(1, 'rgba(255, 99, 99, 0.5)');
+        gradient.addColorStop(0, 'rgba(66, 165, 245, 0.2)');
+        gradient.addColorStop(1, 'rgba(66, 165, 245, 0.6)');
 
         return gradient;
       },

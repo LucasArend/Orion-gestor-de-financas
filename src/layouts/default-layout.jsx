@@ -16,7 +16,7 @@ export default function DefaultLayout() {
       {/* Sidebar controlada pelo layout */}
       <Sidebar open={openSidebar} setOpen={setOpenSidebar} />
 
-      <div className="ml-0 flex flex-1 flex-col transition-all duration-300 md:ml-64">
+      <div className="flex w-full flex-1 flex-col pl-0 transition-all duration-300 md:pl-64">
         {/* Passa a função para o Header */}
         <Header
           pageTitle={pageTitle}

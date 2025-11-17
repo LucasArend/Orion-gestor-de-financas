@@ -54,7 +54,7 @@ export const yearlyChartOptions = (currencyCode, currencyCountry) => ({
         },
         callback(value) {
           if (value === 0) {
-            return '';
+            return 0;
           }
           return new Intl.NumberFormat(currencyCountry, {
             style: 'currency',

@@ -4,33 +4,41 @@ import { Line } from 'react-chartjs-2';
 import { useCurrency } from '../../context/currency-provider';
 import { yearlyChartOptions } from '../../data/yearly-chart-options';
 import { useTransactionsMe } from '../../hooks/use-api';
-import { makeYearlyExpense } from '../../utils/chart-data-factory';
+import { makeYearlyBalance } from '../../utils/chart-data-factory';
 
-function buildYearlyExpenses(transactions) {
-  const monthsPeriod = -12;
-  const expenses = transactions.filter(
-    (t) => t.tipoTransacao?.nome.toUpperCase() === 'DESPESA'
-  );
-
-  if (expenses.length === 0) {
+function buildMonthlyBalance(transactions) {
+  if (!transactions || transactions.length === 0) {
     return [];
   }
 
   const map = new Map();
 
-  for (const e of expenses) {
-    const date = parseISO(e.dataVencimento);
+  for (const t of transactions) {
+    if (!t.dataVencimento) {
+      continue;
+    }
+
+    const date = parseISO(t.dataVencimento);
     const key = format(date, 'yyyy-MM-01');
 
-    const current = map.get(key) || 0;
-    map.set(key, current + Number(e.valor));
+    const current = map.get(key) || { income: 0, expense: 0 };
+    if (t.tipoTransacao?.nome.toUpperCase() === 'RENDA') {
+      current.income += Number(t.valor) || 0;
+    } else if (t.tipoTransacao?.nome.toUpperCase() === 'DESPESA') {
+      current.expense += Number(t.valor) || 0;
+    }
+
+    map.set(key, current);
   }
 
-  const months = [...map.entries()]
-    .map(([month, totalExpense]) => ({ month, totalExpense }))
-    .sort((a, b) => new Date(a.month) - new Date(b.month));
+  const monthlyBalances = [...map.entries()].map(([month, data]) => ({
+    month,
+    balance: data.income - data.expense,
+  }));
 
-  return months.slice(monthsPeriod);
+  monthlyBalances.sort((a, b) => new Date(a.month) - new Date(b.month));
+
+  return monthlyBalances;
 }
 
 const getRecentMonthsData = (data, months) =>
@@ -54,18 +62,32 @@ const getChartLabels = (recentMonths) => {
   });
 };
 
-export default function YearlyExpenseChart() {
+export default function YearlyBalanceChart() {
   const { currency } = useCurrency();
   const { data: transactions } = useTransactionsMe();
+
   if (!transactions) {
     return null;
   }
-  const monthlyData = buildYearlyExpenses(transactions);
+
+  const monthlyData = buildMonthlyBalance(transactions);
   const monthPeriod = 12;
   const recentMonths = getRecentMonthsData(monthlyData, monthPeriod);
-  const labels = getChartLabels(recentMonths);
 
-  const yearlyData = makeYearlyExpense(labels, recentMonths);
+  const fallbackRecentMonths =
+    recentMonths.length > 0
+      ? recentMonths
+      : Array.from({ length: 12 }).map((_, i) => ({
+          month: format(
+            new Date(new Date().setMonth(new Date().getMonth() - (11 - i))),
+            'yyyy-MM-01'
+          ),
+          balance: 0,
+        }));
+
+  const labels = getChartLabels(fallbackRecentMonths);
+
+  const yearlyData = makeYearlyBalance(labels, fallbackRecentMonths);
 
   return (
     <Line

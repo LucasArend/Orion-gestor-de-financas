@@ -48,7 +48,7 @@ export default function Header({ pageTitle, toggleSidebar }) {
       <div className="flex items-center gap-3">
         <div className="relative">
           <button
-            className="flex items-center gap-2 rounded-xl p-1.5 pr-2 hover:bg-gray-200"
+            className="flex items-center gap-2 rounded-2xl p-0.5 pr-2 hover:bg-gray-100"
             onClick={() => setOpen(!open)}
             ref={buttonRef}
             type="button"
