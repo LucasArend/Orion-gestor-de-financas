@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import { localeToCurrency } from '../../data/countries-currency-map';
+import { useCurrency } from '../../context/currency-provider';
 
 export function CurrencyInput({ name, label, icon: Icone }) {
   const {
@@ -9,15 +9,9 @@ export function CurrencyInput({ name, label, icon: Icone }) {
     setValue,
     formState: { errors },
   } = useFormContext();
+
+  const { currency } = useCurrency();
   const percent = 100;
-  const locale =
-    typeof navigator !== 'undefined' ? navigator.language : 'pt-BR';
-  const defaultCurrency = localeToCurrency[locale] || localeToCurrency['pt-BR'];
-  const formCurrency = watch('currency');
-
-  const hasRequiredProps = formCurrency?.code && formCurrency?.locale;
-
-  const currency = hasRequiredProps ? formCurrency : defaultCurrency;
 
   const formatCurrency = (value) => {
     if (!currency?.code) {
@@ -44,6 +38,8 @@ export function CurrencyInput({ name, label, icon: Icone }) {
     return new Intl.NumberFormat(currency.locale, {
       style: 'currency',
       currency: currency.code,
+      maximumFractionDigits: 2,
+      minimumFractionDigits: 2
     }).format(number);
   };
 

@@ -4,6 +4,8 @@ import FinancialInfoTab from '../components/Settings/financial-info-tab';
 import LoginSecurityTab from '../components/Settings/login-security-tab';
 import Tab from '../components/Settings/menu-tab';
 import PersonalInfoTab from '../components/Settings/personal-info-tab';
+import { useCurrency } from '../context/currency-provider';
+import { countryCurrencyMap } from '../data/countries-currency-map';
 import {
   useCreateIncome,
   useCreateSavings,
@@ -38,6 +40,7 @@ export default function Settings() {
   const createSavings = useCreateSavings();
   const updateUser = useUpdateUserMe();
   const updatePassword = useUpdatePassword();
+  const { commitCountry } = useCurrency();
 
   const showNotification = (type, message) => {
     setNotification({ type, message });
@@ -62,20 +65,22 @@ export default function Settings() {
   };
 
   const handleFinancialSave = async (formData) => {
-    const parsedEmergency = Number.parseFloat(formData.emergencyFund);
-    const parsedIncome = Number.parseFloat(formData.totalIncome);
+    const emergency = Number.parseFloat(formData.emergencyFund);
+    const incomeVal = Number.parseFloat(formData.totalIncome);
 
     if (saving) {
-      await updateSavings.mutateAsync({ valor: parsedEmergency });
+      await updateSavings.mutateAsync({ valor: emergency });
     } else {
-      await createSavings.mutateAsync({ valor: parsedEmergency });
+      await createSavings.mutateAsync({ valor: emergency });
     }
 
     if (income) {
-      await updateIncome.mutateAsync({ valor: parsedIncome });
+      await updateIncome.mutateAsync({ valor: incomeVal });
     } else {
-      await createIncome.mutateAsync({ valor: parsedIncome });
+      await createIncome.mutateAsync({ valor: incomeVal });
     }
+
+    commitCountry();
   };
 
   const handleSave = async () => {
@@ -96,8 +101,7 @@ export default function Settings() {
 
       setHasUnsavedChanges(false);
       showNotification('success', 'Alterações salvas com sucesso!');
-    } catch (error) {
-      console.error(error);
+    } catch {
       showNotification('error', 'Erro ao salvar alterações.');
     }
   };
@@ -108,6 +112,8 @@ export default function Settings() {
     showNotification('error', 'Alterações canceladas.');
   };
 
+  const savedCountry = localStorage.getItem('app:country') || 'BR';
+
   const userData = useMemo(
     () => ({
       fullName: user?.name,
@@ -115,12 +121,12 @@ export default function Settings() {
       password: '',
       newPassword: '',
       confirmNewPassword: '',
-      country: '',
-      currency: '',
+      country: savedCountry,
+      currency: countryCurrencyMap[savedCountry],
       emergencyFund: saving,
       totalIncome: income,
     }),
-    [user, saving, income]
+    [user, saving, income, savedCountry]
   );
 
   const ActiveComponent = useMemo(

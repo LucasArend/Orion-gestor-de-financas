@@ -14,11 +14,19 @@ export const doughnutChartOptions = {
       left: 60,
     },
   },
+  animation: {
+    animateRotate: true,
+    animateScale: true,
+    easing: 'easeOutQuart',
+    duration: 1400,
+  },
   plugins: {
     legend: {
       position: 'right',
+      display: true,
       labels: {
-        boxWidth: 14,
+        usePointStyle: true,
+        pointStyle: 'circle',
         padding: 16,
         font: {
           size: 14,

@@ -4,6 +4,7 @@ import ChartExpenses from '../components/Dashboard/expenses-chart';
 import GoalsList from '../components/Dashboard/goals-list';
 import RemindersList from '../components/Dashboard/reminder-list';
 import TransactionsList from '../components/Dashboard/transactions-list';
+import { useCurrency } from '../context/currency-provider';
 import { cardInfoDashboard } from '../data/dashboard-card-info';
 import { useUserMe } from '../hooks/use-api';
 import { useDashboardData } from '../hooks/use-dashboard-data';
@@ -16,6 +17,7 @@ export default function Dashboard() {
   const now = new Date();
   const formattingOptions = { month: 'long', year: 'numeric' };
   const today = now.toLocaleString('pt-BR', formattingOptions);
+  const { currency } = useCurrency();
 
   return (
     <div className="space-y-5">
@@ -27,9 +29,9 @@ export default function Dashboard() {
       </section>
 
       {/* Seção de Cards e Lembretes */}
-      <section className="grid items-stretch gap-4 lg:grid-cols-2">
+      <section className="grid items-stretch gap-4 md:grid-cols-1 lg:grid-cols-2">
         {/* Container para os Cards */}
-        <div className="grid grid-cols-2 items-stretch gap-4">
+        <div className="grid items-stretch gap-4 md:grid-cols-1 lg:grid-cols-2">
           {cardData.map((data) => {
             const config = cardInfoDashboard[data.categoria];
             if (!config) {
@@ -51,9 +53,9 @@ export default function Dashboard() {
                   <p
                     className={`mt-2 font-bold text-3xl ${getTextColor(title, data.valor)}`}
                   >
-                    {new Intl.NumberFormat('pt-BR', {
+                    {new Intl.NumberFormat(currency.locale, {
                       style: 'currency',
-                      currency: 'BRL',
+                      currency: currency.code,
                     }).format(data.valor)}
                   </p>
                 </div>
@@ -63,28 +65,28 @@ export default function Dashboard() {
         </div>
 
         {/* Container para a Lista de Lembretes */}
-        <div className="rounded-lg shadow-lg shadow-zinc-400/50">
+        <div className="flex min-h-0 flex-1 flex-col rounded-lg shadow-lg shadow-zinc-400/50">
           <RemindersList className="lg:col-span-2" />
         </div>
       </section>
 
       {/* Seção de Gráfico e Transações */}
-      <section className="grid items-stretch gap-4 lg:grid-cols-2">
+      <section className="grid items-stretch gap-4 md:grid-cols-1 lg:grid-cols-2">
         {/* Gráfico de Gastos */}
         <div className="flex flex-col rounded-lg bg-white p-6 shadow-lg shadow-zinc-400/50">
           <h3 className="mb-4 font-semibold text-2xl">Gastos por Categoria</h3>
-          <div className="min-h-0 flex-1">
+          <div className="flex min-h-0 flex-1 flex-col">
             <ChartExpenses />
           </div>
         </div>
         {/* Transações Recentes */}
-        <div className="flex flex-col rounded-lg bg-white p-6 shadow-lg shadow-zinc-400/50">
+        <div className="flex min-h-0 flex-1 flex-col rounded-lg bg-white p-6 shadow-lg shadow-zinc-400/50">
           <TransactionsList />
         </div>
       </section>
 
       {/* Seção de Metas */}
-      <section className="rounded-lg bg-white p-6 shadow-lg shadow-zinc-400/50">
+      <section className="items-stretch rounded-lg bg-white p-6 shadow-lg shadow-zinc-400/50">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="font-semibold text-gray-800 text-xl">Metas</h2>
           <button

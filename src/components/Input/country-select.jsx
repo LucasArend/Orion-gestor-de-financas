@@ -6,6 +6,7 @@ import {
 } from '@headlessui/react';
 import { Check, ChevronDown } from 'lucide-react';
 import { Controller, useFormContext } from 'react-hook-form';
+import { useCurrency } from '../../context/currency-provider';
 import {
   countriesOptions,
   countryCurrencyMap,
@@ -13,16 +14,13 @@ import {
 
 export default function CountrySelect() {
   const { control, setValue } = useFormContext();
+  const { queueCountry } = useCurrency();
 
   const handleCountryChange = (countryCode) => {
-    const country = countryCurrencyMap[countryCode];
-    if (country) {
-      setValue('country', countryCode, { shouldDirty: true });
-      setValue('currency', country, { shouldDirty: true });
-    } else {
-      setValue('country', '', { shouldDirty: true });
-      setValue('currency', null, { shouldDirty: true });
-    }
+    setValue('country', countryCode, { shouldDirty: true });
+    queueCountry(countryCode);
+    const currencyData = countryCurrencyMap[countryCode];
+    setValue('currency', currencyData || null, { shouldDirty: true });
   };
 
   return (

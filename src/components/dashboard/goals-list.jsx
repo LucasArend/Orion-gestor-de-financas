@@ -1,10 +1,13 @@
+import { useCurrency } from '../../context/currency-provider';
 import { useGoals } from '../../hooks/use-api';
 
 export default function GoalsList() {
+  const { currency } = useCurrency();
+
   const formatCurrency = (value) =>
-    new Intl.NumberFormat('pt-BR', {
+    new Intl.NumberFormat(currency.locale, {
       style: 'currency',
-      currency: 'BRL',
+      currency: currency.code,
     }).format(value);
 
   const formatDate = (dateString) => {
@@ -23,6 +26,21 @@ export default function GoalsList() {
   };
 
   const { data: goals = [] } = useGoals();
+
+  if (!goals.length) {
+    return (
+      <div className="rounded-xl border border-gray-300 bg-white px-6 py-10 text-center shadow-sm">
+        <p className="mb-3 font-bold text-2xl text-gray-800">
+          Nenhuma meta encontrada
+        </p>
+        <p className="text-base text-gray-600">
+          Comece agora mesmo! Clique em
+          <span className="font-semibold text-gray-800">“Adicionar Meta”</span>
+          para criar seu primeiro objetivo.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="overflow-x-auto rounded-lg shadow">

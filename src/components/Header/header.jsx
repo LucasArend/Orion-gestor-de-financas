@@ -31,19 +31,15 @@ export default function Header({ pageTitle, toggleSidebar }) {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 flex h-14 items-center gap-4 bg-white border-b border-zinc-200 px-4 md:px-8">
-
+    <header className="sticky top-0 z-50 flex h-14 items-center gap-4 border-zinc-200 border-b bg-white px-4 md:px-8">
       {/* HAMBURGER BUTTON - MOBILE ONLY */}
-      <button
-        className="md:hidden text-gray-700"
-        onClick={toggleSidebar}
-      >
-        <Menu className="w-7 h-7" />
+      <button className="text-gray-700 md:hidden" onClick={toggleSidebar}>
+        <Menu className="h-7 w-7" />
       </button>
 
       {/* Título */}
       <div className="flex-1 overflow-hidden">
-        <h1 className="font-bold text-gray-900 text-lg md:text-xl truncate">
+        <h1 className="truncate font-bold text-gray-900 text-lg md:text-xl">
           {pageTitle}
         </h1>
       </div>
@@ -63,7 +59,7 @@ export default function Header({ pageTitle, toggleSidebar }) {
               style={'h-8 w-8 text-sm'}
             />
 
-            <span className="font-medium text-gray-700 text-sm hidden sm:block">
+            <span className="hidden font-medium text-gray-700 text-sm sm:block">
               {user.name}
             </span>
 

@@ -37,7 +37,7 @@ export default function RemindersList() {
   const navigate = useNavigate();
 
   const reminders = (transactions || [])
-    .filter((t) => t.tipoTransacao?.nome === 'despesa')
+    .filter((t) => t.tipoTransacao?.nome.toLowerCase() === 'despesa')
     .map((t) => ({
       id: t.id,
       text: t.descricao,
@@ -57,12 +57,20 @@ export default function RemindersList() {
       </p>
     );
   }
+  const hasExpenses = reminders.length > 0;
 
-  if (!transactions.length) {
+  if (!hasExpenses) {
     return (
-      <p className="mt-4 text-center text-gray-500">
-        Nenhum lembrete disponível no momento.
-      </p>
+      <div className="flex h-full items-center justify-center">
+        <div className="rounded-xl border border-gray-300 bg-white px-10 py-10 text-center shadow-sm sm:m-10 md:m-10">
+          <p className="mb-3 font-bold text-gray-800 text-xl">
+            Nenhum lembrete por aqui ainda
+          </p>
+          <p className="text-base text-gray-600">
+            Crie uma despesa futura para gerar lembretes.
+          </p>
+        </div>
+      </div>
     );
   }
 
