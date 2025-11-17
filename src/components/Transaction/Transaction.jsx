@@ -196,7 +196,8 @@ function Transaction() {
         open={newModalOpen}
         onClose={() => setNewModalOpen(false)}
         onAdd={handleAddTransacao}
-        fetchTransacoes={fetchTransacoes}
+        onUpdateTransactions={fetchTransacoes}  
+        fetchTransacoes={fetchTransacoes}       
       />
 
       <ConfirmModal

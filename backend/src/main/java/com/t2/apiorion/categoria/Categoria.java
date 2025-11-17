@@ -1,10 +1,15 @@
 package com.t2.apiorion.categoria;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.t2.apiorion.transacao.Transacao;
 import com.t2.apiorion.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "categoria")
@@ -22,6 +27,14 @@ public class Categoria {
     @JoinColumn(name = "usuario_id", nullable = true)
     private User usuario;
 
+    @JsonIgnore
+    @OneToMany(
+            mappedBy = "categoria",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Transacao> transacoes = new ArrayList<>();
+
     private Instant createdAt;
     private Instant updatedAt;
 
@@ -37,6 +50,7 @@ public class Categoria {
         this.updatedAt = Instant.now();
     }
 
+    // Getters e Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -45,6 +59,9 @@ public class Categoria {
 
     public User getUsuario() { return usuario; }
     public void setUsuario(User usuario) { this.usuario = usuario; }
+
+    public List<Transacao> getTransacoes() { return transacoes; }
+    public void setTransacoes(List<Transacao> transacoes) { this.transacoes = transacoes; }
 
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
