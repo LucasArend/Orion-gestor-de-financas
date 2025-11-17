@@ -1,56 +1,82 @@
-import { Bar } from "react-chartjs-2";
-import { useTransactions } from "../../hooks/useTransactions";
-import { getRecentMonthsData, getChartLabels } from "../../utils/chart-formatting";
-import { makeMonthlyIncomeExpense } from "../../utils/chart-data-factory";
-import { monthlyChartOptions } from "../../data/monthly-chart-options";
+import { format, parseISO } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Bar } from 'react-chartjs-2';
+import { useCurrency } from '../../context/currency-provider';
+import { monthlyChartOptions } from '../../data/monthly-chart-options';
+import { useTransactionsMe } from '../../hooks/use-api';
+import { makeMonthlyIncomeExpense } from '../../utils/chart-data-factory';
+
+const getMonthKey = (dateStr) => {
+  const d = new Date(dateStr);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+};
+
+const buildMonthlyAggregates = (transactions) => {
+  const map = {};
+
+  for (const t of transactions) {
+    if (!t.dataVencimento) {
+      continue;
+    }
+
+    const monthKey = getMonthKey(t.dataVencimento);
+
+    if (!map[monthKey]) {
+      map[monthKey] = {
+        month: monthKey,
+        totalIncome: 0,
+        totalExpense: 0,
+      };
+    }
+
+    const value = Number(t.valor) || 0;
+
+    if (t.tipoTransacao?.nome.toUpperCase() === 'RENDA') {
+      map[monthKey].totalIncome += value;
+    }
+
+    if (t.tipoTransacao?.nome.toUpperCase() === 'DESPESA') {
+      map[monthKey].totalExpense += value;
+    }
+  }
+
+  return Object.values(map).sort(
+    (a, b) => new Date(a.month) - new Date(b.month)
+  );
+};
+
+const getRecentMonths = (list, limit = 4) => {
+  const sorted = list
+    .slice()
+    .sort((a, b) => new Date(b.month) - new Date(a.month));
+
+  return sorted.slice(0, limit).reverse();
+};
+
+const getChartLabels = (months) => {
+  const years = new Set(months.map((m) => parseISO(m.month).getFullYear()));
+  const showYear = years.size > 1;
+
+  return months.map((item) => {
+    const date = parseISO(item.month);
+    const pattern = showYear ? 'MMM/yy' : 'MMM';
+    const raw = format(date, pattern, { locale: ptBR });
+    return raw.charAt(0).toUpperCase() + raw.slice(1);
+  });
+};
 
 export default function MonthlyIncomeExpenseChart() {
-  const { transactions, loading, error } = useTransactions();
+  const { currency } = useCurrency();
+  const { data: transactions } = useTransactionsMe();
 
-  if (loading) return <p>Carregando dados...</p>;
-  if (error) return <p>Erro ao carregar dados: {error}</p>;
-
-  const processTransactions = (transactions) => {
-    const incomeMap = {};
-    const expenseMap = {};
-
-    transactions.forEach((t) => {
-      const { tipoTransacao, valor, dataVencimento } = t;
-      const monthYear = new Date(dataVencimento).toISOString().substring(0, 7);
-
-      if (tipoTransacao.id === 1) {
-        // Renda
-        if (!incomeMap[monthYear]) incomeMap[monthYear] = 0;
-        incomeMap[monthYear] += valor;
-      } else if (tipoTransacao.id === 2) {
-        // Despesa
-        if (!expenseMap[monthYear]) expenseMap[monthYear] = 0;
-        expenseMap[monthYear] += valor;
-      }
-    });
-
-    const allMonths = [...new Set([...Object.keys(incomeMap), ...Object.keys(expenseMap)])];
-    allMonths.sort();
-
-    return allMonths.map((month) => ({
-      month,
-      totalIncome: incomeMap[month] || 0,
-      totalExpense: expenseMap[month] || 0,
-    }));
-  };
-
-  const monthlyData = processTransactions(transactions);
-  const recentMonths = getRecentMonthsData(monthlyData, 5);
+  if (!transactions) {
+    return null;
+  }
+  const monthPeriod = 4;
+  const aggregated = buildMonthlyAggregates(transactions);
+  const recentMonths = getRecentMonths(aggregated, monthPeriod);
   const labels = getChartLabels(recentMonths);
   const chartData = makeMonthlyIncomeExpense(labels, recentMonths);
 
-      if (!labels.length) {
-    return (
-      <div className="flex justify-center items-center h-64 text-gray-500 text-lg font-medium">
-        Nenhuma transação encontrada
-      </div>
-    );
-  }
-
-  return <Bar data={chartData} options={monthlyChartOptions} />;
+  return <Bar data={chartData} options={monthlyChartOptions(currency.code, currency.locale)} />;
 }

@@ -1,37 +1,52 @@
-import { TrashIcon, PencilIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline';
+import {
+  CurrencyDollarIcon,
+  PencilIcon,
+  TrashIcon,
+} from '@heroicons/react/24/outline';
+import { useCurrency } from '../../context/currency-provider';
 
-const formatCurrency = (value) => {
-  const numericValue = value === null || value === undefined ? 0 : Number(value)
-  return numericValue.toLocaleString('pt-BR', {
+const formatCurrency = (value, currency) => {
+  const numericValue =
+    value === null || value === undefined ? 0 : Number(value);
+  return numericValue.toLocaleString(currency.locale, {
     style: 'currency',
-    currency: 'BRL'
+    currency: currency.code,
   });
 };
 
 const formatDate = (dateString) => {
-  
-  if(!dateString || (typeof dateString === 'string' && dateString.trim() === '')) {
-    return '-'
+  if (
+    !dateString ||
+    (typeof dateString === 'string' && dateString.trim() === '')
+  ) {
+    return '-';
   }
 
   try {
-    const date = new Date(dateString)
+    const date = new Date(dateString);
 
-    if(isNaN(date.getTime())){
-      return dateString
+    if (Number.isNaN(date.getTime())) {
+      return dateString;
     }
 
-    const day = date.getUTCDate().toString().padStart(2, '0')
-    const month = (date.getUTCMonth() + 1).toString().padStart(2, '0')
-    const year = date.getUTCFullYear()
+    const day = date.getUTCDate().toString().padStart(2, '0');
+    const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+    const year = date.getUTCFullYear();
 
-    return `${day}/${month}/${year}`
-  } catch (error) {
+    return `${day}/${month}/${year}`;
+  } catch {
     return dateString;
   }
 };
 
-export default function GoalsTable({ metas, onRemove, onEdit, onContribution }) {
+export default function GoalsTable({
+  metas,
+  onRemove,
+  onEdit,
+  onContribution,
+}) {
+  const { currency } = useCurrency();
+
   return (
     <div className="overflow-hidden rounded-xl bg-white shadow-lg">
       <table className="w-full border-collapse">
@@ -68,16 +83,18 @@ export default function GoalsTable({ metas, onRemove, onEdit, onContribution }) 
             >
               <td className="px-6 py-4 text-gray-900">{meta.objective}</td>
               <td className="px-6 py-4 text-gray-500 text-sm">
-                {formatCurrency(meta.goal)}
+                {formatCurrency(meta.goal, currency)}
               </td>
               <td className="px-6 py-4 text-gray-500 text-sm">
-                {formatCurrency(meta.saved)}
+                {formatCurrency(meta.saved, currency)}
               </td>
               <td className="px-6 py-4 text-gray-500 text-sm">
-                <div className='flex gap-1'>
-                  {formatCurrency(meta.contribution)}
-                  <button className='cursor-pointer text-base text-green-600 hover:text-green-800'
+                <div className="flex gap-1">
+                  {formatCurrency(meta.contribution, currency)}
+                  <button
+                    className="cursor-pointer text-base text-green-600 hover:text-green-800"
                     onClick={() => onContribution(meta)}
+                    type="button"
                   >
                     <CurrencyDollarIcon className="h-5 w-5" />
                   </button>
@@ -90,14 +107,18 @@ export default function GoalsTable({ metas, onRemove, onEdit, onContribution }) 
                 {formatDate(meta.goalDate)}
               </td>
               <td className="px-6 py-4 text-gray-500 text-sm">
-                <div className='flex items-center justify-center gap-3'>
-                  <button className='cursor-pointer text-base text-yellow-600 hover:text-yellow-800'
-                  onClick={() => onEdit(meta.id)}
+                <div className="flex items-center justify-center gap-3">
+                  <button
+                    className="cursor-pointer text-base text-yellow-600 hover:text-yellow-800"
+                    onClick={() => onEdit(meta.id)}
+                    type="button"
                   >
                     <PencilIcon className="h-5 w-5" />
                   </button>
-                  <button className='cursor-pointer text-base text-red-600 hover:text-red-800'
+                  <button
+                    className="cursor-pointer text-base text-red-600 hover:text-red-800"
                     onClick={() => onRemove(meta.id)}
+                    type="button"
                   >
                     <TrashIcon className="h-5 w-5" />
                   </button>

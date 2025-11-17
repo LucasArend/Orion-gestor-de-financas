@@ -1,99 +1,74 @@
-import { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
+import { useCurrency } from '../../context/currency-provider';
 import { expensesChartOptions } from '../../data/expenses-category-options';
+import { useTransactionsMe } from '../../hooks/use-api';
 import { makeExpensesByCategoryData } from '../../utils/chart-data-factory';
-import { useAuth } from '../../context/AuthContext';  
-import axios from 'axios';
 
+const aggregateByCategory = (transactions) => {
+  const map = new Map();
 
-const groupTransactionsByCategory = (transactions) => {
-  const grouped = {};
+  for (const t of transactions) {
+    const nome = t.categoria?.nome || 'Sem categoria';
+    const valor = Number(t.valor) || 0;
 
-  transactions.forEach((transaction) => {
-    console.log("Transação sendo processada:", transaction);
-
-    
-    if (transaction.tipoTransacao.id === 2 && transaction.status === 'PENDENTE' && transaction.valor > 0) {
-      const categoryId = transaction.categoria.id;
-
-      
-      if (grouped[categoryId]) {
-        grouped[categoryId].valor += transaction.valor;
-      } else {
-        grouped[categoryId] = {
-          nome: transaction.categoria.nome,
-          valor: transaction.valor,
-        };
-      }
+    if (map.has(nome)) {
+      map.set(nome, {
+        nome,
+        valor: map.get(nome).valor + valor,
+      });
+    } else {
+      map.set(nome, { nome, valor });
     }
-  });
+  }
 
-  
-  const result = Object.keys(grouped).map((categoryId) => ({
-    nome: grouped[categoryId].nome,
-    valor: grouped[categoryId].valor,
-  }));
-
-  console.log("Dados agrupados:", result);  
-
-  return result;
+  return Array.from(map.values());
 };
 
-const processChartData = (groupedData) => {
-  console.log("Dados agrupados recebidos para processamento:", groupedData);
+const processChartData = (rawCategories) => {
+  const MAX = 4;
+  const sorted = [...rawCategories].sort((a, b) => b.valor - a.valor);
 
-  const labels = groupedData.map(item => item.nome);  
-  const data = groupedData.map(item => item.valor);   
+  if (sorted.length <= MAX) {
+    return {
+      labels: sorted.map((c) => c.nome),
+      data: sorted.map((c) => c.valor),
+    };
+  }
 
-  console.log("Labels processados:", labels);   
-  console.log("Data processados:", data);       
+  const top = sorted.slice(0, MAX);
+  const others = sorted.slice(MAX);
+  const othersTotal = others.reduce((sum, item) => sum + item.valor, 0);
 
-  return { labels, data };
+  return {
+    labels: [...top.map((c) => c.nome), 'Outros'],
+    data: [...top.map((c) => c.valor), othersTotal],
+  };
 };
 
 export default function ChartExpenses() {
-  const { token } = useAuth();
-  const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { data: transactions = [], isLoading } = useTransactionsMe();
+  const { currency } = useCurrency();
 
-  useEffect(() => {
-    async function fetchTransactions() {
-      try {
-        const response = await axios.get('http://localhost:8080/api/transacoes/me', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+  if (isLoading) {
+    return (
+      <p className="mt-4 text-center text-gray-500">
+        Carregando suas transações...
+      </p>
+    );
+  }
 
-        console.log("Transações recebidas:", response.data);  // Verificando a resposta da API
+  const expenses = transactions.filter(
+    (t) => t.tipoTransacao?.nome?.toUpperCase() === 'DESPESA'
+  );
 
-        const groupedData = groupTransactionsByCategory(response.data);
-
-        const processedData = processChartData(groupedData);
-
-        setTransactions(processedData);
-      } catch (err) {
-        setError('Erro ao carregar as transações');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    if (token) {
-      fetchTransactions();
-    }
-  }, [token]);
-
-  if (loading) return <div>Carregando...</div>;
-  if (error) return <div>{error}</div>;
-
-  console.log("Transactions após processamento:", transactions);  // Verificando os dados finais
-
-  const { labels, data } = transactions;
-
+  const aggregated = aggregateByCategory(expenses);
+  const { labels, data } = processChartData(aggregated);
   const expensesChartData = makeExpensesByCategoryData(labels, data);
 
-  return <Bar data={expensesChartData} options={expensesChartOptions} />;
+  return (
+    <Bar
+      data={expensesChartData}
+      options={expensesChartOptions(currency.code, currency.locale)}
+    />
+  );
 }

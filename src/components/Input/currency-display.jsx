@@ -1,10 +1,7 @@
-import { useFormContext } from 'react-hook-form';
-import { countryCurrencyMap } from '../../data/countries-currency-map';
+import { useCurrency } from '../../context/currency-provider';
 
 export function CurrencyDisplay() {
-  const { watch } = useFormContext();
-  const country = watch('country');
-  const currency = countryCurrencyMap[country];
+  const { currency } = useCurrency();
 
   return (
     <div className="space-y-2">
