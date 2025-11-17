@@ -1,8 +1,8 @@
+import { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Header from '../components/Header/header';
 import Sidebar from '../components/Menu/sidebar';
 import { navItems } from '../data/nav-items';
-import { useState } from 'react';
 
 export default function DefaultLayout() {
   const location = useLocation();
@@ -13,15 +13,16 @@ export default function DefaultLayout() {
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      
       {/* Sidebar controlada pelo layout */}
       <Sidebar open={openSidebar} setOpen={setOpenSidebar} />
 
-      <div className="flex flex-1 flex-col ml-0 md:ml-64 transition-all duration-300">
-        
+      <div className="ml-0 flex flex-1 flex-col transition-all duration-300 md:ml-64">
         {/* Passa a função para o Header */}
-        <Header pageTitle={pageTitle} toggleSidebar={() => setOpenSidebar(!openSidebar)} />
-        
+        <Header
+          pageTitle={pageTitle}
+          toggleSidebar={() => setOpenSidebar(!openSidebar)}
+        />
+
         <main className="flex-1 p-8">
           <Outlet />
         </main>
