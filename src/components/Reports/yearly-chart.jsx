@@ -1,55 +1,76 @@
-import { Line } from "react-chartjs-2";
-import { yearlyChartOptions } from "../../data/yearly-chart-options";
-import { makeYearlyExpense } from "../../utils/chart-data-factory";
-import { getChartLabels, getRecentMonthsData } from "../../utils/chart-formatting";
-import { useTransactions } from "../../hooks/useTransactions";
+import { format, parseISO } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Line } from 'react-chartjs-2';
+import { useCurrency } from '../../context/currency-provider';
+import { yearlyChartOptions } from '../../data/yearly-chart-options';
+import { useTransactionsMe } from '../../hooks/use-api';
+import { makeYearlyExpense } from '../../utils/chart-data-factory';
 
-export default function YearlyExpenseChart() {
-  const { transactions, loading, error } = useTransactions();
+function buildYearlyExpenses(transactions) {
+  const monthsPeriod = -12;
+  const expenses = transactions.filter(
+    (t) => t.tipoTransacao?.nome.toUpperCase() === 'DESPESA'
+  );
 
-  if (loading) return <p>Carregando dados...</p>;
-  if (error) return <p>Erro ao carregar dados: {error}</p>;
-
-  const processTransactions = (transactions) => {
-    const incomeMap = {};
-    const expenseMap = {};
-
-    transactions.forEach((t) => {
-      const { tipoTransacao, valor, dataVencimento } = t;
-      const monthYear = new Date(dataVencimento).toISOString().substring(0, 7);
-
-      if (tipoTransacao.id === 1) {
-        if (!incomeMap[monthYear]) incomeMap[monthYear] = 0;
-        incomeMap[monthYear] += valor;
-      } else if (tipoTransacao.id === 2) {
-        if (!expenseMap[monthYear]) expenseMap[monthYear] = 0;
-        expenseMap[monthYear] += valor;
-      }
-    });
-
-    const allMonths = [...new Set([...Object.keys(incomeMap), ...Object.keys(expenseMap)])];
-    allMonths.sort();
-
-    return allMonths.map((month) => ({
-      month,
-      totalIncome: incomeMap[month] || 0,
-      totalExpense: expenseMap[month] || 0,
-      totalBalance: (incomeMap[month] || 0) - (expenseMap[month] || 0),
-    }));
-  };
-
-  const monthlyData = processTransactions(transactions);
-  const recentMonths = getRecentMonthsData(monthlyData, 12);
-  const labels = getChartLabels(recentMonths);
-  const yearlyData = makeYearlyExpense(labels, recentMonths);
-
-      if (!labels.length) {
-    return (
-      <div className="flex justify-center items-center h-64 text-gray-500 text-lg font-medium">
-        Nenhuma transação encontrada
-      </div>
-    );
+  if (expenses.length === 0) {
+    return [];
   }
 
-  return <Line data={yearlyData} options={yearlyChartOptions} />;
+  const map = new Map();
+
+  for (const e of expenses) {
+    const date = parseISO(e.dataVencimento);
+    const key = format(date, 'yyyy-MM-01');
+
+    const current = map.get(key) || 0;
+    map.set(key, current + Number(e.valor));
+  }
+
+  const months = [...map.entries()]
+    .map(([month, totalExpense]) => ({ month, totalExpense }))
+    .sort((a, b) => new Date(a.month) - new Date(b.month));
+
+  return months.slice(monthsPeriod);
+}
+
+const getRecentMonthsData = (data, months) =>
+  data
+    .slice()
+    .sort((a, b) => new Date(b.month).getTime() - new Date(a.month).getTime())
+    .slice(0, months)
+    .reverse();
+
+const getChartLabels = (recentMonths) => {
+  const years = new Set(
+    recentMonths.map((item) => parseISO(item.month).getFullYear())
+  );
+  const showYear = years.size > 1;
+
+  return recentMonths.map((item) => {
+    const date = parseISO(item.month);
+    const pattern = showYear ? 'MMM/yy' : 'MMM';
+    const raw = format(date, pattern, { locale: ptBR });
+    return raw.charAt(0).toUpperCase() + raw.slice(1);
+  });
+};
+
+export default function YearlyExpenseChart() {
+  const { currency } = useCurrency();
+  const { data: transactions } = useTransactionsMe();
+  if (!transactions) {
+    return null;
+  }
+  const monthlyData = buildYearlyExpenses(transactions);
+  const monthPeriod = 12;
+  const recentMonths = getRecentMonthsData(monthlyData, monthPeriod);
+  const labels = getChartLabels(recentMonths);
+
+  const yearlyData = makeYearlyExpense(labels, recentMonths);
+
+  return (
+    <Line
+      data={yearlyData}
+      options={yearlyChartOptions(currency.code, currency.locale)}
+    />
+  );
 }

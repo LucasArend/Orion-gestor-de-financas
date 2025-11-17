@@ -1,9 +1,11 @@
 import { ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useCurrency } from '../../context/currency-provider';
 import { transactionIcons } from '../../data/transaction-icons';
 import { useTransactionsMe } from '../../hooks/use-api';
 
 const TransactionItem = ({ description, category, value, isPositive }) => {
+  const { currency } = useCurrency();
   const status = isPositive ? 'positive' : 'negative';
   const { icon: Icon, color, bgColor } = transactionIcons[status];
 
@@ -21,9 +23,9 @@ const TransactionItem = ({ description, category, value, isPositive }) => {
       </div>
       <p className={`font-semibold ${color}`}>
         {isPositive ? '' : '-'}
-        {new Intl.NumberFormat('pt-BR', {
+        {new Intl.NumberFormat(currency.locale, {
           style: 'currency',
-          currency: 'BRL',
+          currency: currency.code,
         }).format(value)}
       </p>
     </div>
@@ -49,9 +51,16 @@ export default function TransactionsList() {
 
   if (!transactions.length) {
     return (
-      <p className="mt-4 text-center text-gray-500">
-        Nenhuma transação encontrada.
-      </p>
+      <div className="flex h-full items-center justify-center">
+        <div className="m-6 rounded-xl border border-gray-300 bg-white px-6 py-10 text-center shadow-sm sm:m-10 md:m-10">
+          <p className="mb-3 font-bold text-gray-800 text-xl">
+            Nenhuma transação encontrada
+          </p>
+          <p className="text-base text-gray-600">
+            Inclua uma movimentação para visualizar seu histórico.
+          </p>
+        </div>
+      </div>
     );
   }
 

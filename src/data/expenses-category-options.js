@@ -1,7 +1,7 @@
 /*
  * Configurações para o gráfico de -Gastos por Categoria- da página de DASHBOARD
  */
-export const expensesChartOptions = {
+export const expensesChartOptions = (currencyCode, currencyCountry) => ({
   responsive: true,
   maintainAspectRatio: false,
   indexAxis: 'x',
@@ -32,7 +32,12 @@ export const expensesChartOptions = {
           if (value === 0) {
             return '';
           }
-          return `R$${value.toFixed(0).replace('.', ',')}`;
+          return new Intl.NumberFormat(currencyCountry, {
+            style: 'currency',
+            currency: currencyCode,
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+          }).format(value);
         },
       },
     },
@@ -52,9 +57,9 @@ export const expensesChartOptions = {
       callbacks: {
         label: (tooltipItem) => {
           const value = tooltipItem.raw;
-          return new Intl.NumberFormat('pt-BR', {
+          return new Intl.NumberFormat(currencyCountry, {
             style: 'currency',
-            currency: 'BRL',
+            currency: currencyCode,
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           }).format(value);
@@ -63,4 +68,4 @@ export const expensesChartOptions = {
     },
   },
   barPercentage: 0.5,
-};
+});

@@ -1,6 +1,7 @@
 import { TrashIcon } from '@heroicons/react/24/outline';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Plus } from 'lucide-react';
+import { useCurrency } from '../../context/currency-provider';
 
 function TransactionList({
   transacoes,
@@ -12,10 +13,13 @@ function TransactionList({
   onOpen,
   onChangeStatus,
 }) {
+  const { currency } = useCurrency();
   if (loading) return <p>Carregando transações...</p>;
 
   const filtered = transacoes.filter((t) => {
-    const matchesSearch = (t.descricao ?? '').toLowerCase().includes((search ?? '').toLowerCase());
+    const matchesSearch = (t.descricao ?? '')
+      .toLowerCase()
+      .includes((search ?? '').toLowerCase());
     const matchesCategory = category ? t.categoria?.nome === category : true;
     const matchesType = type ? t.tipoTransacao?.nome === type : true;
     return matchesSearch && matchesCategory && matchesType;
@@ -53,7 +57,8 @@ function TransactionList({
           <tbody>
             <AnimatePresence>
               {filtered.map((transacao) => {
-                const isRenda = transacao.tipoTransacao?.nome.toLowerCase() === 'renda';
+                const isRenda =
+                  transacao.tipoTransacao?.nome.toLowerCase() === 'renda';
                 return (
                   <motion.tr
                     animate={{ opacity: 1, y: 0 }}
@@ -66,7 +71,9 @@ function TransactionList({
                     <td className="p-2">
                       <span
                         className={`rounded px-2 py-1 font-semibold text-xs ${
-                          isRenda ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                          isRenda
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-red-100 text-red-700'
                         }`}
                       >
                         {transacao.tipoTransacao?.nome ?? 'N/A'}
@@ -78,23 +85,32 @@ function TransactionList({
                         isRenda ? 'text-green-600' : 'text-red-600'
                       }`}
                     >
-                      {new Intl.NumberFormat('pt-BR', {
+                      {new Intl.NumberFormat(currency.locale, {
                         style: 'currency',
-                        currency: 'BRL',
+                        currency: currency.code,
                       }).format(transacao.valor)}
                     </td>
-                    <td className="p-2">{transacao.categoria?.nome ?? 'N/A'}</td>
+                    <td className="p-2">
+                      {transacao.categoria?.nome ?? 'N/A'}
+                    </td>
                     <td className="p-2">
                       {new Date(transacao.dataVencimento).toLocaleDateString()}
                     </td>
                     <td className="p-2">
                       <button
-                        className={`px-2 py-1 rounded ${
+                        className={`rounded px-2 py-1 ${
                           transacao.status === 'PENDENTE'
                             ? 'bg-yellow-200 text-yellow-800'
                             : 'bg-green-200 text-green-800'
                         }`}
-                        onClick={() => onChangeStatus(transacao.id, transacao.status === 'PENDENTE' ? 'CONCLUIDO' : 'PENDENTE')}
+                        onClick={() =>
+                          onChangeStatus(
+                            transacao.id,
+                            transacao.status === 'PENDENTE'
+                              ? 'CONCLUIDO'
+                              : 'PENDENTE'
+                          )
+                        }
                       >
                         {transacao.status}
                       </button>
