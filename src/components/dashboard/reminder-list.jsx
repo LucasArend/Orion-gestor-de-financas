@@ -36,13 +36,15 @@ export default function RemindersList() {
   const { data: transactions, isLoading } = useTransactionsMe();
   const navigate = useNavigate();
 
-  const reminders = (transactions || [])
-    .filter((t) => t.tipoTransacao?.nome.toLowerCase() === 'despesa')
-    .map((t) => ({
-      id: t.id,
-      text: t.descricao,
-      date: formatReminderDate(t.dataVencimento, t.status),
-    }));
+  const isPendingExpense = (t) =>
+    t.tipoTransacao?.nome.toLowerCase() === 'despesa' &&
+    t.status?.toUpperCase() !== 'CONCLUIDO';
+
+  const reminders = (transactions || []).filter(isPendingExpense).map((t) => ({
+    id: t.id,
+    text: t.descricao,
+    date: formatReminderDate(t.dataVencimento, t.status),
+  }));
 
   const maxItems = 5;
   const shouldShowButton = reminders.length > maxItems;
