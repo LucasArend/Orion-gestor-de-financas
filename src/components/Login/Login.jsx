@@ -16,16 +16,15 @@ function Login() {
 const token = urlParams.get('token');
 
   useEffect(() => {
-    // Captura o token da URL
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
 
-    // Se houver token, armazena no contexto e navega para o dashboard
+
     if (token) {
-      setToken(token);  // Armazena o token no contexto
-      navigate('/dashboard');  // Pode navegar para a página de dashboard ou manter-se na mesma
+      setToken(token); 
+      navigate('/dashboard');  
     } else {
-      // Se não houver token, redirecionar para o login (caso necessário)
+
       navigate('/');
     }
   }, [navigate, setToken]);

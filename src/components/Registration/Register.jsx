@@ -2,6 +2,7 @@ import styles from '../../css/Login/Login.module.css'
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import OrionLogo from '../../assets/images/Orion.png';
 
 export default function Register() {
   const { register } = useAuth();
@@ -98,7 +99,7 @@ export default function Register() {
       </form>
 
       <div className={styles.right}>
-        <img src="Orion.png" alt="Ícone Orion" />
+        <img alt="Ícone Orion" src={OrionLogo} />
         <h1>Orion</h1>
         <p>Clareza para as suas finanças</p>
       </div>
