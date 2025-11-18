@@ -1,7 +1,7 @@
 /*
  * Configurações para o gráfico de -Balanço Financeiro Mensal- da página de RELATÓRIOS
  */
-export const monthlyChartOptions = {
+export const monthlyChartOptions = (currencyCode, currencyCountry) => ({
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
@@ -24,9 +24,9 @@ export const monthlyChartOptions = {
       callbacks: {
         label: (tooltipItem) => {
           const value = tooltipItem.raw;
-          return new Intl.NumberFormat('pt-BR', {
+          return new Intl.NumberFormat(currencyCountry, {
             style: 'currency',
-            currency: 'BRL',
+            currency: currencyCode,
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           }).format(value);
@@ -48,10 +48,15 @@ export const monthlyChartOptions = {
           if (value === 0) {
             return '';
           }
-          return `R$${Number(value).toFixed(0).replace('.', ',')}`;
+          return new Intl.NumberFormat(currencyCountry, {
+            style: 'currency',
+            currency: currencyCode,
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+          }).format(value);
         },
       },
       grid: { display: true, border: { display: false } },
     },
   },
-};
+});

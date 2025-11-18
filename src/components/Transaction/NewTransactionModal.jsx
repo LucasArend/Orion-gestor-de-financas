@@ -49,51 +49,16 @@ async function deletarCategoria(id, token) {
   try {
     const response = await fetch(`http://localhost:8080/categorias/${id}`, {
       method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     });
 
     if (!response.ok) throw new Error('Erro ao deletar categoria');
+
     toast.success('Categoria removida com sucesso!');
     return true;
   } catch (error) {
     console.error(error);
     toast.error('Erro ao deletar categoria.');
-    return false;
-  }
-}
-
-async function deletarTransacoesPorCategoria(categoria, token) {
-  try {
-    const response = await fetch(
-      `http://localhost:8080/transacoes?categoria=${encodeURIComponent(categoria)}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    if (!response.ok) throw new Error('Erro ao buscar transações por categoria');
-
-    const transacoes = await response.json();
-
-    for (const t of transacoes) {
-      const res = await fetch(`http://localhost:8080/transacoes/${t.id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) throw new Error('Erro ao deletar transação vinculada');
-    }
-
-    return true;
-  } catch (error) {
-    console.error(error);
-    toast.error('Erro ao deletar transações da categoria.');
     return false;
   }
 }
@@ -125,7 +90,7 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions, fetch
 
     async function fetchCategorias() {
       try {
-        const response = await fetch('http://localhost:8080/categorias', {
+        const response = await fetch('http://localhost:8080/categorias/me', {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -193,13 +158,6 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions, fetch
   async function confirmarDeleteCategoria() {
     if (!confirmDeleteChecked) return;
 
-    const transacoesOk = await deletarTransacoesPorCategoria(
-      categoriaParaDeletar.nome,
-      token
-    );
-
-    if (!transacoesOk) return;
-
     const sucesso = await deletarCategoria(categoriaParaDeletar.id, token);
 
     if (sucesso) {
@@ -207,9 +165,11 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions, fetch
       if (categoriaSelecionada === categoriaParaDeletar.nome) {
         setCategoriaSelecionada('');
       }
-      setModalDeleteOpen(false);
-
-      if (onUpdateTransactions) onUpdateTransactions();
+      
+      if (onUpdateTransactions) await onUpdateTransactions();
+      
+      
+      onClose();
     }
   }
 
@@ -250,13 +210,12 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions, fetch
         },
         body: JSON.stringify(novaTransacao),
       });
-      console.log("Transação sendo enviada:", novaTransacao);
+
       if (!res.ok) {
         const errorText = await res.text();
         throw new Error(`Erro ao salvar transação: ${errorText}`);
       }
 
-      const data = await res.json();
       toast.success('Transação adicionada com sucesso!');
       if (fetchTransacoes) await fetchTransacoes();
       onClose();
@@ -294,7 +253,7 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions, fetch
       >
         <h2 className="mb-2 font-semibold text-lg">Nova Transação</h2>
 
-        {!(adicionandoCategoria || editandoCategoria) && (
+        {!adicionandoCategoria && !editandoCategoria && (
           <div>
             <p className="mb-1">Tipo da transação</p>
             <div className="flex gap-4">
@@ -353,7 +312,6 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions, fetch
                     setNovaCategoriaNome('');
                     setNomeCategoriaEditando('');
                   }}
-                  type="button"
                 >
                   Cancelar
                 </button>
@@ -364,7 +322,6 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions, fetch
                       ? handleEditarCategoria
                       : handleAdicionarCategoria
                   }
-                  type="button"
                 >
                   Salvar
                 </button>
@@ -386,45 +343,45 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions, fetch
                   <ul className="absolute top-full z-10 max-h-60 w-full overflow-y-auto rounded border bg-white p-2 shadow-lg">
                     {categorias.map((cat) => (
                       <div
-  className="flex cursor-pointer items-center justify-between px-3 py-1 hover:bg-gray-100"
-  key={cat.id}
->
-  <span
-    className="flex-1"
-    onClick={() => {
-      setCategoriaSelecionada(cat.nome);
-      setShowDropdown(false);
-    }}
-  >
-    {cat.nome}
-  </span>
-  <div className="flex gap-2">
-    <button
-      className="text-blue-500 hover:text-blue-700"
-      onClick={(e) => {
-        e.stopPropagation();
-        setEditandoCategoria(cat);
-        setNomeCategoriaEditando(cat.nome);
-        setShowDropdown(false);
-      }}
-      type="button"
-    >
-      ✏️
-    </button>
-    <button
-      className="text-red-500 hover:text-red-700"
-      onClick={(e) => {
-        e.stopPropagation();
-        abrirModalDeleteCategoria(cat);
-      }}
-      type="button"
-    >
-      <TrashIcon className="h-5 w-5" />
-    </button>
-  </div>
-</div>
+                        className="flex cursor-pointer items-center justify-between px-3 py-1 hover:bg-gray-100"
+                        key={cat.id}
+                      >
+                        <span
+                          className="flex-1"
+                          onClick={() => {
+                            setCategoriaSelecionada(cat.nome);
+                            setShowDropdown(false);
+                          }}
+                        >
+                          {cat.nome}
+                        </span>
 
+                        <div className="flex gap-2">
+                          <button
+                            className="text-blue-500 hover:text-blue-700"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditandoCategoria(cat);
+                              setNomeCategoriaEditando(cat.nome);
+                              setShowDropdown(false);
+                            }}
+                          >
+                            ✏️
+                          </button>
+
+                          <button
+                            className="text-red-500 hover:text-red-700"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              abrirModalDeleteCategoria(cat);
+                            }}
+                          >
+                            <TrashIcon className="h-5 w-5" />
+                          </button>
+                        </div>
+                      </div>
                     ))}
+
                     <li
                       className="mt-1 cursor-pointer rounded p-2 hover:bg-gray-100 text-green-600"
                       onClick={() => {
@@ -469,7 +426,6 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions, fetch
         </div>
 
         <div className="flex gap-4">
-          {/* Parcelas */}
           <div className="flex-1">
             <label className="mb-1 block font-medium text-sm" htmlFor="installments">
               Parcelas
@@ -478,13 +434,12 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions, fetch
               className="w-full rounded border border-gray-300 px-3 py-2"
               id="installments"
               min={1}
-              onChange={(e) => setParcelas(e.target.value)}
               type="number"
+              onChange={(e) => setParcelas(e.target.value)}
               value={parcelas}
             />
           </div>
 
-          {/* Calendário */}
           <div className="flex-1">
             <Calendario
               label="Data da transação"
@@ -510,7 +465,6 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions, fetch
         </div>
       </div>
 
-      {/* Modal de confirmação de exclusão */}
       {modalDeleteOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/70 p-4"
@@ -521,11 +475,13 @@ function NewTransactionModal({ open, onClose, onAdd, onUpdateTransactions, fetch
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-lg font-semibold">Confirmar exclusão</h3>
+
             <p>
               Tem certeza que deseja deletar a categoria{' '}
               <span className="font-bold">{categoriaParaDeletar?.nome}</span> e
               todas as transações vinculadas?
             </p>
+
             <label className="flex items-center gap-2">
               <input
                 type="checkbox"

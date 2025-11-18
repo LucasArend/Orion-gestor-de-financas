@@ -1,50 +1,18 @@
-import { useEffect, useState } from 'react';
 import CategorySummary from '../components/Reports/category-summary';
+import ChartAmountExpenses from '../components/Reports/chart-amount-expenses';
 import ChartPercentage from '../components/Reports/chart-percentage';
-import DoughnutChart from '../components/Reports/doughnut-chart';
 import MonthlyIncomeExpenseChart from '../components/Reports/monthly-chart';
 import YearlyExpenseChart from '../components/Reports/yearly-chart';
-import { useAuth } from '../context/AuthContext';
-import { doughnutChartOptions } from '../data/doughnut-chart-options';
+import { useCurrency } from '../context/currency-provider';
 import { cardInfoReports } from '../data/reports-card-info';
 import { useReportsData } from '../hooks/use-reports-data';
-import { aggregateTransactionsByMonth } from '../utils/aggregateTransactions';
-import { makeCategoryDoughnutData } from '../utils/chart-data-factory';
 import { getTextColor } from '../utils/get-text-color';
 
 export default function Reports() {
-  const { token } = useAuth();
-  const [monthlyData, setMonthlyData] = useState([]);
   const { cardDataReports } = useReportsData();
-
-  useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        const response = await fetch(
-          'http://localhost:8080/api/transacoes/me',
-          {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        const transactions = await response.json();
-        const aggregated = aggregateTransactionsByMonth(transactions);
-        setMonthlyData(aggregated);
-      } catch (error) {
-        console.error('Erro ao buscar transações:', error);
-      }
-    };
-
-    fetchTransactions();
-  }, [token]);
+  const { currency } = useCurrency();
 
   const percent = 100;
-  const labels = ['Transporte', 'Alimentação', 'Lazer', 'Contas', 'Outros'];
-  const values = [2, 5, 5, 3, 4];
-
   return (
     <div className="space-y-5">
       <section>
@@ -60,7 +28,6 @@ export default function Reports() {
       <section className="grid items-stretch gap-4 md:grid-cols-2 lg:grid-cols-4">
         {cardDataReports.map((data) => {
           const config = cardInfoReports[data.categoria];
-          if (!config) return null;
           const { title, Icon } = config;
 
           return (
@@ -82,13 +49,13 @@ export default function Reports() {
                   )}`}
                 >
                   {title === 'Taxa de Poupança'
-                    ? new Intl.NumberFormat('pt-BR', {
+                    ? new Intl.NumberFormat(currency.locale, {
                         style: 'percent',
                         minimumFractionDigits: 2,
                       }).format(data.valor / percent)
-                    : new Intl.NumberFormat('pt-BR', {
+                    : new Intl.NumberFormat(currency.locale, {
                         style: 'currency',
-                        currency: 'BRL',
+                        currency: currency.code,
                       }).format(data.valor)}
                 </p>
               </div>
@@ -105,10 +72,7 @@ export default function Reports() {
             Quantidade de Gastos por Categoria
           </h3>
           <div className="flex min-h-0 flex-1 flex-col rounded-lg">
-            <DoughnutChart
-              data={makeCategoryDoughnutData(labels, values)}
-              options={doughnutChartOptions}
-            />
+            <ChartAmountExpenses />
           </div>
         </div>
 
@@ -118,7 +82,12 @@ export default function Reports() {
             Resumo de Gastos
           </h3>
           <div className="flex min-h-0 flex-1 flex-col gap-6 lg:flex-row">
-            <CategorySummary />
+            <div className="lg:w-1/2">
+              <ChartPercentage />
+            </div>
+            <div className="lg:w-1/2">
+              <CategorySummary />
+            </div>
           </div>
         </div>
       </section>
@@ -130,19 +99,16 @@ export default function Reports() {
             Balanço Financeiro Mensal
           </h3>
           <div className="flex min-h-0 flex-1 flex-col rounded-lg">
-            <MonthlyIncomeExpenseChart
-              monthlyData={monthlyData}
-              monthPeriod={6}
-            />
+            <MonthlyIncomeExpenseChart />
           </div>
         </div>
 
         <div className="flex flex-col rounded-lg bg-white p-6 shadow-lg shadow-zinc-400/50">
           <h3 className="mb-4 font-semibold text-gray-800 text-xl">
-            Evolução dos Gastos
+            Evolução do Saldo Anual
           </h3>
           <div className="flex min-h-0 flex-1 flex-col rounded-lg">
-            <YearlyExpenseChart monthlyData={monthlyData} />
+            <YearlyExpenseChart />
           </div>
         </div>
       </section>

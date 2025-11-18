@@ -59,6 +59,11 @@ public class JwtService {
     }
 
     public Long getUserIdFromToken(String token) {
+        System.err.println(
+                "\n[AVISO JWT] getUserIdFromToken() foi chamado, " +
+                        "mas o subject do token NÃO é um número.\n" +
+                        "Isso acontece porque o token usa username/email como subject.\n"
+        );
         String subject = getSubject(token);
         return Long.parseLong(subject);
     }

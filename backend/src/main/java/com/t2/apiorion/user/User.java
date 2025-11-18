@@ -27,7 +27,6 @@ public class User {
     @Email
     private String username;
 
-    @NotBlank
     @Size(min = 60, max = 100)
     private String password;
 
@@ -101,4 +100,20 @@ public class User {
     public Instant getUpdatedAt() { return updatedAt; }
 
     public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
+    }
 }

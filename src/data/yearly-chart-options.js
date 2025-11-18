@@ -1,7 +1,5 @@
-/*
- * Configurações para o gráfico de -Evolução dos Gastos- da página de RELATÓRIOS
- */
-export const yearlyChartOptions = {
+
+export const yearlyChartOptions = (currencyCode, currencyCountry) => ({
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
@@ -19,9 +17,9 @@ export const yearlyChartOptions = {
       callbacks: {
         label: (tooltipItem) => {
           const value = tooltipItem.raw;
-          return new Intl.NumberFormat('pt-BR', {
+          return new Intl.NumberFormat(currencyCountry, {
             style: 'currency',
-            currency: 'BRL',
+            currency: currencyCode,
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           }).format(value);
@@ -56,9 +54,14 @@ export const yearlyChartOptions = {
           if (value === 0) {
             return '';
           }
-          return `R$${value.toFixed(0).replace('.', ',')}`;
+          return new Intl.NumberFormat(currencyCountry, {
+            style: 'currency',
+            currency: currencyCode,
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+          }).format(value);
         },
       },
     },
   },
-};
+});
