@@ -65,6 +65,9 @@ export default function GoalsTable({
               Aporte Mensal
             </th>
             <th className="px-6 py-3 text-left font-bold text-gray-600 text-xs uppercase tracking-wider">
+              Contribuir
+            </th>
+            <th className="px-6 py-3 text-left font-bold text-gray-600 text-xs uppercase tracking-wider">
               Data Prevista
             </th>
             <th className="px-6 py-3 text-left font-bold text-gray-600 text-xs uppercase tracking-wider">
@@ -89,14 +92,15 @@ export default function GoalsTable({
                 {formatCurrency(meta.saved, currency)}
               </td>
               <td className="px-6 py-4 text-gray-500 text-sm">
-                <div className="flex gap-1">
-                  {formatCurrency(meta.contribution, currency)}
-                  <button
-                    className="cursor-pointer text-base text-green-600 hover:text-green-800"
+                  {formatCurrency(meta.contribution)}
+              </td>
+              <td className='px-6 py-4 text-gray-500 text-sm'>
+                <div className='ml-6'>
+                  <button type='button' className='cursor-pointer text-base text-green-600 hover:text-green-800 '
                     onClick={() => onContribution(meta)}
                     type="button"
                   >
-                    <CurrencyDollarIcon className="h-5 w-5" />
+                    <CurrencyDollarIcon className="h-7 w-7"/>
                   </button>
                 </div>
               </td>
