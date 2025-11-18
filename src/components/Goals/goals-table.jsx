@@ -6,11 +6,14 @@ import {
 import { useCurrency } from '../../context/currency-provider';
 
 const formatCurrency = (value, currency) => {
+  const safeCurrency = currency ?? { locale: "pt-BR", code: "BRL" };
+
   const numericValue =
     value === null || value === undefined ? 0 : Number(value);
-  return numericValue.toLocaleString(currency.locale, {
-    style: 'currency',
-    currency: currency.code,
+
+  return numericValue.toLocaleString(safeCurrency.locale, {
+    style: "currency",
+    currency: safeCurrency.code,
   });
 };
 
@@ -98,7 +101,6 @@ export default function GoalsTable({
                 <div className='ml-6'>
                   <button type='button' className='cursor-pointer text-base text-green-600 hover:text-green-800 '
                     onClick={() => onContribution(meta)}
-                    type="button"
                   >
                     <CurrencyDollarIcon className="h-7 w-7"/>
                   </button>
