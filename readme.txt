@@ -179,12 +179,6 @@ Rodar com:
 -   🔐 Login com mais redes sociais
 -   🔄 Lançamentos automáticos (recorrentes)
 
-------------------------------------------------------------------------
-
-📜 Licença
-
-Defina aqui a licença desejada (exemplo: MIT, GPL, Apache).
-Atualmente não definida.
 
 ------------------------------------------------------------------------
 
