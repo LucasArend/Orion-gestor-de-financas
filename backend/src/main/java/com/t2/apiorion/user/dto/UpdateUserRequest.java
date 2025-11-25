@@ -8,7 +8,6 @@ public class UpdateUserRequest {
     private String username;
     private Set<String> roles;
 
-    // Getters e setters
     public String getName() {
         return name;
     }

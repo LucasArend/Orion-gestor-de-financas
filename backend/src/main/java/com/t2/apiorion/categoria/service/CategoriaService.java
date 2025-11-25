@@ -4,43 +4,44 @@ import com.t2.apiorion.categoria.Categoria;
 import com.t2.apiorion.categoria.CategoriaRepository;
 import com.t2.apiorion.categoria.dto.CategoriaRequest;
 import com.t2.apiorion.user.User;
-import com.t2.apiorion.user.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class CategoriaService {
 
     private final CategoriaRepository categoriaRepository;
-    private final UserRepository userRepository;
 
-    public CategoriaService(CategoriaRepository categoriaRepository, UserRepository userRepository) {
+    public CategoriaService(CategoriaRepository categoriaRepository) {
         this.categoriaRepository = categoriaRepository;
-        this.userRepository = userRepository;
     }
 
     @Transactional
-    public Categoria atualizarCategoria(Long id, CategoriaRequest request) {
-        Categoria categoria = categoriaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Categoria não encontrada com id " + id));
+    public Categoria criarCategoria(CategoriaRequest request, User usuario) {
+        if (usuario == null) {
+            throw new EntityNotFoundException("Usuário não encontrado");
+        }
 
+        Categoria categoria = new Categoria();
         categoria.setNome(request.getNome());
+        categoria.setUsuario(usuario);
         return categoriaRepository.save(categoria);
     }
 
     @Transactional
-    public Categoria criarCategoria(CategoriaRequest request) {
-        Categoria categoria = new Categoria();
+    public Categoria atualizarCategoria(Long id, CategoriaRequest request, User usuario) {
+        Categoria categoria = categoriaRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Categoria não encontrada com id " + id));
+
+        if (categoria.getUsuario() == null || !Objects.equals(categoria.getUsuario().getId(), usuario.getId())) {
+            throw new EntityNotFoundException("Categoria não pertence ao usuário");
+        }
+
         categoria.setNome(request.getNome());
-
-        // Associando a categoria ao usuário logado (nesse caso, assume-se que o usuário logado tenha ID 1)
-        User usuario = userRepository.findById(1L)  // Aqui você deve pegar o usuário logado, por exemplo com SecurityContext
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-        categoria.setUsuario(usuario);
-
         return categoriaRepository.save(categoria);
     }
 

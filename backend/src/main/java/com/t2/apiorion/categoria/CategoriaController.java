@@ -11,11 +11,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import java.security.Principal;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/categorias")
@@ -39,8 +40,18 @@ public class CategoriaController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Categoria criada com sucesso")
     })
-    public ResponseEntity<Categoria> criarCategoria(@Valid @RequestBody CategoriaRequest request) {
-        Categoria categoria = categoriaService.criarCategoria(request);
+    public ResponseEntity<Categoria> criarCategoria(
+            @Valid @RequestBody CategoriaRequest request,
+            Principal principal
+    ) {
+        if (principal == null || principal.getName() == null) {
+            throw new EntityNotFoundException("Usuário não autenticado");
+        }
+
+        User usuario = userRepository.findByUsername(principal.getName())
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+
+        Categoria categoria = categoriaService.criarCategoria(request, usuario);
         return ResponseEntity.status(HttpStatus.CREATED).body(categoria);
     }
 
@@ -62,25 +73,31 @@ public class CategoriaController {
     })
     public ResponseEntity<Categoria> atualizarCategoria(
             @PathVariable Long id,
-            @Valid @RequestBody CategoriaRequest request) {
+            @Valid @RequestBody CategoriaRequest request,
+            Principal principal
+    ) {
+        if (principal == null || principal.getName() == null) {
+            throw new EntityNotFoundException("Usuário não autenticado");
+        }
 
-        Categoria categoriaAtualizada = categoriaService.atualizarCategoria(id, request);
+        User usuario = userRepository.findByUsername(principal.getName())
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+
+        Categoria categoriaAtualizada = categoriaService.atualizarCategoria(id, request, usuario);
         return ResponseEntity.ok(categoriaAtualizada);
     }
 
     @GetMapping("/me")
     @Operation(summary = "Lista todas as categorias do usuário logado", description = "Retorna todas as categorias associadas ao usuário logado")
-    public ResponseEntity<List<Categoria>> listarCategoriasDoUsuarioLogado(
-            @AuthenticationPrincipal String username) {
+    public ResponseEntity<List<Categoria>> listarCategoriasDoUsuarioLogado(Principal principal) {
+        if (principal == null || principal.getName() == null) {
+            throw new EntityNotFoundException("Usuário não autenticado");
+        }
 
-        // Buscar o usuário logado no banco de dados
-        User usuario = userRepository.findByUsername(username)
+        User usuario = userRepository.findByUsername(principal.getName())
                 .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
 
-        // Buscar as categorias associadas ao usuário logado
         List<Categoria> categorias = categoriaRepository.findByUsuario(usuario);
-
-        // Retorna a lista de categorias com o status 200 OK
         return ResponseEntity.ok(categorias);
     }
 
@@ -90,16 +107,26 @@ public class CategoriaController {
             @ApiResponse(responseCode = "204", description = "Categoria deletada com sucesso"),
             @ApiResponse(responseCode = "404", description = "Categoria não encontrada")
     })
-    public ResponseEntity<Void> deletarCategoria(@PathVariable Long id) {
+    public ResponseEntity<Void> deletarCategoria(
+            @PathVariable Long id,
+            Principal principal
+    ) {
+        if (principal == null || principal.getName() == null) {
+            throw new EntityNotFoundException("Usuário não autenticado");
+        }
 
-        // Verificar se a categoria existe
+        User usuario = userRepository.findByUsername(principal.getName())
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+
         Categoria categoria = categoriaRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Categoria não encontrada"));
+                .filter(c -> {
+                    // proteção contra usuário null na categoria (evita NPE)
+                    if (c.getUsuario() == null) return false;
+                    return Objects.equals(c.getUsuario().getId(), usuario.getId());
+                })
+                .orElseThrow(() -> new EntityNotFoundException("Categoria não encontrada ou não pertence ao usuário"));
 
-        // Deletar a categoria e todas as transações associadas (cascade delete)
         categoriaRepository.delete(categoria);
-
-        // Retornar resposta sem conteúdo, indicando sucesso na deleção
         return ResponseEntity.noContent().build();
     }
 }

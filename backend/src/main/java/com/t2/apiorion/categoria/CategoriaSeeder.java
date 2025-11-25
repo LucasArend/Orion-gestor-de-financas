@@ -13,7 +13,7 @@ public class CategoriaSeeder {
             if (categoriaRepository.findByNomeAndUsuarioIsNull("Metas").isEmpty()) {
                 Categoria metas = new Categoria();
                 metas.setNome("Metas");
-                metas.setUsuario(null); // categoria global, sem dono
+                metas.setUsuario(null);
                 categoriaRepository.save(metas);
                 System.out.println("✅ Categoria global 'Metas' criada automaticamente.");
             }

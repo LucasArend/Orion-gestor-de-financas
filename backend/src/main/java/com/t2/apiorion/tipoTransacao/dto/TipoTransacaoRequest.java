@@ -9,7 +9,6 @@ public class TipoTransacaoRequest {
     @Size(max = 50)
     private String nome;
 
-    // Getters e Setters
     public String getNome() {
         return nome;
     }
